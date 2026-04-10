@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evaluacion Orientativa de Asertividad</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body class="public-body">
+    <div class="page-glow page-glow-left" aria-hidden="true"></div>
+    <div class="page-glow page-glow-right" aria-hidden="true"></div>
+    <div id="alert" class="alert hidden" aria-live="polite"></div>
+
+    <main class="public-shell">
+      <section id="welcomeScreen" class="glass-card screen-card">
+        <div class="intro-slides">
+          <section class="intro-slide intro-slide-hero is-visible" data-intro-slide="0">
+            <div class="reference-card">
+              <div class="section-heading">
+                <h1>Entra con calma.</h1>
+                <p id="instrumentDescription">
+                  Esto no es un examen. Es una forma de entender como estas viviendo tu forma de expresarte hoy.
+                </p>
+              </div>
+
+              <div class="benefit-list" aria-label="Beneficios del recorrido">
+                <div class="benefit-item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 11V8a5 5 0 0 1 10 0v3" />
+                    <rect x="5" y="11" width="14" height="10" rx="2" />
+                  </svg>
+                  <span>Tus respuestas son privadas</span>
+                </div>
+                <div class="benefit-item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0 0 6v1a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3Z" />
+                    <path d="M15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 0 6v1a3 3 0 0 1-6 0V7a3 3 0 0 1 3-3Z" />
+                  </svg>
+                  <span>No hay respuestas correctas o incorrectas</span>
+                </div>
+                <div class="benefit-item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                  </svg>
+                  <span>Toma pocos minutos y una pregunta por pantalla</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="intro-slide intro-slide-trust hidden" data-intro-slide="1">
+            <div class="reference-card">
+              <div class="section-heading">
+                <h1>Mira sin juzgar.</h1>
+                <p>Responder con honestidad te dara una lectura mas util que responder para quedar bien.</p>
+              </div>
+
+              <div class="benefit-list" aria-label="Claves de aplicacion">
+                <div class="benefit-item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 21s7-4.4 7-11a7 7 0 0 0-14 0c0 6.6 7 11 7 11Z" />
+                    <circle cx="12" cy="10" r="2.5" />
+                  </svg>
+                  <span>Observa como sueles actuar en la vida real</span>
+                </div>
+                <div class="benefit-item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 12c2-5 6-7 8-7s6 2 8 7c-2 5-6 7-8 7s-6-2-8-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <span>El resultado es orientativo y academico</span>
+                </div>
+                <div class="benefit-item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 19c4-1 6-3 7-7 1 4 3 6 7 7-4 1-6 3-7 7-1-4-3-6-7-7Z" />
+                    <path d="M4 7c2-.5 3.5-2 4-4 .5 2 2 3.5 4 4-2 .5-3.5 2-4 4-.5-2-2-3.5-4-4Z" />
+                  </svg>
+                  <span>Al final recibiras un perfil y areas de atencion</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="intro-slide intro-slide-form hidden" data-intro-slide="2">
+            <div class="reference-card reference-card-form">
+              <div class="section-heading">
+                <h1>Comienza tu evaluacion.</h1>
+                <p>Completa tus datos y responde los 45 reactivos con la escala oficial del instrumento.</p>
+              </div>
+
+              <div class="google-block">
+                <div class="google-copy">
+                  <p class="google-title">Acceso opcional</p>
+                  <p class="google-text">Google solo precarga nombre, correo y foto.</p>
+                </div>
+                <div id="googleSignInContainer" class="google-slot"></div>
+              </div>
+
+              <div id="profilePreview" class="profile-preview hidden">
+                <img id="profilePicture" alt="Foto de perfil" />
+                <div>
+                  <strong id="profileName"></strong>
+                  <p id="profileEmail"></p>
+                </div>
+              </div>
+
+              <form id="participantForm" class="participant-form">
+                <label>
+                  Cedula
+                  <input id="idNumber" name="idNumber" type="text" inputmode="numeric" placeholder="0102030405" required />
+                  <small id="idNumberFeedback" class="field-feedback hidden"></small>
+                </label>
+                <label>
+                  Nombres y apellidos
+                  <input id="fullName" name="fullName" type="text" placeholder="Tu nombre completo" required />
+                </label>
+                <label>
+                  Carrera
+                  <input id="career" name="career" type="text" placeholder="Software, Psicologia, etc." required />
+                </label>
+                <label>
+                  Edad
+                  <input id="age" name="age" type="text" placeholder="21" required />
+                </label>
+                <label>
+                  Genero
+                  <select id="gender" name="gender" required>
+                    <option value="">Selecciona una opcion</option>
+                    <option value="Mujer">Mujer</option>
+                    <option value="Hombre">Hombre</option>
+                    <option value="No binario">No binario</option>
+                    <option value="Prefiero no responder">Prefiero no responder</option>
+                  </select>
+                </label>
+                <label>
+                  Correo electronico
+                  <input id="email" name="email" type="email" placeholder="tu@correo.com" />
+                </label>
+                <button id="startAssessmentButton" class="primary-button" type="submit">
+                  Comenzar evaluacion
+                </button>
+              </form>
+            </div>
+          </section>
+        </div>
+
+        <div class="intro-pagination">
+          <button id="introBackButton" class="secondary-button ghost-link" type="button">Volver</button>
+          <div class="intro-dots" aria-label="Progreso de introduccion">
+            <span class="intro-dot is-active"></span>
+            <span class="intro-dot"></span>
+            <span class="intro-dot"></span>
+          </div>
+          <button id="introNextButton" class="ghost-link" type="button">Ver como funciona -></button>
+        </div>
+      </section>
+
+      <section id="questionScreen" class="glass-card screen-card hidden">
+        <div class="question-header">
+          <div class="section-heading compact">
+            <span id="questionDimension" class="step-pill">Dimension</span>
+            <h2 id="questionHeading">Pregunta</h2>
+            <p id="questionHint">Selecciona el nivel de acuerdo que mejor describa tu experiencia habitual.</p>
+          </div>
+          <div class="progress-panel">
+            <div class="progress-meta">
+              <p id="progressLabel">Pregunta 1 de 45</p>
+              <p id="progressMessage" class="progress-message">Avanza con calma y responde como sueles actuar.</p>
+            </div>
+            <div class="progress-bar" aria-hidden="true">
+              <div id="progressFill" class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <article class="question-card">
+          <div class="question-orb" aria-hidden="true"></div>
+          <p id="questionCategory" class="question-category"></p>
+          <h3 id="questionText"></h3>
+          <p id="questionMicrocopy" class="question-microcopy"></p>
+          <div class="motivation-banner">
+            <span class="motivation-label">Mensaje para este momento</span>
+            <p id="questionMotivation"></p>
+          </div>
+          <div id="ratingGroup" class="rating-group" role="group" aria-label="Opciones de respuesta"></div>
+        </article>
+
+        <div class="navigation-row">
+          <button id="backButton" class="secondary-button" type="button">Anterior</button>
+          <button id="nextButton" class="primary-button" type="button">Siguiente</button>
+        </div>
+      </section>
+
+      <section id="resultScreen" class="glass-card screen-card hidden">
+        <div class="section-heading">
+          <span class="step-pill">Resultado</span>
+          <h2 id="resultHeading">Tu lectura orientativa</h2>
+          <p id="resultSubheading">Resumen academico del instrumento aplicado.</p>
+        </div>
+
+        <div class="report-overview">
+          <article class="report-score-card">
+            <p class="report-label">Perfil global</p>
+            <strong id="globalProfile"></strong>
+            <p id="globalSummary" class="report-summary"></p>
+          </article>
+          <article class="report-highlight-card">
+            <p class="report-label">Indice global favorable</p>
+            <strong id="overallAverage"></strong>
+            <p id="overallPercentage" class="report-summary"></p>
+          </article>
+        </div>
+
+        <section class="report-section">
+          <p class="report-label">Tus datos</p>
+          <div id="participantSummary" class="summary-grid"></div>
+        </section>
+
+        <section class="report-section">
+          <p class="report-label">Resultados por dimension</p>
+          <div id="dimensionGrid" class="dimension-grid"></div>
+        </section>
+
+        <section class="report-section">
+          <p class="report-label">Observaciones automaticas</p>
+          <div class="observations-grid">
+            <article>
+              <h3>Fortalezas detectadas</h3>
+              <ul id="strengthList" class="clean-list"></ul>
+            </article>
+            <article>
+              <h3>Areas de atencion</h3>
+              <ul id="attentionList" class="clean-list"></ul>
+            </article>
+            <article>
+              <h3>Sugerencias prudentes</h3>
+              <ul id="suggestionList" class="clean-list"></ul>
+            </article>
+          </div>
+        </section>
+
+        <div class="navigation-row single-action">
+          <button id="newAssessmentButton" class="primary-button" type="button">Nueva aplicacion</button>
+        </div>
+      </section>
+
+      <footer id="publicFooter" class="public-footer">
+        <a href="/admin.html" class="admin-link" target="_blank" rel="noreferrer">Admin</a>
+      </footer>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

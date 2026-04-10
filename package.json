@@ -1,0 +1,9 @@
+{
+  "name": "inteligencia-emocional-app",
+  "version": "1.0.0",
+  "description": "Aplicacion web con acceso de Google, formulario de inteligencia emocional y reporte final.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

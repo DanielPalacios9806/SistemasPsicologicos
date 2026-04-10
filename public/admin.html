@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin | Evaluacion de Asertividad</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="admin-body">
+    <div class="page-glow page-glow-left" aria-hidden="true"></div>
+    <div class="page-glow page-glow-right" aria-hidden="true"></div>
+    <div id="adminAlert" class="alert hidden" aria-live="polite"></div>
+
+    <main class="admin-shell">
+      <section id="adminLoginScreen" class="glass-card admin-card">
+        <div class="section-heading">
+          <span class="step-pill">Admin</span>
+          <h1>Acceso administrativo</h1>
+          <p>Ingresa tus credenciales para consultar registros y descargar el Excel consolidado.</p>
+        </div>
+
+        <form id="adminLoginForm" class="participant-form admin-form">
+          <label>
+            Usuario
+            <input id="adminUsername" name="adminUsername" type="text" placeholder="admin" required />
+          </label>
+          <label>
+            Contrasena
+            <input id="adminPassword" name="adminPassword" type="password" placeholder="********" required />
+          </label>
+          <button class="primary-button" type="submit">Ingresar</button>
+        </form>
+
+        <div class="navigation-row single-action">
+          <a href="/" class="secondary-button back-link">Regresar</a>
+        </div>
+      </section>
+
+      <section id="adminPanelScreen" class="glass-card admin-card hidden">
+        <div class="panel-head">
+          <div>
+            <span class="step-pill">Admin</span>
+            <h2>Panel de consulta</h2>
+            <p>Busca por cedula o descarga la base consolidada en Excel.</p>
+          </div>
+          <div class="admin-actions">
+            <button id="adminExportButton" class="primary-button" type="button">Descargar Excel</button>
+            <a href="/" class="secondary-button back-link">Regresar</a>
+          </div>
+        </div>
+
+        <form id="adminSearchForm" class="search-form">
+          <input id="adminSearchIdNumber" name="adminSearchIdNumber" type="text" inputmode="numeric" placeholder="Ingresa la cedula" required />
+          <button class="primary-button" type="submit">Consultar</button>
+        </form>
+
+        <section id="adminResultCard" class="report-section hidden">
+          <p class="report-label">Resultado consultado</p>
+          <div id="adminParticipantSummary" class="summary-grid"></div>
+          <div id="adminDimensionGrid" class="dimension-grid admin-gap"></div>
+          <div class="observations-grid admin-gap">
+            <article>
+              <h3>Fortalezas</h3>
+              <ul id="adminStrengthList" class="clean-list"></ul>
+            </article>
+            <article>
+              <h3>Areas de atencion</h3>
+              <ul id="adminAttentionList" class="clean-list"></ul>
+            </article>
+            <article>
+              <h3>Sugerencias</h3>
+              <ul id="adminSuggestionList" class="clean-list"></ul>
+            </article>
+          </div>
+          <div id="adminAnswersList" class="answers-list admin-gap"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/admin.js"></script>
+  </body>
+</html>

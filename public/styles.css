@@ -779,8 +779,8 @@ button:focus {
   }
 
   .question-card h3 {
-    font-size: clamp(1.55rem, 8.1vw, 2.12rem);
-    max-width: 11ch;
+    font-size: clamp(1.36rem, 6.7vw, 1.82rem);
+    max-width: 14ch;
     line-height: 0.98;
   }
 

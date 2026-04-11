@@ -93,8 +93,6 @@ body::before {
 
 .glass-card,
 .benefit-list,
-.google-block,
-.profile-preview,
 .progress-panel,
 .question-card,
 .report-score-card,
@@ -214,6 +212,12 @@ p {
   max-width: 520px;
 }
 
+.form-microcopy {
+  margin-top: 10px;
+  font-size: 0.94rem;
+  max-width: 560px;
+}
+
 .benefit-list {
   display: grid;
   gap: 18px;
@@ -239,42 +243,6 @@ p {
   stroke-width: 1.85;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.google-block {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: center;
-  padding: 16px;
-  border-radius: var(--radius-lg);
-  margin-bottom: 16px;
-}
-
-.google-title {
-  margin-bottom: 6px;
-  color: var(--muted-strong);
-  font-weight: 700;
-}
-
-.google-slot {
-  min-height: 42px;
-}
-
-.profile-preview {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  margin-bottom: 16px;
-}
-
-.profile-preview img {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
 }
 
 .participant-form,
@@ -422,12 +390,12 @@ button:focus {
 
 .question-header {
   display: grid;
-  gap: 16px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .progress-panel {
-  padding: 16px;
+  padding: 14px 16px;
   border-radius: var(--radius-lg);
 }
 
@@ -454,7 +422,7 @@ button:focus {
 .question-card {
   position: relative;
   overflow: hidden;
-  padding: clamp(24px, 5vw, 44px);
+  padding: clamp(22px, 4vw, 36px);
   border-radius: var(--radius-xl);
 }
 
@@ -469,35 +437,35 @@ button:focus {
 }
 
 .question-card h3 {
-  font-size: clamp(2rem, 4vw, 3.15rem);
+  font-size: clamp(1.72rem, 3.4vw, 2.7rem);
   max-width: 14ch;
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 .question-microcopy {
-  margin-top: 12px;
+  margin-top: 10px;
   max-width: 56ch;
 }
 
 .motivation-banner {
-  margin-top: 18px;
-  padding: 14px 16px;
+  margin-top: 14px;
+  padding: 12px 14px;
   border-radius: var(--radius-md);
   background: rgba(255,255,255,.05);
   border: 1px solid var(--line);
 }
 
 .rating-group {
-  margin-top: 20px;
+  margin-top: 16px;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 7px;
 }
 
 .rating-button {
-  min-height: 96px;
+  min-height: 88px;
   min-width: 0;
-  padding: 10px 6px;
+  padding: 8px 6px;
   text-align: center;
   border: 1px solid var(--line);
   background: rgba(255,255,255,.05);
@@ -542,8 +510,8 @@ button:focus {
 }
 
 #questionScreen .navigation-row {
-  margin-top: 28px;
-  padding-top: 10px;
+  margin-top: 22px;
+  padding-top: 8px;
 }
 
 .report-overview,
@@ -567,7 +535,8 @@ button:focus {
 .report-highlight-card strong {
   display: block;
   margin-top: 10px;
-  font-size: 1.6rem;
+  font-size: 1.45rem;
+  line-height: 1.15;
 }
 
 .summary-item span {
@@ -580,6 +549,16 @@ button:focus {
 
 .summary-item strong {
   display: block;
+  margin-top: 8px;
+}
+
+.dimension-card h3 {
+  font-size: 1.5rem;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.dimension-card p + p {
   margin-top: 8px;
 }
 
@@ -663,8 +642,23 @@ button:focus {
   }
 
   .reference-card {
-    padding: 24px 20px;
+    padding: 20px 16px;
     border-radius: 26px;
+  }
+
+  .section-heading h1,
+  .section-heading h2 {
+    font-size: clamp(2rem, 11vw, 2.8rem);
+    margin-bottom: 12px;
+  }
+
+  .section-heading p {
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+
+  .form-microcopy {
+    font-size: 0.84rem;
   }
 
   .rating-group {
@@ -672,24 +666,45 @@ button:focus {
   }
 
   .rating-button {
-    min-height: 82px;
-    padding: 8px 4px;
+    min-height: 76px;
+    padding: 6px 3px;
   }
 
   .rating-emoji {
-    font-size: .98rem;
-    margin-bottom: 5px;
+    font-size: .92rem;
+    margin-bottom: 4px;
   }
 
   .rating-value {
-    width: 24px;
-    height: 24px;
-    font-size: .78rem;
-    margin-bottom: 6px;
+    width: 22px;
+    height: 22px;
+    font-size: .74rem;
+    margin-bottom: 5px;
   }
 
   .rating-title {
-    font-size: .67rem;
+    font-size: .61rem;
+  }
+
+  .question-card {
+    padding: 18px 14px;
+  }
+
+  .question-card h3 {
+    font-size: clamp(1.45rem, 8vw, 2.05rem);
+    max-width: 12ch;
+  }
+
+  .question-microcopy,
+  .motivation-banner p,
+  #questionHint,
+  .progress-message {
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .progress-panel {
+    padding: 12px;
   }
 
   .primary-button,

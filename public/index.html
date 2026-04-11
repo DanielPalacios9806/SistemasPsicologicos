@@ -11,7 +11,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body class="public-body">
     <div class="page-glow page-glow-left" aria-hidden="true"></div>
@@ -93,23 +92,8 @@
             <div class="reference-card reference-card-form">
               <div class="section-heading">
                 <h1>Comienza tu evaluacion.</h1>
-                <p>Completa tus datos y responde los 45 reactivos con la escala oficial del instrumento.</p>
-              </div>
-
-              <div class="google-block">
-                <div class="google-copy">
-                  <p class="google-title">Acceso opcional</p>
-                  <p class="google-text">Google solo precarga nombre, correo y foto.</p>
-                </div>
-                <div id="googleSignInContainer" class="google-slot"></div>
-              </div>
-
-              <div id="profilePreview" class="profile-preview hidden">
-                <img id="profilePicture" alt="Foto de perfil" />
-                <div>
-                  <strong id="profileName"></strong>
-                  <p id="profileEmail"></p>
-                </div>
+                <p>Completa tus datos y responde los 45 reactivos con calma. La lectura final es privada y orientativa.</p>
+                <p class="form-microcopy">Para reducir sesgos, durante el recorrido no se muestran nombres de categorias ni claves tecnicas del instrumento.</p>
               </div>
 
               <form id="participantForm" class="participant-form">
@@ -166,7 +150,6 @@
       <section id="questionScreen" class="glass-card screen-card hidden">
         <div class="question-header">
           <div class="section-heading compact">
-            <span id="questionDimension" class="step-pill">Dimension</span>
             <h2 id="questionHeading">Pregunta</h2>
             <p id="questionHint">Selecciona el nivel de acuerdo que mejor describa tu experiencia habitual.</p>
           </div>
@@ -183,7 +166,6 @@
 
         <article class="question-card">
           <div class="question-orb" aria-hidden="true"></div>
-          <p id="questionCategory" class="question-category"></p>
           <h3 id="questionText"></h3>
           <p id="questionMicrocopy" class="question-microcopy"></p>
           <div class="motivation-banner">
@@ -213,7 +195,7 @@
             <p id="globalSummary" class="report-summary"></p>
           </article>
           <article class="report-highlight-card">
-            <p class="report-label">Indice global favorable</p>
+            <p class="report-label">Lectura general</p>
             <strong id="overallAverage"></strong>
             <p id="overallPercentage" class="report-summary"></p>
           </article>
@@ -225,7 +207,7 @@
         </section>
 
         <section class="report-section">
-          <p class="report-label">Resultados por dimension</p>
+          <p class="report-label">Lectura por areas</p>
           <div id="dimensionGrid" class="dimension-grid"></div>
         </section>
 

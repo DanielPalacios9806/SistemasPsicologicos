@@ -14,7 +14,6 @@ const MOTIVATION_BY_DIMENSION = {
 
 const state = {
   config: null,
-  googleClientId: "",
   introSlideIndex: 0,
   idNumberExists: false,
   participant: { googleId: "", picture: "" },
@@ -36,14 +35,8 @@ const participantForm = document.getElementById("participantForm");
 const idNumberInput = document.getElementById("idNumber");
 const idNumberFeedback = document.getElementById("idNumberFeedback");
 const startAssessmentButton = document.getElementById("startAssessmentButton");
-const profilePreview = document.getElementById("profilePreview");
-const profilePicture = document.getElementById("profilePicture");
-const profileName = document.getElementById("profileName");
-const profileEmail = document.getElementById("profileEmail");
-const questionDimension = document.getElementById("questionDimension");
 const questionHeading = document.getElementById("questionHeading");
 const questionHint = document.getElementById("questionHint");
-const questionCategory = document.getElementById("questionCategory");
 const questionText = document.getElementById("questionText");
 const questionMicrocopy = document.getElementById("questionMicrocopy");
 const questionMotivation = document.getElementById("questionMotivation");
@@ -65,6 +58,33 @@ const strengthList = document.getElementById("strengthList");
 const attentionList = document.getElementById("attentionList");
 const suggestionList = document.getElementById("suggestionList");
 const newAssessmentButton = document.getElementById("newAssessmentButton");
+
+const USER_DIMENSION_COPY = {
+  asertividad_directa: {
+    title: "Expresion directa",
+    high: "Este patron aparece como un recurso disponible y relativamente consistente en tus respuestas.",
+    medium: "Este recurso aparece en varias situaciones, aunque no de forma totalmente estable.",
+    low: "Aqui aparecen senales de reserva o dificultad para expresarte con claridad en algunos contextos.",
+  },
+  no_asertividad: {
+    title: "Seguridad al expresarte",
+    high: "Tus respuestas sugieren que la inhibicion o el temor a la evaluacion no dominan la mayoria de tus interacciones.",
+    medium: "Aparecen algunas reservas al expresarte, sobre todo en situaciones sensibles o exigentes.",
+    low: "Se observan respuestas compatibles con inhibicion, cautela excesiva o temor a expresar necesidades.",
+  },
+  asertividad_indirecta: {
+    title: "Preferencia de comunicacion",
+    high: "Predomina la disposicion a comunicarte de forma presencial y directa cuando la situacion lo requiere.",
+    medium: "En ciertos momentos podrias preferir medios indirectos, aunque no de manera marcada.",
+    low: "Se aprecia una tendencia a elegir formas indirectas para comunicar asuntos que tambien podrian hablarse cara a cara.",
+  },
+};
+
+function getUserBandLabel(band) {
+  if (band === "high") return "Tendencia favorable";
+  if (band === "medium") return "Tendencia intermedia";
+  return "Area a fortalecer";
+}
 
 function showAlert(message, isError = true) {
   alertBox.textContent = message;
@@ -107,25 +127,7 @@ async function loadInstrument() {
 
 async function loadConfig() {
   const response = await fetch("/api/config");
-  const config = await response.json();
-  state.googleClientId = config.googleClientId;
-
-  if (!state.googleClientId) {
-    showAlert("Google no esta configurado. Puedes continuar manualmente.", false);
-    return;
-  }
-
-  if (window.google?.accounts?.id) {
-    initializeGoogleSignIn();
-    return;
-  }
-
-  const interval = setInterval(() => {
-    if (window.google?.accounts?.id) {
-      clearInterval(interval);
-      initializeGoogleSignIn();
-    }
-  }, 250);
+  await response.json();
 }
 
 async function checkExistingIdNumber(idNumber) {
@@ -164,48 +166,6 @@ async function validateIdNumberField() {
   setIdNumberFeedback("Cedula disponible para una nueva aplicacion.", "success");
 }
 
-function initializeGoogleSignIn() {
-  window.google.accounts.id.initialize({
-    client_id: state.googleClientId,
-    callback: handleGoogleCredential,
-  });
-
-  window.google.accounts.id.renderButton(document.getElementById("googleSignInContainer"), {
-    theme: "outline",
-    size: "large",
-    shape: "pill",
-    text: "signin_with",
-    width: 280,
-  });
-}
-
-async function handleGoogleCredential(response) {
-  try {
-    const apiResponse = await fetch("/api/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ credential: response.credential }),
-    });
-    const payload = await apiResponse.json();
-    if (!apiResponse.ok) throw new Error(payload.error || "No se pudo validar la cuenta de Google.");
-
-    state.participant = { ...state.participant, ...payload };
-    document.getElementById("fullName").value = payload.fullName || "";
-    document.getElementById("email").value = payload.email || "";
-    renderProfile(payload);
-    showAlert("Perfil de Google precargado correctamente.", false);
-  } catch (error) {
-    showAlert(error.message);
-  }
-}
-
-function renderProfile(profile) {
-  profilePreview.classList.remove("hidden");
-  profilePicture.src = profile.picture || "https://via.placeholder.com/56";
-  profileName.textContent = profile.fullName || "Usuario";
-  profileEmail.textContent = profile.email || "";
-}
-
 function getDimensionLabel(key) {
   return state.config.dimensions.find((dimension) => dimension.key === key)?.label || key;
 }
@@ -215,11 +175,9 @@ function renderQuestion() {
   const currentValue = state.answers[state.currentQuestionIndex];
   const percent = Math.round(((state.currentQuestionIndex + 1) / state.config.questions.length) * 100);
 
-  questionDimension.textContent = getDimensionLabel(question.dimension);
   questionHeading.textContent = `Pregunta ${question.id}`;
-  questionCategory.textContent = getDimensionLabel(question.dimension);
   questionText.textContent = question.text;
-  questionHint.textContent = "Marca el nivel de acuerdo que mejor describa tu experiencia habitual.";
+  questionHint.textContent = "Marca el nivel de acuerdo que mejor describa tu experiencia habitual, sin pensar en categorias ni resultados.";
   questionMicrocopy.textContent =
     question.reverseForGlobal
       ? "Recuerda responder como realmente sueles actuar, aunque no siempre te guste."
@@ -285,14 +243,20 @@ function renderParticipantSummary(participant, createdAt) {
 function renderDimensionResults(scoring) {
   dimensionGrid.innerHTML = "";
   scoring.dimensions.forEach((dimension) => {
+    const copy = USER_DIMENSION_COPY[dimension.key] || {
+      title: dimension.label,
+      high: dimension.interpretiveNote,
+      medium: dimension.interpretiveNote,
+      low: dimension.interpretiveNote,
+    };
+
     const card = document.createElement("article");
     card.className = "dimension-card";
     card.innerHTML = `
-      <p class="question-category">${dimension.label}</p>
-      <h3>${dimension.favorablePercentage}%</h3>
-      <p>${dimension.interpretiveLevel}</p>
+      <p class="question-category">${copy.title}</p>
+      <h3>${getUserBandLabel(dimension.band)}</h3>
+      <p>${copy[dimension.band]}</p>
       <p>${dimension.interpretiveNote}</p>
-      <p>Puntaje bruto: ${dimension.rawTotal} | Promedio: ${dimension.rawAverage}</p>
     `;
     dimensionGrid.appendChild(card);
   });
@@ -300,11 +264,18 @@ function renderDimensionResults(scoring) {
 
 function renderResult(submission) {
   resultHeading.textContent = "Tu lectura orientativa";
-  resultSubheading.textContent = submission.scoring.summary;
+  resultSubheading.textContent =
+    "Este resultado resume patrones de comunicacion observados en tus respuestas. No representa una etiqueta fija ni un diagnostico.";
   globalProfile.textContent = submission.scoring.profile;
   globalSummary.textContent = submission.scoring.summary;
-  overallAverage.textContent = submission.scoring.overallAverage.toFixed(2);
-  overallPercentage.textContent = `${submission.scoring.overallPercentage}% de indice global favorable`;
+  overallAverage.textContent =
+    submission.scoring.strongestDimension?.label === submission.scoring.weakestDimension?.label
+      ? "Perfil relativamente equilibrado"
+      : `Predomina: ${submission.scoring.strongestDimension?.label || "Patron mixto"}`;
+  overallPercentage.textContent =
+    submission.scoring.weakestDimension
+      ? `Conviene observar con mas calma: ${submission.scoring.weakestDimension.label}.`
+      : "Conviene revisar tus respuestas con una mirada reflexiva y sin juicio.";
   renderParticipantSummary(submission.participant, submission.createdAt);
   renderDimensionResults(submission.scoring);
   renderList(strengthList, submission.scoring.observations.strengths);
@@ -430,7 +401,6 @@ nextButton.addEventListener("click", async () => {
 
 newAssessmentButton.addEventListener("click", () => {
   participantForm.reset();
-  profilePreview.classList.add("hidden");
   setIdNumberFeedback("");
   startAssessmentButton.disabled = false;
   state.idNumberExists = false;

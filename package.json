@@ -1,5 +1,5 @@
 {
-  "name": "inteligencia-emocional-app",
+  "name": "evaluacion-asertividad-ema",
   "version": "1.0.0",
   "description": "Aplicacion web con acceso de Google, formulario de inteligencia emocional y reporte final.",
   "main": "server.js",

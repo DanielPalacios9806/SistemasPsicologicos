@@ -620,13 +620,17 @@ button:focus {
 .public-footer {
   display: flex;
   justify-content: center;
-  padding-top: 12px;
+  position: fixed;
+  right: 14px;
+  bottom: 10px;
+  z-index: 20;
+  padding: 0;
 }
 
 .admin-link {
   color: rgba(247,242,255,.55);
   text-decoration: none;
-  font-size: .86rem;
+  font-size: .78rem;
 }
 
 .admin-link:hover {
@@ -947,7 +951,8 @@ body::after {
 
 .public-shell {
   width: min(100%, 1060px);
-  padding-top: 18px;
+  padding-top: clamp(8px, 1.6vh, 18px);
+  padding-bottom: clamp(8px, 1.6vh, 18px);
 }
 
 .brand-nav {
@@ -955,8 +960,8 @@ body::after {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  margin-bottom: 14px;
-  padding: 12px 14px;
+  margin-bottom: clamp(8px, 1.2vh, 14px);
+  padding: clamp(8px, 1.1vh, 12px) 14px;
   border: 1px solid rgba(245, 184, 47, 0.18);
   border-radius: 16px;
   background: rgba(7, 14, 25, 0.62);
@@ -973,9 +978,9 @@ body::after {
 }
 
 .brand-mark {
-  width: 54px;
-  height: 54px;
-  flex: 0 0 54px;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
   border-radius: 50%;
   box-shadow: 0 0 0 1px rgba(245, 184, 47, 0.26), 0 12px 30px rgba(0, 0, 0, 0.42);
 }
@@ -1026,10 +1031,22 @@ body::after {
 }
 
 .screen-card {
-  min-height: calc(100vh - 134px);
+  min-height: calc(100svh - 124px);
   border-radius: 18px;
   padding: 18px;
   animation: surfaceIn 420ms ease both;
+}
+
+#welcomeScreen {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - 124px);
+}
+
+.intro-slides {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 h1,
@@ -1067,7 +1084,8 @@ h3 {
 }
 
 .intro-slide {
-  min-height: calc(100vh - 198px);
+  min-height: 0;
+  height: 100%;
   border-radius: 14px;
   isolation: isolate;
 }
@@ -1101,6 +1119,7 @@ h3 {
 .reference-card {
   width: min(100%, 720px);
   margin: auto;
+  padding: clamp(24px, 4vh, 48px) clamp(24px, 4.2vw, 56px);
   border-radius: 14px;
   border-color: rgba(245, 184, 47, 0.22);
   background:
@@ -1119,8 +1138,13 @@ h3 {
 
 .benefit-list {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(18px, 3vh, 28px);
   border-radius: 12px;
   padding: 14px;
+}
+
+.intro-pagination {
+  margin: 10px auto 0;
 }
 
 .benefit-item {
@@ -1379,20 +1403,21 @@ button:focus {
   .public-shell {
     width: 100%;
     max-width: 100%;
-    padding: 10px 8px 24px;
+    padding: 8px 8px 0;
     overflow-x: hidden;
   }
 
   .brand-nav {
     width: 100%;
     max-width: 100%;
-    padding: 10px;
+    margin-bottom: 8px;
+    padding: 8px 10px;
   }
 
   .brand-mark {
-    width: 46px;
-    height: 46px;
-    flex-basis: 46px;
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
   }
 
   .brand-lockup strong {
@@ -1408,8 +1433,12 @@ button:focus {
     max-width: 100%;
     min-height: auto;
     border-radius: 14px;
-    padding: 10px;
+    padding: 8px;
     overflow: hidden;
+  }
+
+  #welcomeScreen {
+    min-height: calc(100svh - 78px);
   }
 
   .intro-slide,
@@ -1425,17 +1454,23 @@ button:focus {
   }
 
   .reference-card {
-    padding: 18px 14px;
+    padding: 16px 14px;
   }
 
   .section-heading h1,
   .section-heading h2 {
-    font-size: 2.35rem;
+    font-size: 2.18rem;
     max-width: none;
   }
 
   .benefit-list {
     grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 8px;
+  }
+
+  .benefit-item {
     padding: 10px;
   }
 
@@ -1443,7 +1478,8 @@ button:focus {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    margin-top: 8px;
   }
 
   .intro-dots {
@@ -1456,6 +1492,10 @@ button:focus {
     min-width: 0;
     padding: 10px 12px;
     white-space: nowrap;
+  }
+
+  .public-footer {
+    display: none;
   }
 
   .question-card h3 {

@@ -70,12 +70,23 @@ const overallAverage = document.getElementById("overallAverage");
 const overallPercentage = document.getElementById("overallPercentage");
 const participantSummary = document.getElementById("participantSummary");
 const dimensionGrid = document.getElementById("dimensionGrid");
+const baronDetailSection = document.getElementById("baronDetailSection");
+const baronDetailGrid = document.getElementById("baronDetailGrid");
 const validitySection = document.getElementById("validitySection");
 const validityGrid = document.getElementById("validityGrid");
 const strengthList = document.getElementById("strengthList");
 const attentionList = document.getElementById("attentionList");
 const suggestionList = document.getElementById("suggestionList");
 const newAssessmentButton = document.getElementById("newAssessmentButton");
+
+const CATEGORY_LABELS = {
+  very_low: "Muy bajo",
+  low: "Bajo",
+  average: "Promedio",
+  high: "Alto",
+  very_high: "Muy alto",
+  pending: "Pendiente",
+};
 
 function showAlert(message, isError = true) {
   alertBox.textContent = message;
@@ -215,17 +226,24 @@ async function startSelectedInstrument() {
 }
 
 function getModuleProgressMap() {
-  const scoring = state.currentApplication?.scoring;
-  if (!scoring?.modules) {
-    const instrument = getCurrentInstrument();
-    return (instrument?.modules || []).map((module) => ({
+  const instrument = getCurrentInstrument();
+  const answerMap = getCurrentAnswerMap();
+  const scoringModules = new Map((state.currentApplication?.scoring?.modules || []).map((module) => [module.key, module]));
+
+  return (instrument?.modules || []).map((module) => {
+    const answeredCount = module.itemIds.filter((itemId) => answerMap[itemId] != null).length;
+    const expectedCount = module.itemIds.length;
+    return {
+      ...(scoringModules.get(module.key) || {}),
       key: module.key,
       label: module.label,
-      completionRatio: 0,
-      isComplete: false,
-    }));
-  }
-  return scoring.modules;
+      intro: module.intro,
+      answeredCount,
+      expectedCount,
+      completionRatio: expectedCount ? Math.round((answeredCount / expectedCount) * 100) : 0,
+      isComplete: answeredCount === expectedCount,
+    };
+  });
 }
 
 function renderModuleSummary() {
@@ -307,8 +325,10 @@ function enterModule(moduleKey) {
   const instrument = getCurrentInstrument();
   const module = instrument.modules.find((candidate) => candidate.key === moduleKey);
   if (!module) return;
+  const answerMap = getCurrentAnswerMap();
+  const pendingItemIds = module.itemIds.filter((itemId) => answerMap[itemId] == null);
   state.activeModuleKey = moduleKey;
-  state.activeQuestionIds = module.itemIds;
+  state.activeQuestionIds = pendingItemIds.length ? pendingItemIds : module.itemIds;
   state.activeQuestionIndex = 0;
   renderQuestion();
   switchScreen(questionScreen);
@@ -416,6 +436,19 @@ function renderParticipantSummary(participant, date) {
   });
 }
 
+function formatCategory(category) {
+  return CATEGORY_LABELS[category] || "Sin clasificar";
+}
+
+function formatCeScore(score) {
+  return score == null ? "Pendiente" : score;
+}
+
+function formatRawScore(result) {
+  if (result?.rawScore == null || result?.maxScore == null) return "Puntaje bruto pendiente.";
+  return `Puntaje bruto: ${result.rawScore} de ${result.maxScore}.`;
+}
+
 function renderDimensionCardsFromBaron(scoring) {
   dimensionGrid.innerHTML = "";
   (scoring.components || []).forEach((component) => {
@@ -423,11 +456,39 @@ function renderDimensionCardsFromBaron(scoring) {
     card.className = "dimension-card";
     card.innerHTML = `
       <p class="question-category">${component.label}</p>
-      <h3>${component.ceScore ?? "Parcial"}</h3>
+      <h3>CE ${formatCeScore(component.ceScore)}</h3>
       <p>${component.description}</p>
-      <p>Categoria actual: ${component.category || "pendiente"}.</p>
+      <p>Categoria: ${formatCategory(component.category)}. ${formatRawScore(component)}</p>
     `;
     dimensionGrid.appendChild(card);
+  });
+}
+
+function renderBaronFullDiagnostics(scoring) {
+  baronDetailSection.classList.remove("hidden");
+  baronDetailGrid.innerHTML = "";
+
+  const totalCard = document.createElement("article");
+  totalCard.className = "dimension-card";
+  totalCard.innerHTML = `
+    <p class="question-category">Resultado global</p>
+    <h3>CE ${formatCeScore(scoring.total?.ceScore)}</h3>
+    <p>${scoring.summary || "Lectura global disponible al completar todos los reactivos."}</p>
+    <p>Categoria: ${formatCategory(scoring.total?.category)}. ${formatRawScore(scoring.total)}</p>
+  `;
+  baronDetailGrid.appendChild(totalCard);
+
+  (scoring.subcomponents || []).forEach((subcomponent) => {
+    const component = (scoring.components || []).find((item) => item.key === subcomponent.componentKey);
+    const card = document.createElement("article");
+    card.className = "dimension-card";
+    card.innerHTML = `
+      <p class="question-category">${component?.label || "Subcomponente"}</p>
+      <h3>${subcomponent.label}</h3>
+      <p>${subcomponent.description}</p>
+      <p>CE ${formatCeScore(subcomponent.ceScore)}. Categoria: ${formatCategory(subcomponent.category)}. ${formatRawScore(subcomponent)}</p>
+    `;
+    baronDetailGrid.appendChild(card);
   });
 }
 
@@ -467,16 +528,33 @@ function renderValidity(scoring) {
     `;
     validityGrid.appendChild(card);
   });
+
+  if (scoring.validity.warnings?.length) {
+    const warningCard = document.createElement("article");
+    warningCard.className = "dimension-card";
+    warningCard.innerHTML = `
+      <p class="question-category">Revision recomendada</p>
+      <h3>${scoring.validity.valid ? "Sin bloqueo" : "Revisar protocolo"}</h3>
+      <ul class="clean-list"></ul>
+    `;
+    const list = warningCard.querySelector("ul");
+    scoring.validity.warnings.forEach((warning) => {
+      const item = document.createElement("li");
+      item.textContent = warning;
+      list.appendChild(item);
+    });
+    validityGrid.appendChild(warningCard);
+  }
 }
 
 function renderResult(application) {
   const scoring = application.scoring;
-  resultHeading.textContent = application.instrumentCode === "baron" ? "Tu lectura BarOn ICE" : "Tu lectura orientativa";
+  resultHeading.textContent = application.instrumentCode === "baron" ? "Diagnostico orientativo BarOn ICE" : "Tu lectura orientativa";
   resultSubheading.textContent =
     application.instrumentCode === "baron"
       ? application.status === "invalid"
         ? "La aplicacion esta completa, pero requiere revision de validez antes de leerla como resultado integral."
-        : "Resultado integral del instrumento, con lectura orientativa y no clinica."
+        : "Resultado integral del instrumento, con lectura academica orientativa y no clinica."
       : "Este resultado resume patrones de comunicacion observados en tus respuestas. No representa una etiqueta fija ni un diagnostico.";
 
   globalProfile.textContent = scoring.profile || application.finalResult?.profileGlobal || "Lectura disponible";
@@ -488,8 +566,11 @@ function renderResult(application) {
       ? "La aplicacion cumple los criterios de validez implementados en esta version."
       : "La lectura requiere cautela interpretativa y revision de validez.";
     renderDimensionCardsFromBaron(scoring);
+    renderBaronFullDiagnostics(scoring);
     renderValidity(scoring);
   } else {
+    baronDetailSection.classList.add("hidden");
+    baronDetailGrid.innerHTML = "";
     overallAverage.textContent =
       scoring.strongestDimension?.label === scoring.weakestDimension?.label
         ? "Perfil relativamente equilibrado"

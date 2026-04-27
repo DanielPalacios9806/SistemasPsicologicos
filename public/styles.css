@@ -248,6 +248,7 @@ p {
 .participant-form,
 .summary-grid,
 .dimension-grid,
+.diagnostic-grid,
 .observations-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -645,6 +646,7 @@ button:focus {
   .participant-form,
   .summary-grid,
   .dimension-grid,
+.diagnostic-grid,
   .observations-grid,
   .report-overview,
   .instrument-grid,

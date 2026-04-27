@@ -972,17 +972,9 @@ body::after {
 .brand-lockup {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 0;
   color: var(--text);
   text-decoration: none;
-}
-
-.brand-mark {
-  width: 50px;
-  height: 50px;
-  flex: 0 0 50px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(245, 184, 47, 0.26), 0 12px 30px rgba(0, 0, 0, 0.42);
 }
 
 .brand-lockup strong {
@@ -1116,6 +1108,23 @@ h3 {
     url("/background-stars.jpg") center/cover no-repeat;
 }
 
+.intro-slide-hero {
+  flex-direction: column;
+  gap: clamp(10px, 1.8vh, 18px);
+  justify-content: flex-start;
+  padding: clamp(12px, 2.4vh, 28px);
+}
+
+.intro-brand-banner {
+  display: block;
+  width: min(420px, 58%);
+  aspect-ratio: 1.92;
+  object-fit: cover;
+  object-position: center;
+  border: 1px solid rgba(245, 184, 47, 0.18);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+}
+
 .reference-card {
   width: min(100%, 720px);
   margin: auto;
@@ -1125,6 +1134,10 @@ h3 {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
     rgba(8, 17, 30, 0.62);
+}
+
+.intro-slide-hero .reference-card {
+  margin: 0 auto;
 }
 
 .intro-pagination .ghost-link {
@@ -1414,12 +1427,6 @@ button:focus {
     padding: 8px 10px;
   }
 
-  .brand-mark {
-    width: 42px;
-    height: 42px;
-    flex-basis: 42px;
-  }
-
   .brand-lockup strong {
     font-size: 1.16rem;
   }
@@ -1451,6 +1458,16 @@ button:focus {
 
   .intro-slide {
     padding: 8px;
+  }
+
+  .intro-slide-hero {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .intro-brand-banner {
+    width: min(230px, 64vw);
+    aspect-ratio: 1.82;
   }
 
   .reference-card {

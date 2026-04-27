@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evaluacion Orientativa de Asertividad</title>
+    <title>Mente de Acero</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rajdhani:wght@600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
@@ -18,14 +18,26 @@
     <div id="alert" class="alert hidden" aria-live="polite"></div>
 
     <main class="public-shell">
+      <header class="brand-nav" aria-label="Mente de Acero">
+        <a class="brand-lockup" href="/" aria-label="Ir al inicio">
+          <img class="brand-mark" src="/mente-de-acero-mark.svg" alt="" />
+          <span>
+            <strong>Mente de Acero</strong>
+            <small>Mente · cuerpo · espiritu</small>
+          </span>
+        </a>
+        <span class="brand-status">Evaluacion segura</span>
+      </header>
+
       <section id="welcomeScreen" class="glass-card screen-card">
         <div class="intro-slides">
           <section class="intro-slide intro-slide-hero is-visible" data-intro-slide="0">
             <div class="reference-card">
               <div class="section-heading">
-                <h1>Entra con calma.</h1>
+                <span class="eyebrow">Entrenamiento interior</span>
+                <h1>Mente lista. Cuerpo firme.</h1>
                 <p id="instrumentDescription">
-                  Esto no es un examen. Es una forma de entender como estas viviendo tu forma de expresarte hoy.
+                  Una lectura privada para reconocer como respondes, decides y sostienes presion en situaciones reales.
                 </p>
               </div>
 
@@ -49,7 +61,7 @@
                     <circle cx="12" cy="12" r="9" />
                     <path d="M12 7v5l3 2" />
                   </svg>
-                  <span>Toma pocos minutos y una pregunta por pantalla</span>
+                  <span>Avance automatico y experiencia guiada</span>
                 </div>
               </div>
             </div>
@@ -58,8 +70,9 @@
           <section class="intro-slide intro-slide-trust hidden" data-intro-slide="1">
             <div class="reference-card">
               <div class="section-heading">
-                <h1>Mira sin juzgar.</h1>
-                <p>Responder con honestidad te dara una lectura mas util que responder para quedar bien.</p>
+                <span class="eyebrow">Sin mascaras</span>
+                <h1>Responde como actuas.</h1>
+                <p>La plataforma detecta patrones de respuesta y protege la lectura cuando el protocolo no es confiable.</p>
               </div>
 
               <div class="benefit-list" aria-label="Claves de aplicacion">
@@ -75,14 +88,14 @@
                     <path d="M4 12c2-5 6-7 8-7s6 2 8 7c-2 5-6 7-8 7s-6-2-8-7Z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
-                  <span>El resultado es orientativo y academico</span>
+                  <span>El resultado es orientativo, privado y accionable</span>
                 </div>
                 <div class="benefit-item">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M5 19c4-1 6-3 7-7 1 4 3 6 7 7-4 1-6 3-7 7-1-4-3-6-7-7Z" />
                     <path d="M4 7c2-.5 3.5-2 4-4 .5 2 2 3.5 4 4-2 .5-3.5 2-4 4-.5-2-2-3.5-4-4Z" />
                   </svg>
-                  <span>Al final recibiras un perfil y areas de atencion</span>
+                  <span>Al final recibiras un perfil visual y areas de accion</span>
                 </div>
               </div>
             </div>
@@ -91,9 +104,10 @@
           <section class="intro-slide intro-slide-form hidden" data-intro-slide="2">
             <div class="reference-card reference-card-form">
               <div class="section-heading">
-                <h1>Comienza tu evaluacion.</h1>
-                <p>Completa tus datos y responde los 45 reactivos con calma. La lectura final es privada y orientativa.</p>
-                <p class="form-microcopy">Para reducir sesgos, durante el recorrido no se muestran nombres de categorias ni claves tecnicas del instrumento.</p>
+                <span class="eyebrow">Acceso</span>
+                <h1>Activa tu perfil.</h1>
+                <p>Completa tus datos y elige el instrumento. El recorrido mantiene tu avance y entrega una lectura visual al finalizar.</p>
+                <p class="form-microcopy">Durante la prueba evitamos claves tecnicas para que respondas con menos sesgo.</p>
               </div>
 
               <form id="participantForm" class="participant-form">
@@ -129,7 +143,7 @@
                   <input id="email" name="email" type="email" placeholder="tu@correo.com" />
                 </label>
                 <button id="startAssessmentButton" class="primary-button" type="submit">
-                  Comenzar evaluacion
+                  Iniciar recorrido
                 </button>
               </form>
             </div>
@@ -152,8 +166,7 @@
           <span class="step-pill">Instrumento</span>
           <h2>Elige el recorrido</h2>
           <p>
-            Puedes aplicar EMA o BarOn ICE. Cada instrumento guarda su propio avance para que una misma persona
-            no pierda continuidad entre evaluaciones.
+            Selecciona el instrumento que vas a aplicar. Mente de Acero guarda el avance de cada recorrido de forma independiente.
           </p>
         </div>
 
@@ -219,7 +232,7 @@
 
       <section id="resultScreen" class="glass-card screen-card hidden">
         <div class="section-heading">
-          <span class="step-pill">Resultado</span>
+          <span class="step-pill">Informe</span>
           <h2 id="resultHeading">Tu lectura orientativa</h2>
           <p id="resultSubheading">Resumen academico del instrumento aplicado.</p>
         </div>
@@ -238,7 +251,7 @@
         </div>
 
         <section class="report-section">
-          <p class="report-label">Tus datos</p>
+          <p class="report-label">Identidad</p>
           <div id="participantSummary" class="summary-grid"></div>
         </section>
 
@@ -248,7 +261,7 @@
         </section>
 
         <section id="baronDetailSection" class="report-section hidden">
-          <p class="report-label">Diagnostico orientativo completo</p>
+          <p class="report-label">Informe completo</p>
           <div id="baronDetailGrid" class="diagnostic-grid"></div>
         </section>
 
@@ -263,7 +276,7 @@
         </section>
 
         <section class="report-section">
-          <p class="report-label">Observaciones automaticas</p>
+          <p class="report-label">Plan de accion</p>
           <div class="observations-grid">
             <article>
               <h3>Fortalezas detectadas</h3>

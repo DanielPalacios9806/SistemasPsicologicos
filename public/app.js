@@ -1,18 +1,18 @@
 const RESPONSE_UI = {
-  1: { emoji: "😶", title: "Nivel 1" },
-  2: { emoji: "🙂", title: "Nivel 2" },
-  3: { emoji: "🤔", title: "Nivel 3" },
-  4: { emoji: "😊", title: "Nivel 4" },
-  5: { emoji: "🌟", title: "Nivel 5" },
+  1: { emoji: "01", title: "Nivel 1" },
+  2: { emoji: "02", title: "Nivel 2" },
+  3: { emoji: "03", title: "Nivel 3" },
+  4: { emoji: "04", title: "Nivel 4" },
+  5: { emoji: "05", title: "Nivel 5" },
 };
 
 const MOTIVATION_BY_MODULE = {
-  ema: "Responde desde tu experiencia real, sin intentar adivinar el perfil final. ✨",
-  intrapersonal: "Observa con calma como te sientes, te nombras y te diriges internamente. 🌙",
-  interpersonal: "Piensa en como te vinculas, escuchas y sostienes a otras personas. 🤝",
-  adaptabilidad: "Aqui importa como resuelves, ajustas y verificas la realidad que enfrentas. 🧭",
-  manejo_estres: "Respira un instante y responde pensando en momentos reales de tension. 🌿",
-  estado_animo: "Mira este tramo como una lectura de energia, esperanza y disfrute cotidiano. ☀️",
+  ema: "Responde desde tu experiencia real, sin intentar adivinar el perfil final.",
+  intrapersonal: "Observa como te sientes, te nombras y te diriges internamente.",
+  interpersonal: "Piensa en como te vinculas, escuchas y sostienes a otras personas.",
+  adaptabilidad: "Aqui importa como resuelves, ajustas y verificas la realidad que enfrentas.",
+  manejo_estres: "Respira un instante y responde pensando en momentos reales de tension.",
+  estado_animo: "Mira este tramo como una lectura de energia, esperanza y disfrute cotidiano.",
 };
 
 const state = {
@@ -133,7 +133,7 @@ async function loadInstruments() {
   const payload = await response.json();
   state.instruments = payload.instruments || [];
   instrumentDescription.textContent =
-    "Esto no es un examen. Es una forma de entender como estas viviendo tu forma de expresarte o regularte hoy.";
+    "Una lectura privada para reconocer como respondes, decides y sostienes presion en situaciones reales.";
 }
 
 function collectParticipantData() {
@@ -170,7 +170,7 @@ function renderInstrumentCards() {
       <span class="question-category">${instrument.version}</span>
       <h3>${instrument.name}</h3>
       <p>${instrument.description}</p>
-      <small>${instrument.moduleCount} modulo(s) · ${instrument.itemCount} reactivos</small>
+      <small>${instrument.moduleCount} modulo(s) / ${instrument.itemCount} reactivos</small>
     `;
     card.addEventListener("click", () => {
       state.selectedInstrumentCode = instrument.code;
@@ -623,7 +623,7 @@ function renderResult(application) {
     overallAverage.textContent = scoring.total?.ceScore ? `CE total: ${scoring.total.ceScore}` : "Resultado parcial";
     overallPercentage.textContent = scoring.validity?.valid
       ? "La aplicacion cumple los criterios de validez implementados en esta version."
-      : "La lectura queda bloqueada como perfil diagnostico y requiere revision profesional.";
+      : "La lectura queda bloqueada como perfil interpretable y requiere revision profesional.";
     renderDimensionCardsFromBaron(scoring);
     renderBaronFullDiagnostics(scoring);
     renderValidity(scoring);

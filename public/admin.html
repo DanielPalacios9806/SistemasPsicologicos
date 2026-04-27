@@ -47,7 +47,7 @@
           <div>
             <span class="step-pill">Admin</span>
             <h2>Panel de consulta</h2>
-            <p>Busca por cedula o descarga la base consolidada en Excel.</p>
+            <p>Filtra por instrumento, estado o cedula. Aqui si se muestran resultados mas tecnicos y avances parciales.</p>
           </div>
           <div class="admin-actions">
             <button id="adminExportButton" class="primary-button" type="button">Descargar Excel</button>
@@ -56,12 +56,28 @@
         </div>
 
         <form id="adminSearchForm" class="search-form">
-          <input id="adminSearchIdNumber" name="adminSearchIdNumber" type="text" inputmode="numeric" placeholder="Ingresa la cedula" required />
+          <input id="adminSearchIdNumber" name="adminSearchIdNumber" type="text" inputmode="numeric" placeholder="Cedula (opcional)" />
+          <select id="adminInstrumentFilter" name="adminInstrumentFilter">
+            <option value="">Todos los instrumentos</option>
+            <option value="ema">EMA</option>
+            <option value="baron">BarOn ICE</option>
+          </select>
+          <select id="adminStatusFilter" name="adminStatusFilter">
+            <option value="">Todos los estados</option>
+            <option value="in_progress">En progreso</option>
+            <option value="completed">Completado</option>
+            <option value="invalid">Invalido / revisar</option>
+          </select>
           <button class="primary-button" type="submit">Consultar</button>
         </form>
 
+        <section class="report-section admin-gap">
+          <p class="report-label">Listado</p>
+          <div id="adminApplicationList" class="answers-list"></div>
+        </section>
+
         <section id="adminResultCard" class="report-section hidden">
-          <p class="report-label">Resultado consultado</p>
+          <p class="report-label">Aplicacion consultada</p>
           <div id="adminParticipantSummary" class="summary-grid"></div>
           <div id="adminDimensionGrid" class="dimension-grid admin-gap"></div>
           <div class="observations-grid admin-gap">

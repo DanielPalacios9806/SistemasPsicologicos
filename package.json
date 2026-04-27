@@ -1,9 +1,12 @@
 {
-  "name": "evaluacion-asertividad-ema",
+  "name": "evaluacion-multiinstrumento",
   "version": "1.0.0",
-  "description": "Aplicacion web con acceso de Google, formulario de inteligencia emocional y reporte final.",
+  "description": "Aplicacion web multi-instrumento para EMA y BarOn ICE con panel admin y exportacion.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }

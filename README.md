@@ -1,23 +1,33 @@
-# Evaluacion Orientativa de Asertividad
+# Plataforma de Evaluacion Orientativa
 
-Aplicacion web Node.js para aplicar la Escala Multidimensional de Asertividad (EMA) en contexto academico, registrar estudiantes, consultar por cedula y exportar resultados a Excel.
+Aplicacion web Node.js para aplicar instrumentos orientativos en contexto academico. Actualmente soporta EMA y BarOn ICE, con almacenamiento local o Supabase, panel administrativo, exportacion Excel y continuidad por instrumento.
 
 ## Caracteristicas
 
 - Registro de encuestados con datos academicos
-- Aplicacion de 45 reactivos con escala Likert oficial
-- Calculo automatico por dimensiones y perfil global
-- Consulta individual por cedula
-- Exportacion de todos los registros a Excel
-- Inicio de sesion opcional con Google para precargar nombre, correo y foto
+- Seleccion de instrumento por persona
+- EMA con scoring original y flujo de una pregunta por pantalla
+- BarOn ICE por modulos con guardado automatico de avance
+- Consulta administrativa por cedula, instrumento y estado
+- Exportacion Excel por instrumento o consolidada
 
 ## Escala de respuesta
+
+### EMA
 
 - 1 = Completamente en desacuerdo
 - 2 = En desacuerdo
 - 3 = Ni de acuerdo ni en desacuerdo
 - 4 = De acuerdo
 - 5 = Completamente de acuerdo
+
+### BarOn ICE
+
+- 1 = Rara vez o nunca es mi caso
+- 2 = Pocas veces es mi caso
+- 3 = A veces es mi caso
+- 4 = Muchas veces es mi caso
+- 5 = Con mucha frecuencia o siempre es mi caso
 
 ## Ejecucion local
 

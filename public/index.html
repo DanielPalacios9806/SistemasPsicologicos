@@ -147,6 +147,42 @@
         </div>
       </section>
 
+      <section id="instrumentScreen" class="glass-card screen-card hidden">
+        <div class="section-heading">
+          <span class="step-pill">Instrumento</span>
+          <h2>Elige el recorrido</h2>
+          <p>
+            Puedes aplicar EMA o BarOn ICE. Cada instrumento guarda su propio avance para que una misma persona
+            no pierda continuidad entre evaluaciones.
+          </p>
+        </div>
+
+        <div id="instrumentList" class="instrument-grid"></div>
+
+        <div class="navigation-row single-action">
+          <button id="continueToInstrumentButton" class="primary-button" type="button">
+            Continuar con el instrumento seleccionado
+          </button>
+        </div>
+      </section>
+
+      <section id="moduleScreen" class="glass-card screen-card hidden">
+        <div class="section-heading">
+          <span id="moduleEyebrow" class="step-pill">Preparacion</span>
+          <h2 id="moduleHeading">Tu recorrido</h2>
+          <p id="moduleDescription">
+            Aqui veras instrucciones del instrumento y el estado de cada modulo antes de comenzar.
+          </p>
+        </div>
+
+        <div id="moduleSummaryCard" class="report-overview"></div>
+        <div id="moduleList" class="module-grid"></div>
+
+        <div class="navigation-row single-action">
+          <button id="moduleActionButton" class="primary-button" type="button">Comenzar</button>
+        </div>
+      </section>
+
       <section id="questionScreen" class="glass-card screen-card hidden">
         <div class="question-header">
           <div class="section-heading compact">
@@ -209,6 +245,11 @@
         <section class="report-section">
           <p class="report-label">Lectura por areas</p>
           <div id="dimensionGrid" class="dimension-grid"></div>
+        </section>
+
+        <section id="validitySection" class="report-section hidden">
+          <p class="report-label">Validez y alertas</p>
+          <div id="validityGrid" class="dimension-grid"></div>
         </section>
 
         <section class="report-section">

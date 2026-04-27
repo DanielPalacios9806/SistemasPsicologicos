@@ -254,6 +254,49 @@ p {
   gap: 12px;
 }
 
+.instrument-grid,
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.instrument-card,
+.module-card,
+.application-row {
+  width: 100%;
+  text-align: left;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  padding: 16px;
+  color: var(--text);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)),
+    rgba(30, 41, 83, 0.54);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.instrument-card.selected,
+.module-card.selected {
+  border-color: rgba(216, 198, 255, 0.68);
+  box-shadow: 0 0 0 1px rgba(216, 198, 255, 0.18), var(--shadow);
+}
+
+.instrument-card h3,
+.module-card h3 {
+  margin: 6px 0 10px;
+  font-size: 2rem;
+}
+
+.instrument-card p,
+.module-card p,
+.instrument-card small,
+.module-card small {
+  display: block;
+}
+
 .participant-form button {
   grid-column: span 2;
 }
@@ -594,7 +637,7 @@ button:focus {
 
 .search-form {
   display: grid;
-  grid-template-columns: 1fr max-content;
+  grid-template-columns: 1.2fr repeat(2, minmax(0, 180px)) max-content;
   gap: 12px;
 }
 
@@ -603,7 +646,9 @@ button:focus {
   .summary-grid,
   .dimension-grid,
   .observations-grid,
-  .report-overview {
+  .report-overview,
+  .instrument-grid,
+  .module-grid {
     grid-template-columns: 1fr;
   }
 
@@ -700,6 +745,17 @@ button:focus {
   .secondary-button {
     padding: 10px 16px;
     font-size: 0.95rem;
+  }
+
+  .instrument-card,
+  .module-card,
+  .application-row {
+    padding: 12px;
+  }
+
+  .instrument-card h3,
+  .module-card h3 {
+    font-size: 1.65rem;
   }
 
   .rating-group {

@@ -1,5 +1,6 @@
 const adminState = {
   token: sessionStorage.getItem("adminToken") || "",
+  applications: [],
 };
 
 const adminAlert = document.getElementById("adminAlert");
@@ -15,6 +16,9 @@ const adminAttentionList = document.getElementById("adminAttentionList");
 const adminSuggestionList = document.getElementById("adminSuggestionList");
 const adminAnswersList = document.getElementById("adminAnswersList");
 const adminExportButton = document.getElementById("adminExportButton");
+const adminInstrumentFilter = document.getElementById("adminInstrumentFilter");
+const adminStatusFilter = document.getElementById("adminStatusFilter");
+const adminApplicationList = document.getElementById("adminApplicationList");
 
 function showAdminAlert(message, isError = true) {
   adminAlert.textContent = message;
@@ -44,15 +48,19 @@ function normalizeDate(isoDate) {
   return Number.isNaN(date.getTime()) ? isoDate : date.toLocaleString("es-EC");
 }
 
-function renderSummary(participant, createdAt) {
+function renderSummary(application) {
   adminParticipantSummary.innerHTML = "";
   const fields = [
-    ["Cedula", participant.idNumber],
-    ["Nombre", participant.fullName],
-    ["Carrera", participant.career],
-    ["Edad", participant.age],
-    ["Genero", participant.gender],
-    ["Fecha", normalizeDate(createdAt)],
+    ["Cedula", application.participant.idNumber],
+    ["Nombre", application.participant.fullName],
+    ["Carrera", application.participant.career],
+    ["Edad", application.participant.age],
+    ["Genero", application.participant.gender],
+    ["Instrumento", application.instrumentName],
+    ["Estado", application.status],
+    ["Avance", `${application.percentageComplete || 0}%`],
+    ["Fecha inicio", normalizeDate(application.startedAt)],
+    ["Fecha fin", application.completedAt ? normalizeDate(application.completedAt) : "-"],
   ];
 
   fields.forEach(([label, value]) => {
@@ -63,9 +71,36 @@ function renderSummary(participant, createdAt) {
   });
 }
 
-function renderDimensions(scoring) {
+function renderDimensions(application) {
   adminDimensionGrid.innerHTML = "";
-  scoring.dimensions.forEach((dimension) => {
+  const scoring = application.scoringSnapshot || {};
+
+  if (application.instrumentCode === "baron") {
+    (scoring.components || []).forEach((component) => {
+      const card = document.createElement("article");
+      card.className = "dimension-card";
+      card.innerHTML = `
+        <p class="question-category">${component.label}</p>
+        <h3>${component.ceScore ?? "Parcial"}</h3>
+        <p>Categoria: ${component.category || "pendiente"}</p>
+        <p>Puntaje bruto: ${component.rawScore} | Avance: ${component.answeredCount}/${component.expectedCount}</p>
+      `;
+      adminDimensionGrid.appendChild(card);
+    });
+    (scoring.validity?.warnings || []).forEach((warning) => {
+      const card = document.createElement("article");
+      card.className = "dimension-card";
+      card.innerHTML = `
+        <p class="question-category">Validez</p>
+        <h3>Revisar</h3>
+        <p>${warning}</p>
+      `;
+      adminDimensionGrid.appendChild(card);
+    });
+    return;
+  }
+
+  (scoring.dimensions || []).forEach((dimension) => {
     const card = document.createElement("article");
     card.className = "dimension-card";
     card.innerHTML = `
@@ -81,25 +116,63 @@ function renderDimensions(scoring) {
 
 function renderAnswers(answers) {
   adminAnswersList.innerHTML = "";
-  answers.forEach((answer) => {
+  (answers || []).forEach((answer) => {
     const row = document.createElement("article");
     row.className = "answer-row";
     row.innerHTML = `
-      <strong>Pregunta ${answer.questionId}</strong>
+      <strong>Item ${answer.itemId}</strong>
       <span>Respuesta: ${answer.value}</span>
+      <span>${answer.moduleKey || ""}</span>
     `;
     adminAnswersList.appendChild(row);
   });
 }
 
-function renderSubmission(submission) {
+function renderApplication(application) {
   adminResultCard.classList.remove("hidden");
-  renderSummary(submission.participant, submission.createdAt);
-  renderDimensions(submission.scoring);
-  renderList(adminStrengthList, submission.scoring.observations.strengths);
-  renderList(adminAttentionList, submission.scoring.observations.attentionAreas);
-  renderList(adminSuggestionList, submission.scoring.observations.suggestions);
-  renderAnswers(submission.answers);
+  renderSummary(application);
+  renderDimensions(application);
+  renderList(adminStrengthList, application.scoringSnapshot?.observations?.strengths || []);
+  renderList(adminAttentionList, application.scoringSnapshot?.observations?.attentionAreas || []);
+  renderList(adminSuggestionList, application.scoringSnapshot?.observations?.suggestions || []);
+  renderAnswers(application.answers);
+}
+
+function renderApplicationList() {
+  adminApplicationList.innerHTML = "";
+  adminState.applications.forEach((application) => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "answer-row application-row";
+    row.innerHTML = `
+      <strong>${application.participant.fullName}</strong>
+      <span>${application.participant.idNumber} · ${application.instrumentCode.toUpperCase()}</span>
+      <span>${application.status} · ${application.percentageComplete || 0}%</span>
+    `;
+    row.addEventListener("click", () => renderApplication(application));
+    adminApplicationList.appendChild(row);
+  });
+}
+
+async function loadApplications() {
+  const params = new URLSearchParams();
+  const cedula = String(document.getElementById("adminSearchIdNumber").value || "").trim();
+  if (cedula) params.set("cedula", cedula);
+  if (adminInstrumentFilter.value) params.set("instrument", adminInstrumentFilter.value);
+  if (adminStatusFilter.value) params.set("status", adminStatusFilter.value);
+
+  const response = await fetch(`/api/admin/applications?${params.toString()}`, {
+    headers: { "x-admin-token": adminState.token },
+  });
+  const payload = await response.json();
+  if (!response.ok) throw new Error(payload.error || "No se pudieron cargar las aplicaciones.");
+  adminState.applications = payload.applications || [];
+  renderApplicationList();
+  if (adminState.applications[0]) {
+    renderApplication(adminState.applications[0]);
+  } else {
+    adminResultCard.classList.add("hidden");
+  }
 }
 
 adminLoginForm.addEventListener("submit", async (event) => {
@@ -119,6 +192,7 @@ adminLoginForm.addEventListener("submit", async (event) => {
     adminState.token = result.token;
     sessionStorage.setItem("adminToken", result.token);
     switchAdminScreen();
+    await loadApplications();
     showAdminAlert("Sesion administrativa iniciada.", false);
   } catch (error) {
     showAdminAlert(error.message);
@@ -127,15 +201,8 @@ adminLoginForm.addEventListener("submit", async (event) => {
 
 adminSearchForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const idNumber = String(document.getElementById("adminSearchIdNumber").value || "").trim();
-
   try {
-    const response = await fetch(`/api/submissions/${encodeURIComponent(idNumber)}`, {
-      headers: { "x-admin-token": adminState.token },
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "No se encontro el registro.");
-    renderSubmission(result);
+    await loadApplications();
   } catch (error) {
     showAdminAlert(error.message);
   }
@@ -143,7 +210,9 @@ adminSearchForm.addEventListener("submit", async (event) => {
 
 adminExportButton.addEventListener("click", async () => {
   try {
-    const response = await fetch("/api/export/excel", {
+    const params = new URLSearchParams();
+    if (adminInstrumentFilter.value) params.set("instrument", adminInstrumentFilter.value);
+    const response = await fetch(`/api/export/excel?${params.toString()}`, {
       headers: { "x-admin-token": adminState.token },
     });
     if (!response.ok) {
@@ -155,7 +224,7 @@ adminExportButton.addEventListener("click", async () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "resultados-ema.xls";
+    link.download = `resultados-${adminInstrumentFilter.value || "consolidado"}.xls`;
     link.click();
     URL.revokeObjectURL(url);
   } catch (error) {

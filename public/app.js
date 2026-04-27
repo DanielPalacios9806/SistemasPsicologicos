@@ -74,6 +74,8 @@ const baronDetailSection = document.getElementById("baronDetailSection");
 const baronDetailGrid = document.getElementById("baronDetailGrid");
 const validitySection = document.getElementById("validitySection");
 const validityGrid = document.getElementById("validityGrid");
+const methodologySection = document.getElementById("methodologySection");
+const methodologyGrid = document.getElementById("methodologyGrid");
 const strengthList = document.getElementById("strengthList");
 const attentionList = document.getElementById("attentionList");
 const suggestionList = document.getElementById("suggestionList");
@@ -516,6 +518,11 @@ function renderValidity(scoring) {
       value: scoring.validity.omissionCount ?? 0,
       note: "Se recomienda revision cuando hay 8 o mas omisiones.",
     },
+    {
+      label: "Inconsistencia",
+      value: scoring.validity.inconsistency?.score ?? "Pendiente",
+      note: "Indice basado en 10 pares de reactivos similares. Mayor a 12 requiere revision.",
+    },
   ];
 
   cards.forEach((entry) => {
@@ -547,30 +554,85 @@ function renderValidity(scoring) {
   }
 }
 
+function renderMethodology(scoring) {
+  methodologySection.classList.remove("hidden");
+  methodologyGrid.innerHTML = "";
+
+  const notes = [
+    {
+      label: "Conversion CE",
+      title: "Media 100, DE 15",
+      detail: "CE = ((puntaje bruto - media normativa) / desviacion estandar normativa) * 15 + 100.",
+    },
+    {
+      label: "Baremos",
+      title: "Muestra peruana",
+      detail: "El algoritmo usa medias y desviaciones del manual adulto BarOn ICE adaptado y estandarizado en Lima Metropolitana.",
+    },
+    {
+      label: "Validez",
+      title: scoring.validity?.valid ? "Interpretable" : "No interpretable",
+      detail:
+        "Antes de leer el perfil se revisan item 133, omisiones, impresion positiva, impresion negativa e inconsistencia.",
+    },
+    {
+      label: "Alcance",
+      title: "Orientativo",
+      detail:
+        "El informe no reemplaza entrevista, historia clinica ni juicio profesional; describe un perfil psicometrico actual.",
+    },
+  ];
+
+  notes.forEach((note) => {
+    const card = document.createElement("article");
+    card.className = "dimension-card";
+    card.innerHTML = `
+      <p class="question-category">${note.label}</p>
+      <h3>${note.title}</h3>
+      <p>${note.detail}</p>
+    `;
+    methodologyGrid.appendChild(card);
+  });
+}
+
 function renderResult(application) {
   const scoring = application.scoring;
-  resultHeading.textContent = application.instrumentCode === "baron" ? "Diagnostico orientativo BarOn ICE" : "Tu lectura orientativa";
+  const isBaron = application.instrumentCode === "baron";
+  const isBaronInvalid = isBaron && scoring.validity && !scoring.validity.valid;
+
+  resultHeading.textContent = isBaron
+    ? isBaronInvalid
+      ? "Protocolo BarOn ICE requiere revision"
+      : "Perfil interpretativo BarOn ICE"
+    : "Tu lectura orientativa";
   resultSubheading.textContent =
-    application.instrumentCode === "baron"
-      ? application.status === "invalid"
-        ? "La aplicacion esta completa, pero requiere revision de validez antes de leerla como resultado integral."
+    isBaron
+      ? isBaronInvalid
+        ? "La aplicacion esta completa, pero los criterios de validez impiden leerla como perfil psicometrico confiable."
         : "Resultado integral del instrumento, con lectura academica orientativa y no clinica."
       : "Este resultado resume patrones de comunicacion observados en tus respuestas. No representa una etiqueta fija ni un diagnostico.";
 
-  globalProfile.textContent = scoring.profile || application.finalResult?.profileGlobal || "Lectura disponible";
-  globalSummary.textContent = scoring.summary || application.finalResult?.interpretationJson?.summary || "";
+  globalProfile.textContent = isBaronInvalid
+    ? "Protocolo no interpretable sin revision"
+    : scoring.profile || application.finalResult?.profileGlobal || "Lectura disponible";
+  globalSummary.textContent = isBaronInvalid
+    ? "Las respuestas activaron uno o mas controles de validez. Los puntajes pueden revisarse como datos, pero no deben presentarse como diagnostico del evaluado."
+    : scoring.summary || application.finalResult?.interpretationJson?.summary || "";
 
-  if (application.instrumentCode === "baron") {
+  if (isBaron) {
     overallAverage.textContent = scoring.total?.ceScore ? `CE total: ${scoring.total.ceScore}` : "Resultado parcial";
     overallPercentage.textContent = scoring.validity?.valid
       ? "La aplicacion cumple los criterios de validez implementados en esta version."
-      : "La lectura requiere cautela interpretativa y revision de validez.";
+      : "La lectura queda bloqueada como perfil diagnostico y requiere revision profesional.";
     renderDimensionCardsFromBaron(scoring);
     renderBaronFullDiagnostics(scoring);
     renderValidity(scoring);
+    renderMethodology(scoring);
   } else {
     baronDetailSection.classList.add("hidden");
     baronDetailGrid.innerHTML = "";
+    methodologySection.classList.add("hidden");
+    methodologyGrid.innerHTML = "";
     overallAverage.textContent =
       scoring.strongestDimension?.label === scoring.weakestDimension?.label
         ? "Perfil relativamente equilibrado"
@@ -594,9 +656,19 @@ function renderResult(application) {
   }
 
   renderParticipantSummary(application.participant, application.completedAt || application.startedAt);
-  renderList(strengthList, scoring.observations?.strengths || []);
-  renderList(attentionList, scoring.observations?.attentionAreas || []);
-  renderList(suggestionList, scoring.observations?.suggestions || []);
+  renderList(
+    strengthList,
+    isBaronInvalid
+      ? ["No se emite perfil de fortalezas porque el protocolo no cumple criterios de validez."]
+      : scoring.observations?.strengths || []
+  );
+  renderList(attentionList, isBaronInvalid ? scoring.validity?.warnings || [] : scoring.observations?.attentionAreas || []);
+  renderList(
+    suggestionList,
+    isBaronInvalid
+      ? ["Revisar condiciones de aplicacion, estilo de respuesta y contexto del evaluado antes de interpretar puntajes."]
+      : scoring.observations?.suggestions || []
+  );
   switchScreen(resultScreen);
 }
 

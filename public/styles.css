@@ -952,7 +952,7 @@ body::after {
 .public-shell {
   width: min(100%, 1060px);
   padding-top: clamp(8px, 1.6vh, 18px);
-  padding-bottom: clamp(8px, 1.6vh, 18px);
+  padding-bottom: 0;
 }
 
 .brand-nav {
@@ -1109,16 +1109,16 @@ h3 {
 }
 
 .intro-slide-hero {
-  flex-direction: column;
-  gap: clamp(10px, 1.8vh, 18px);
-  justify-content: flex-start;
-  padding: clamp(12px, 2.4vh, 28px);
+  justify-content: center;
+  padding: clamp(8px, 1.4vh, 16px);
 }
 
 .intro-brand-banner {
   display: block;
-  width: min(420px, 58%);
+  width: min(300px, 40%);
   aspect-ratio: 1.92;
+  flex: 0 0 auto;
+  margin: 0 auto clamp(6px, 1.2vh, 10px);
   object-fit: cover;
   object-position: center;
   border: 1px solid rgba(245, 184, 47, 0.18);
@@ -1138,6 +1138,33 @@ h3 {
 
 .intro-slide-hero .reference-card {
   margin: 0 auto;
+}
+
+.intro-slide-form .reference-card {
+  width: min(100%, 680px);
+  padding: clamp(18px, 2.8vh, 32px) clamp(20px, 3.6vw, 44px);
+}
+
+.intro-slide-form .section-heading h1 {
+  font-size: clamp(2.3rem, 5vh, 3.35rem);
+  margin-bottom: 12px;
+}
+
+.intro-slide-form .section-heading p {
+  line-height: 1.45;
+}
+
+.intro-slide-form .form-microcopy {
+  margin-top: 8px;
+}
+
+.intro-slide-form .participant-form {
+  gap: 8px 12px;
+}
+
+.intro-slide-form input,
+.intro-slide-form select {
+  padding: 10px 12px;
 }
 
 .intro-pagination .ghost-link {
@@ -1461,17 +1488,48 @@ button:focus {
   }
 
   .intro-slide-hero {
-    gap: 8px;
     padding: 8px;
   }
 
   .intro-brand-banner {
-    width: min(230px, 64vw);
+    width: min(150px, 44vw);
     aspect-ratio: 1.82;
+    margin-bottom: 6px;
   }
 
   .reference-card {
     padding: 16px 14px;
+  }
+
+  .intro-slide-form .reference-card {
+    padding: 12px 14px;
+  }
+
+  .intro-slide-form .section-heading h1 {
+    font-size: 1.92rem;
+    margin-bottom: 8px;
+  }
+
+  .intro-slide-form .section-heading p {
+    font-size: 0.82rem;
+    line-height: 1.28;
+  }
+
+  .intro-slide-form .form-microcopy {
+    display: none;
+  }
+
+  .intro-slide-form .participant-form {
+    gap: 7px;
+  }
+
+  .intro-slide-form label {
+    gap: 4px;
+  }
+
+  .intro-slide-form input,
+  .intro-slide-form select {
+    padding: 9px 12px;
   }
 
   .section-heading h1,

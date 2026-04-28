@@ -1046,13 +1046,13 @@ body::after {
 
 .intro-watermark {
   position: absolute;
-  top: 13%;
-  left: 5%;
-  width: min(340px, 32%);
+  top: 15%;
+  left: 6%;
+  width: min(330px, 31%);
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 24px 42px rgba(0, 0, 0, 0.36));
-  opacity: 0.24;
+  opacity: 0.28;
   mix-blend-mode: screen;
   pointer-events: none;
   z-index: 2;
@@ -1535,10 +1535,10 @@ button:focus {
   }
 
   .intro-watermark {
-    top: 20%;
-    left: -22%;
-    width: 56%;
-    opacity: 0.2;
+    top: 21%;
+    left: -18%;
+    width: 55%;
+    opacity: 0.24;
   }
 
   .reference-card {

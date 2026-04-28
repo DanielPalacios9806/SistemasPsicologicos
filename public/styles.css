@@ -1046,18 +1046,14 @@ body::after {
 
 .intro-watermark {
   position: absolute;
-  top: 8%;
-  left: 3%;
-  width: min(720px, 62%);
-  height: 82%;
-  object-fit: cover;
-  object-position: left center;
-  clip-path: inset(0 66% 0 0);
-  filter: saturate(1.08) contrast(1.06);
-  opacity: 0.25;
+  top: 13%;
+  left: 5%;
+  width: min(340px, 32%);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 42px rgba(0, 0, 0, 0.36));
+  opacity: 0.24;
   mix-blend-mode: screen;
-  -webkit-mask-image: radial-gradient(ellipse at 27% 48%, #000 0 34%, rgba(0, 0, 0, 0.72) 47%, transparent 72%);
-  mask-image: radial-gradient(ellipse at 27% 48%, #000 0 34%, rgba(0, 0, 0, 0.72) 47%, transparent 72%);
   pointer-events: none;
   z-index: 2;
 }
@@ -1539,14 +1535,10 @@ button:focus {
   }
 
   .intro-watermark {
-    top: 8%;
+    top: 20%;
     left: -22%;
-    width: 118%;
-    height: 70%;
-    clip-path: inset(0 68% 0 0);
+    width: 56%;
     opacity: 0.2;
-    -webkit-mask-image: radial-gradient(ellipse at 28% 44%, #000 0 32%, rgba(0, 0, 0, 0.66) 46%, transparent 72%);
-    mask-image: radial-gradient(ellipse at 28% 44%, #000 0 32%, rgba(0, 0, 0, 0.66) 46%, transparent 72%);
   }
 
   .reference-card {

@@ -176,7 +176,7 @@ p {
 
 .intro-slide > * {
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
 .intro-slide-hero,
@@ -1033,12 +1033,33 @@ body::after {
   display: flex;
   flex-direction: column;
   min-height: calc(100svh - 124px);
+  position: relative;
+  overflow: hidden;
 }
 
 .intro-slides {
   display: grid;
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
+}
+
+.intro-watermark {
+  position: absolute;
+  top: 8%;
+  left: 3%;
+  width: min(720px, 62%);
+  height: 82%;
+  object-fit: cover;
+  object-position: left center;
+  clip-path: inset(0 66% 0 0);
+  filter: saturate(1.08) contrast(1.06);
+  opacity: 0.25;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse at 27% 48%, #000 0 34%, rgba(0, 0, 0, 0.72) 47%, transparent 72%);
+  mask-image: radial-gradient(ellipse at 27% 48%, #000 0 34%, rgba(0, 0, 0, 0.72) 47%, transparent 72%);
+  pointer-events: none;
+  z-index: 2;
 }
 
 h1,
@@ -1084,8 +1105,9 @@ h3 {
 
 .intro-slide::before {
   background:
-    linear-gradient(115deg, rgba(7, 14, 25, 0.72), rgba(8, 28, 42, 0.46) 46%, rgba(8, 12, 22, 0.86)),
-    linear-gradient(90deg, rgba(245, 184, 47, 0.18), transparent 34%);
+    linear-gradient(115deg, rgba(6, 14, 24, 0.86), rgba(8, 27, 40, 0.62) 47%, rgba(5, 11, 20, 0.9)),
+    linear-gradient(90deg, rgba(245, 184, 47, 0.14), transparent 34%);
+  z-index: 0;
 }
 
 .intro-slide::after {
@@ -1094,9 +1116,11 @@ h3 {
   inset: 0;
   pointer-events: none;
   background:
+    linear-gradient(90deg, rgba(5, 13, 23, 0.08), rgba(8, 18, 30, 0.42) 54%, rgba(5, 11, 20, 0.84) 86%),
     linear-gradient(135deg, transparent 0 52%, rgba(15, 154, 176, 0.16) 53%, transparent 60%),
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 52px);
-  opacity: 0.7;
+  opacity: 0.52;
+  z-index: 0;
 }
 
 .intro-slide-hero,
@@ -1110,19 +1134,7 @@ h3 {
 
 .intro-slide-hero {
   justify-content: center;
-  padding: clamp(8px, 1.4vh, 16px);
-}
-
-.intro-brand-banner {
-  display: block;
-  width: min(300px, 40%);
-  aspect-ratio: 1.92;
-  flex: 0 0 auto;
-  margin: 0 auto clamp(6px, 1.2vh, 10px);
-  object-fit: cover;
-  object-position: center;
-  border: 1px solid rgba(245, 184, 47, 0.18);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+  padding: clamp(20px, 5vh, 58px);
 }
 
 .reference-card {
@@ -1137,7 +1149,34 @@ h3 {
 }
 
 .intro-slide-hero .reference-card {
+  width: min(100%, 640px);
   margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: translateX(8%);
+}
+
+.intro-slide-hero .section-heading h1 {
+  font-size: clamp(3.2rem, 5.5vw, 4.35rem);
+  max-width: 12ch;
+  text-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+}
+
+.intro-slide-hero .section-heading p {
+  max-width: 620px;
+  font-size: 1.05rem;
+}
+
+.intro-slide-hero .benefit-list {
+  width: min(100%, 610px);
+  margin-top: clamp(22px, 4vh, 36px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.028)),
+    rgba(12, 24, 38, 0.56);
+  box-shadow: 0 20px 58px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .intro-slide-form .reference-card {
@@ -1488,17 +1527,44 @@ button:focus {
   }
 
   .intro-slide-hero {
-    padding: 8px;
+    padding: 16px 14px;
   }
 
-  .intro-brand-banner {
-    width: min(150px, 44vw);
-    aspect-ratio: 1.82;
-    margin-bottom: 6px;
+  .intro-slide::after {
+    background:
+      linear-gradient(180deg, rgba(5, 13, 23, 0.12), rgba(5, 11, 20, 0.82)),
+      linear-gradient(135deg, transparent 0 52%, rgba(15, 154, 176, 0.14) 53%, transparent 60%),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 52px);
+    opacity: 0.44;
+  }
+
+  .intro-watermark {
+    top: 8%;
+    left: -22%;
+    width: 118%;
+    height: 70%;
+    clip-path: inset(0 68% 0 0);
+    opacity: 0.2;
+    -webkit-mask-image: radial-gradient(ellipse at 28% 44%, #000 0 32%, rgba(0, 0, 0, 0.66) 46%, transparent 72%);
+    mask-image: radial-gradient(ellipse at 28% 44%, #000 0 32%, rgba(0, 0, 0, 0.66) 46%, transparent 72%);
   }
 
   .reference-card {
     padding: 16px 14px;
+  }
+
+  .intro-slide-hero .reference-card {
+    padding: 0;
+    transform: none;
+  }
+
+  .intro-slide-hero .section-heading h1 {
+    font-size: 2.42rem;
+  }
+
+  .intro-slide-hero .section-heading p {
+    font-size: 0.93rem;
+    line-height: 1.42;
   }
 
   .intro-slide-form .reference-card {

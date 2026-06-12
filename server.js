@@ -24,6 +24,7 @@ const GOOGLE_CLIENT_ID = config.googleClientId;
 const ADMIN_USERNAME = config.adminUsername;
 const ADMIN_PASSWORD = config.adminPassword;
 const PUBLIC_DIR = path.join(__dirname, "public");
+const APP_VERSION = process.env.RENDER_GIT_COMMIT || "local";
 const adminTokens = new Set();
 
 const MIME_TYPES = {
@@ -73,7 +74,10 @@ function sendFile(res, filePath) {
       sendJson(res, 500, { error: "No se pudo cargar el recurso." });
       return;
     }
-    res.writeHead(200, { "Content-Type": contentType });
+    res.writeHead(200, {
+      "Content-Type": contentType,
+      "Cache-Control": "no-store, max-age=0",
+    });
     res.end(content);
   });
 }
@@ -374,6 +378,15 @@ const server = http.createServer(async (req, res) => {
   if (requestUrl.pathname === "/api/config" && req.method === "GET") {
     sendJson(res, 200, {
       googleClientId: GOOGLE_CLIENT_ID,
+      storageDriver: shouldUseSupabase() ? "supabase" : "local",
+    });
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/health" && req.method === "GET") {
+    sendJson(res, 200, {
+      ok: true,
+      version: APP_VERSION,
       storageDriver: shouldUseSupabase() ? "supabase" : "local",
     });
     return;

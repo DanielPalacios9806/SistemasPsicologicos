@@ -346,8 +346,9 @@ function buildPublicApplicationPayload(application, instrumentDefinition) {
   };
 }
 
-async function sendExcel(res, instrumentCode = "") {
-  const applications = await exportApplications({ instrumentCode });
+async function sendExcel(res, filter = {}) {
+  const applications = await exportApplications(filter);
+  const instrumentCode = filter.instrumentCode || "";
   const sheetName = instrumentCode ? `Resultados ${instrumentCode.toUpperCase()}` : "Resultados";
   const workbook = buildExcelWorkbook(applications, sheetName);
   res.writeHead(200, {
@@ -620,9 +621,13 @@ const server = http.createServer(async (req, res) => {
   if (requestUrl.pathname === "/api/export/excel" && req.method === "GET") {
     if (!requireAdmin(req, res)) return;
     try {
-      const instrumentCode = String(requestUrl.searchParams.get("instrument") || "").trim().toLowerCase();
-      await sendExcel(res, instrumentCode);
+      await sendExcel(res, {
+        idNumber: requestUrl.searchParams.get("cedula") || "",
+        instrumentCode: String(requestUrl.searchParams.get("instrument") || "").trim().toLowerCase(),
+        status: requestUrl.searchParams.get("status") || "",
+      });
     } catch (error) {
+      console.error("No se pudo generar el archivo Excel:", error);
       sendJson(res, 500, { error: error.message || "No se pudo generar el archivo Excel." });
     }
     return;
@@ -639,6 +644,17 @@ const server = http.createServer(async (req, res) => {
   }
 
   sendFile(res, filePath);
+});
+
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(`El puerto ${PORT} ya esta en uso. Cierra el servidor anterior o inicia con otro puerto:`);
+    console.error(`$env:PORT=3001; npm start`);
+    process.exit(1);
+  }
+
+  console.error("No se pudo iniciar el servidor:", error.message);
+  process.exit(1);
 });
 
 initializeStorage()

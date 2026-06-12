@@ -195,7 +195,9 @@ adminLoginForm.addEventListener("submit", async (event) => {
     await loadApplications();
     showAdminAlert("Sesion administrativa iniciada.", false);
   } catch (error) {
-    showAdminAlert(error.message);
+    const message =
+      error instanceof TypeError ? "No se pudo conectar con el servidor para generar el Excel." : error.message;
+    showAdminAlert(message);
   }
 });
 
@@ -211,7 +213,10 @@ adminSearchForm.addEventListener("submit", async (event) => {
 adminExportButton.addEventListener("click", async () => {
   try {
     const params = new URLSearchParams();
+    const cedula = String(document.getElementById("adminSearchIdNumber").value || "").trim();
+    if (cedula) params.set("cedula", cedula);
     if (adminInstrumentFilter.value) params.set("instrument", adminInstrumentFilter.value);
+    if (adminStatusFilter.value) params.set("status", adminStatusFilter.value);
     const response = await fetch(`/api/export/excel?${params.toString()}`, {
       headers: { "x-admin-token": adminState.token },
     });

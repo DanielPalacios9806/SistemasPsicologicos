@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acceso | Sistemas Psicologicos</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="public-body">
+    <div id="alert" class="alert hidden" aria-live="polite"></div>
+    <main class="public-shell">
+      <header class="brand-nav">
+        <a class="brand-lockup" href="/login.html">
+          <span>
+            <strong>Sistemas Psicologicos</strong>
+            <small>Evaluacion segura</small>
+          </span>
+        </a>
+      </header>
+
+      <section class="glass-card screen-card">
+        <div class="section-heading">
+          <span class="eyebrow">Acceso individual</span>
+          <h1>Ingresa con tu cedula.</h1>
+          <p>Si es tu primer acceso, usuario y contrasena temporal son tu cedula.</p>
+        </div>
+
+        <form id="loginForm" class="participant-form">
+          <label>
+            Usuario
+            <input id="username" name="username" type="text" inputmode="numeric" autocomplete="username" required />
+          </label>
+          <label>
+            Contrasena
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Ingresar</button>
+        </form>
+      </section>
+
+      <section id="changeSection" class="glass-card screen-card hidden">
+        <div class="section-heading">
+          <span class="eyebrow">Cambio obligatorio</span>
+          <h1>Crea una nueva contrasena.</h1>
+          <p>Debe tener al menos 8 caracteres y no puede ser igual a tu cedula.</p>
+        </div>
+
+        <form id="changePasswordForm" class="participant-form">
+          <label>
+            Contrasena actual
+            <input id="currentPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <label>
+            Nueva contrasena
+            <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required />
+          </label>
+          <label>
+            Confirmar nueva contrasena
+            <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required />
+          </label>
+          <button class="primary-button" type="submit">Guardar contrasena</button>
+        </form>
+      </section>
+    </main>
+    <script src="/login.js"></script>
+  </body>
+</html>

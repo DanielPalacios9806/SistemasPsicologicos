@@ -18,6 +18,8 @@ const MOTIVATION_BY_MODULE = {
 const state = {
   config: null,
   instruments: [],
+  assignments: [],
+  currentUser: null,
   introSlideIndex: 0,
   participant: { googleId: "", picture: "" },
   selectedInstrumentCode: "",
@@ -131,12 +133,36 @@ async function loadConfig() {
 async function loadInstruments() {
   const response = await fetch("/api/instruments");
   const payload = await response.json();
-  state.instruments = payload.instruments || [];
+  const instruments = payload.instruments || [];
+  const assignedCodes = new Set(state.assignments.map((item) => item.instrumentCode));
+  state.instruments = assignedCodes.size ? instruments.filter((instrument) => assignedCodes.has(instrument.code)) : instruments;
   instrumentDescription.textContent =
     "Una lectura privada para reconocer como respondes, decides y sostienes presion en situaciones reales.";
 }
 
+async function loadSession() {
+  const response = await fetch("/api/auth/me");
+  if (!response.ok) {
+    window.location.href = "/login.html";
+    return false;
+  }
+  const payload = await response.json();
+  if (payload.user?.mustChangePassword) {
+    window.location.href = "/login.html?change=1";
+    return false;
+  }
+  state.currentUser = payload.user;
+  state.assignments = payload.assignments || [];
+  state.participant = {
+    ...(payload.user?.person || {}),
+    googleId: "",
+    picture: "",
+  };
+  return true;
+}
+
 function collectParticipantData() {
+  if (state.currentUser?.person) return state.participant;
   const formData = new FormData(participantForm);
   const payload = Object.fromEntries(formData.entries());
   return {
@@ -209,7 +235,6 @@ async function startSelectedInstrument() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      participant,
       instrumentCode: state.selectedInstrumentCode,
     }),
   });
@@ -674,6 +699,11 @@ function renderResult(application) {
 
 participantForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (state.currentUser?.person) {
+    renderInstrumentCards();
+    switchScreen(instrumentScreen);
+    return;
+  }
   const participant = collectParticipantData();
   const validationError = validateParticipantLocally(participant);
   if (validationError) {
@@ -690,6 +720,7 @@ continueToInstrumentButton.addEventListener("click", () => {
 });
 
 idNumberInput.addEventListener("blur", () => {
+  if (state.currentUser?.person) return;
   const participant = collectParticipantData();
   const validationError = validateParticipantLocally({ ...participant, fullName: "tmp", career: "tmp", age: "1", gender: "tmp" });
   setIdNumberFeedback(validationError ? "Ingresa una cedula valida de 8 a 15 digitos." : "", validationError ? "error" : "");
@@ -764,9 +795,22 @@ nextButton.addEventListener("click", async () => {
 });
 
 newAssessmentButton.addEventListener("click", () => {
-  participantForm.reset();
+  window.location.href = "/portal.html";
+});
+
+async function initializeAuthenticatedAssessment() {
+  const person = state.currentUser?.person || {};
+  const heading = document.querySelector("#welcomeScreen h1");
+  const copy = document.querySelector("#welcomeScreen .intro-slide-form p");
+  if (heading) heading.textContent = `Bienvenido, ${person.fullName || "participante"}`;
+  if (copy) copy.textContent = "Selecciona uno de tus instrumentos asignados para continuar.";
+  if (participantForm) participantForm.classList.add("hidden");
+  renderInstrumentCards();
+  switchScreen(instrumentScreen);
+}
+
+async function resetLocalAssessmentState() {
   setIdNumberFeedback("");
-  state.participant = { googleId: "", picture: "" };
   state.selectedInstrumentCode = "";
   state.currentApplication = null;
   state.activeQuestionIds = [];
@@ -776,13 +820,19 @@ newAssessmentButton.addEventListener("click", () => {
   state.introSlideIndex = 0;
   renderIntroSlide();
   switchScreen(welcomeScreen);
-});
+}
 
 async function initialize() {
   await loadConfig();
+  const hasSession = await loadSession();
+  if (!hasSession) return;
   await loadInstruments();
+  const requestedInstrument = new URLSearchParams(window.location.search).get("instrument");
+  if (requestedInstrument && state.instruments.some((instrument) => instrument.code === requestedInstrument)) {
+    state.selectedInstrumentCode = requestedInstrument;
+  }
   renderIntroSlide();
-  switchScreen(welcomeScreen);
+  await initializeAuthenticatedAssessment();
 }
 
 initialize().catch((error) => showAlert(error.message || "No se pudo iniciar la aplicacion."));

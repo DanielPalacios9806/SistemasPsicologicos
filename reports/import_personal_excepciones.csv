@@ -1,0 +1,367 @@
+﻿rowNumber,cedula,nombres,grado,promocion,unidad,clasificacion,baron_required,ema_required,disc_required,accion,observacion,specialtyCode,descripcion,sexo
+1156,1726391616,MOLINA CANDO JOSE JOEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1157,1726386681,MORALES CAMPOVERDE MATHIUS XAVIER,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1158,1725585143,LOPEZ FLORES CINTYA CAROLINA,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1159,1721592374,CATOTA GALLARDO JHAIR ANDRES,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1160,1105649600,CAYO GONZALEZ CRISTOFER ALEXIS,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1161,1724052111,OJEDA PARREÑO MARTIN NICOLAS,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1162,0503280372,PAREDES ARAUZ MAURICIO SEBASTIAN,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1163,1726900457,PEREZ VELEZ DANIEL FERNANDO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1164,2350670689,PONCE GARZON MICHAEL JOHAO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1165,1600666679,PONLUISA CASTILLO JHOSTIN JOEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1166,1004343180,RAMIREZ VELOZ ODALYS LIZETH,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,F
+1167,0550623029,TARCO AIMACAÑA ERIK MATIAS,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1168,2200395362,UCLES SOLANO WINDEMBER JAIR,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1169,0604727313,VILLA PALOMINO RENZO ARON,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1170,0550011969,ZAPATA MUÑOZ JUAN ESTEBAN,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1171,0550536767,ANALUISA TOAPANTA GENESIS CECIBEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1172,1725842189,ARMIJO VELASCO AXEL ANDRES,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1173,1722890629,ATI GAVILANES GILMAR GUSTAVO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1174,1600595472,CAICEDO HARO JUAN DIEGO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1175,0450079017,POZO HERNANDEZ JOSEPH EMILIANO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1176,1804495552,REYES VALLE EMILY DAYANARA,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1177,0504450321,TENELANDA SALAZAR DANNY JEANPIERE,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1178,0504864828,TRAVEZ SUAREZ KEYLA ANABEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1179,1723517387,VARGAS QUIMBITA JONATHAN ISMAEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1180,1005268741,VILLALBA SALAZAR DONAYKER DANIEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1181,1722888540,YUNGAN MIRANDA FABRICIO ALEXANDER,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1182,1726932328,SANDOVAL ALCIVAR ROBERT ALEXIS,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1183,0929549079,ELIZALDE BURGOS CARLOS ANTONIO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1184,0150685402,FERNANDEZ VILLALTA NICOLAS DE JESUS,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1185,0107068728,CARPIO CALDERON JOSE FABIAN,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1186,0550050272,GALARZA SALGUERO JHOSSEL ESTEBAN,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1187,0604825885,GAVIN TACURI TATIANA LISBET,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1188,0503319063,OCHOA HERRERA DAVID ALEJANDRO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1189,1721069696,CALAPAQUI GONZALEZ GALO DANIEL,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1190,1500836414,JIMENEZ BUENAÑO KENNY JOSTIN,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1191,0940622624,VILLAMAR VILLALBA DAVID DE JESUS,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1192,0924706047,OLAYA LOZANO ANTHONY JOEL,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1193,1752563823,ANDRADE CORONEL JEREMY ISSAC,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1194,0504456054,VIZCAINO PEÑAFIEL JUAN JOSE,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1195,1721346920,OSCULLO HERRERA DAYANNA MAYBETH,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1196,1722372016,IZA SIERRA LUIS ANTONIO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1197,1750184275,HUARACA QUISHPI GENESIS MISHELL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1198,0550307771,GUAPULEMA REA ERIK JOEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1199,0550315444,ESTRADA GARCIA NOE VICENTE,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1200,0504855164,CUEVA PURUNCAJAS JORDAN MATEO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1201,0401803796,CUAICAL MAYANQUER KIMI FERNANDO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1202,1750363903,COMPANY CUÑAS ELIYAHU RAFAEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1203,1753105293,BRAVO JUMBO ESTALIN REINALDO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1204,1850580430,BASANTES HARO CARLOS ANDRES,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1205,1003753249,ANDRADE CALDERON JHONATHAN GABRIEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1206,0550053805,ALARCON DE LA VEGA MATEO SEBASTIAN,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1207,1726045220,NUÑEZ DIAZ NAYELI MARCELA,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1208,0929466829,MONTAÑO ZAMBRANO NAHOMI PATRICIA,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1209,1805649413,CAMPAÑA TOAPANTA OSCAR ALEXANDER,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1210,1600959439,ASHQUI LLANGARI ANDY ALEXIS,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1211,0504276627,HURTADO LAGOS DANNY JAVIER,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1212,1150614475,ALDAZ GARCIA JHONATAN XAVIER,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1213,0850852070,ESTACIO DROUET VISMARK JOEL,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1214,1727761379,GONZALEZ ARROYO ELIAN SAMIR,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1215,1753078417,MELENDREZ AGUILAR HERNAN ALEXANDER,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1216,0550638613,MIÑO YANEZ MARIO ANTONIO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1217,1050165768,MORENO LOPEZ SEBASTIAN ISRAEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1218,0926719592,NAVARRO MORENO MARCO FERNANDO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1219,1753146271,OSORIO DIAZ DANIEL SEBASTIAN,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1220,0402046601,MONTENEGRO IMBACUAN MARIA JOSE,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,F
+1221,0927510644,PROAÑO ORRALA ANDRES SANTIAGO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1222,1850493675,RAMIREZ SIZA SANTIAGO DANIEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1223,1754061768,GOMEZ SEGOVIA ELSA DANIELA,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1224,0450150461,PANTOJA GAVILANEZ FABIAN STIVEN,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1225,1722243985,CELA GUERRERO DANNY GUSTAVO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1226,0503113045,MISE ABATA JENNIFER DANIELA,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1227,1721923587,IBAÑEZ JARAMILLO WELLINGTON STEVE,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1228,0503193054,JIMENEZ GAVILANEZ GEOVANNY ALEXANDER,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1229,1312565540,YANEZ VELASQUEZ CARLOS ALEJANDRO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1230,1312170119,ANCHATUÑA TACO KEVIN PATRICIO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1231,1804203600,GUEVARA MORALES DANIEL SEBASTIAN,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1232,1726626243,LOACHAMIN CHACON ERICK MATEO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1233,1751387836,CHILIG CADENA CARLOS ADRIAN,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1234,1804530747,BARRIONUEVO PILCO KEVIN STEVEN,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1235,0926799925,ARMIJOS CRIOLLO MARIA SOLEDAD,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,F
+1236,1750126169,PUEDMAG ATIENCIA CRISTIAN FERNANDO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1237,1722542402,QUIROZ DELGADO MARLON ALEXANDER,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1238,1721673729,RODRIGUEZ CARRASCO ARIEL EDUARDO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1239,1726154865,VELEZ MORA ISRAEL ALEJANDRO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1240,1105894669,CUENCA GONZALEZ DARWIN ISRAEL,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1241,1728227339,CUICHAN GORDON GINGER NICOLL,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1242,1724359292,PAREDES VILLAMARIN ADRIAN MATIAS,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1243,0503262628,PEÑAFIEL PEREZ DANNA PAOLA,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1244,0503075186,POZO FLORES KERLY SARAI,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1245,1754238267,QUELAL CADENA EDISON GUSTAVO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1246,1726349432,RECALDE CHACON ECKENNER SANTIAGO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1247,1600608408,SANCHEZ BALDEON ANTHONY PATRICIO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1248,0503320350,CHACHA PURUNCAJA ALEXIS DANILO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1249,1752801355,BALAREZO CEDEÑO JUAN PABLO,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,111031,OFICIAL PILOTO ALUMNO TRANSPORTES,M
+1250,0503016792,AREQUIPA GUANOLUISA ERICK PAUL,KDTE,77,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1251,0929879591,CAMPOVERDE PEREZ AXEL EDUARDO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1252,1755714589,CARRION CARRION ANTONIO VINICIO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1253,1750372367,CEVALLOS FLORES NEYTHAN ALEXANDER,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1254,1003871488,CEVALLOS HARO DYLAN JULIAN,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1255,1754915641,ESCOBAR PAZMIÑO PABLO FERNANDO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1256,0706339975,ESPINOZA ASANZA JOSE DANIEL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1257,0503884496,ESTRELLA NAVAS PATRICIO SALVADOR,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1258,1722691886,JAMI RODRIGUEZ STEVEEN GEOVANNY,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1259,1004461941,JARAMILLO CLERQUE BYRON PAUL,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1260,0401741574,LUCERO LOPEZ JHON JAIRO,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1261,1725189607,MEZA VITERI PABLO ANDRES,KDTE,78,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1262,1003828918,CAÑAREJO GUAÑA ELVIS JESUS,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1263,1950129385,JARAMILLO HERRERA CESAR DAVID,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1264,1750241356,ARIAS ECHEVERRIA MICHAEL ALEXANDER,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1265,1726238502,GARZON GOMEZ ALAN OMAR,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1266,0604580340,ORTIZ BONILLA ALEX PATRICIO,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1267,0107880924,MARIN LAZO CHRISTIAN MATEO,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1268,1719029447,LOPEZ BUENAÑO ANTHONY ALEXIS,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1269,0924701766,MOYOTA USHCA JEREMI ALEXANDER,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1270,1756321616,OBACO TINITANA FREYSLER ALEXIS,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1271,0550217178,VARGAS NINASUNTA DANNY VICENTE,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1272,0503134033,CLAUDIO DIAZ BRYAN STEVEEN,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1273,1729050680,CHICAIZA PUEDMAG WILLIAM JAVIER,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1274,0605815752,ECHEVERRIA SILVA DOMENICA ALEXANDRA,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1275,0604480152,MACAS AREVALO RENY JOSUE,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1276,1400868095,RIVADENEIRA SALAZAR EULER ALEJANDRO,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1277,0504872425,JAQUE AIMACAÑA ALEXIS STEEVEN,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1278,1805448238,SOTO VALDIVIESO SANTIAGO RAFAEL,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1279,0450129671,TEPUD RUIZ PRISCILA EUGENIA,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1280,0925729196,SINCHIGUANO NEIRA BRYAN ALEXANDER,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1281,0650077696,ZAVALA SANCHEZ JOHAN DANIEL,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1282,0924482367,BONILLA CERVANTES NATHASHA NICOLE,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,F
+1283,1726333105,CARRERA TUCANES WINSTON ALEJANDRO,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1284,0925845380,CASTRO ENRIQUEZ DAMARIS MISHELLE,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1285,1721336103,MACATO NIZA DIEGO JOSUE,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1286,1804170585,NARANJO PERALTA MATEO SEBASTIAN,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1287,0503186488,ENCALADA DUQUE TAMARA ESTHEFANIA,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1288,1722824545,FLORES AGUIRRE DOMENICA ANAHI,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1289,0503174351,GUANOLUISA LLUMIQUINGA ALEX JHOEL,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1290,1725301806,HERRERA CEVALLOS SAIM MATHIAS,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1291,0550549869,IZA RIVERA WILMER SANTIAGO,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1292,1721365441,ALOMOTO ABAD JOHAO ADRIAN,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1293,1724240641,RAMON NIZA LERIMAR BETANIA,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,F
+1294,0924279821,JARA MATIAS EDWIN ALEXANDER,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+1295,1721548848,VELASCO VEGA MIGUEL EDUARDO,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1296,2200242374,ZAAVEDRA ORTIZ EDINSON DANIEL,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001P,CADETE PILOTO,M
+1297,1726377656,AVILA CALDERON KENNETH ANDRES,KDTE,76,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,0001T,CADETE TECNICO,M
+6151,1206849752,GONZALES SANCHEZ LUIS ALEJANDRO,CPTO,0,EIA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,00010 B,CONSCRIPTO AEREO,M
+6152,1707859672,PAUCAR TORRES WALTER EDISON,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603063,MEDICO 3,M
+6153,1712698651,ALARCON MURILLO NELLY VANESSA,SPNR,0,AL22,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130602041,BIOQUIMICO FARMACEUTICO 2,F
+6154,1315663813,FALCONES PARRAGA FANNY FERNANDA,SPNR,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601034,ENFERMERA 2,F
+6155,1311350647,COBEÑA ZAMBRANO ANA MIREYA,SPNR,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601034,ENFERMERA 2,F
+6156,1726792219,MESA GOMEZ ROCIO ALEJANDRA,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130609031,TECNOLOGO MEDICO (IMAGENOLOGIA),F
+6157,1715965925,ULLRICH TORRES CHRISTIAN ANDRES,SPNR,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130609031,TECNOLOGO MEDICO (IMAGENOLOGIA),F
+6158,1316263811,PONCE PONCE LINSLEY LISBETH,SPNR,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130609032,TECNOLOGO MEDICO 2 (LABORATORIO),F
+6159,1600332116,ZUÑIGA FLORES FLOR MAGDALENA,SPNR,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130103010,TRABAJADOR SOCIAL,F
+6160,1705579116,LOPEZ GONZALEZ JESUS DAVID,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603063,MEDICO 3,M
+6161,1314971019,ANCHUNDIA PERALTA GENESIS TATIANA,SPNR,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130609031,TECNOLOGO MEDICO (IMAGENOLOGIA),F
+6162,1308115664,SOLORZANO ALAVA CENIA MARISOL,SPNR,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601032,ENFERMERA 4,F
+6163,1712732096,MURILLO ALVAREZ DANIEL LEONARDO,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160120301030,CAMAROGRAFO DE TELEVISION,M
+6164,1712869328,CEVALLOS MARTÍNEZ JAVIER OLMEDO,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603063,MEDICO 3,M
+6165,1713013504,RAZA MERINO XIMENA ALEXANDRA,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130103010,TRABAJADOR SOCIAL,F
+6166,1711227460,FLORES ARMAS DALIA MARCELA,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130104030,ADMINISTRADOR DE CENTRO INFANTIL,F
+6167,1710572312,ANDRADE CASTAÑEDA ESPERANZA ELIZABETH,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130301010,TECNICO MANTTO. EQPS. INFORMATICOS,F
+6168,1309877304,MACIAS PIN MAYRA MERCEDES,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130104020,PARVULARIO DE CENTRO INFANTIL,F
+6169,1802490068,RAMIREZ VALVERDE IRMA JANNETH,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130104010,AUXILIAR DE CENTRO INFANTIL,F
+6170,1710471978,CHAMORRO UBILLUS CARMEN AMELIA,SPNR,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601032,ENFERMERA 4,F
+6171,1711195634,VILLAREAL MARTINEZ YOLANDA MARILU,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701051,GASTRONOMO,F
+6172,1710090521,CALVOPIÑA TORRES JENNY EDITH,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130604032,ODONTOLOGO 2,F
+6173,1204059701,TAPIA FERNANDEZ ISIDRO FRANCISCO,SPNR,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130610023,PSICOLOGO 4,M
+6174,1709805186,ALBORNOZ ESPINOZA SUSANITA DE LAS MERCEDES,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130201040,BODEGUERO,F
+6175,1715380844,BAEZ ESPINOSA MARTHA CRISTINA,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130104020,PARVULARIO DE CENTRO INFANTIL,F
+6176,1204191405,MORAN CHILIQUINGA FANNY PIEDAD,SPNR,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601032,ENFERMERA 4,F
+6177,1718484015,HIDALGO HERRERA JAIME,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160140108020,TOPOGRAFO,M
+6178,1307181659,PALMA DELGADO MAYRA LOANNY,SPNR,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601032,ENFERMERA 4,F
+6179,1709593238,PEÑAFIEL RIVADENEIRA OLGA PATRICIA,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130203040,DISENADOR GRAFICO,F
+6180,1306910652,VALENCIA MUENTES LILIAN MARIBEL,SPNR,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601032,ENFERMERA 4,F
+6181,1001908266,FLORES CAZAR FRANKLIN OMAR,SPNR,0,COED,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130301040,ANALISTA TECNOLOGIAS INFORMACION,M
+6182,1802893048,VITERI VILLACIS CHRISTIAN GREGORY,SPNR,0,ETFA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130105030,ENTRENADOR DEPORTES MILITARES,M
+6183,1707330625,BAEZ RIVERA MARIO FERNANDO,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130602031,QUIMICO 2,M
+6184,1709356115,POZO GUDINO SHETHERY JAVIER,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1110202,ANALISTA PROGRAMADOR DE SISTEM,M
+6185,1002044079,REALPE ARIAS XIMENA CUMANDA,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130403010,CAJERO,F
+6186,1710620731,ROBAYO RODRIGUEZ JOSE MARCELO,SPNR,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130403010,CAJERO,M
+6187,1201102157,PERALTA CABEZAS RAUL BISMARK,SPNR,0,AL22,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603063,MEDICO 3,M
+6188,1705418323,PROAÑO VILLOTA PAULINA ELIZABETH,SPNR,0,AL22,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130604033,ODONTOLOGO 3,F
+6189,1706622048,SANCHEZ CABRERA SORAYA ELIZABETH,SPNR,0,AL22,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130605010,FISIOTERAPEUTA,F
+6190,1713786562,TERAN GOMEZ JAQUELINE ELIZABETH,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130104020,PARVULARIO DE CENTRO INFANTIL,F
+6191,1001225919,VIÑACHI BERMEO HERBERT HUMBERTO,SPNR,0,ETFA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130105010,INSTRUCTOR TECNICO,M
+6192,1102661137,CALVA CALVA RODRIGO IBAN,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130501020,TECN. CLASIFICADOR DCMTOS. MILITARES,M
+6193,1712625407,ANGULO CABASCANGO JORGE SANTIAGO,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130401020,ANALISTA ECONOMICO FINANCIERO,M
+6194,1710115542,TRUJILLO ESPARZA GERSON,SPNR,0,EIA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1180501,ENTRENADOR DE DEPORTES,M
+6195,1306274414,ESPINOZA CANO KATHIUSCA FRANCISCA,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130104030,ADMINISTRADOR DE CENTRO INFANTIL,F
+6196,1802533701,QUIROLA NARANJO GRACIELA DE LAS MER,SPNR,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130104020,PARVULARIO DE CENTRO INFANTIL,F
+6197,1709253825,MACAS REYES TOMAS VICENTE,SPNR,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130201040,BODEGUERO,M
+6198,1802652402,MUÑOZ NUÑEZ BILMA MARLENE,SPNR,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601032,ENFERMERA 4,F
+6199,1001762903,LUCERO PILLAJO GABRIEL HUMBERTO,SPNR,0,COED,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1180501,ENTRENADOR DE DEPORTES,M
+6200,1802434025,PUNGUIL CHICAIZA ELEUTERIO BLADYMIR,SPNR,0,COED,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130505040,DIRECTOR BANDA DE MUSICA,M
+6201,1718122508,VILLARROEL GALLO RAÚL MARCELO,SPNP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130203040,DISENADOR GRAFICO,M
+6202,1104166622,TORRES ALBERCA MAYRA ROSA,SPNP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130602041,BIOQUIMICO FARMACEUTICO 2,F
+6203,1722042692,ESTRELLA GARZÓN ESTEFANIA VICTORIA,SPNP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130610022,PSICOLOGO 3,F
+6204,1305088302,BOWEN ROLDAN LARRY CLITON,SPNP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130106010,CAPELLAN,M
+6205,1802988897,VELASTEGUI ALTAMIRANO MARIA ALEJANDRA,SPNP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603062,MEDICO 2,F
+6206,1713722880,FLORES ESCOBAR MARCIA LORENA,SPNP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603063,MEDICO 3,F
+6207,1310566698,CEDEÑO VERGARA YESICA YAHAIRA,SPNP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130609032,TECNOLOGO MEDICO 2 (LABORATORIO),F
+6208,1105807851,CORREA ASTUDILLO ARIANA PAOLA,SPNP,0,AL22,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130604032,ODONTOLOGO 2,F
+6209,1310859796,ROMERO LOOR HELEN VERONICA,SPNP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603063,MEDICO 3,F
+6210,1718868076,MACIAS VASQUEZ GABRIELA ALEXANDRA,SPNP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130604032,ODONTOLOGO 2,F
+6211,1707317150,MOYA POZO CARLOS ARTURO,SPNP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130602040,BIOQUIMICO FARMACEUTICO,M
+6212,1102738265,VEINTIMILLA NEIRA JUAN ROGELIO,SPNP,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130106010,CAPELLAN,M
+6213,1719085936,GUANO RIOFRIO SANDY GABRIELA,SPNP,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130604032,ODONTOLOGO 2,F
+6214,1720226883,ENCALADA BOMBÓN DIANA MARIBEL,SPNP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130610025,PSICOLOGO/A CLINICO/A,F
+6215,1310596315,ANCHUNDIA HOLGUIN JUNIOR STALIN,SPNP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601034,ENFERMERA 2,M
+6216,1715613202,PORTILLO TUPIZA ALEJANDRO VINICIO,SPNP,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603063,MEDICO 3,M
+6217,1312460403,ESPINOZA CALLE BEATRIZ LORENA,SPNP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130609031,TECNOLOGO MEDICO (IMAGENOLOGIA),F
+6218,1802163996,ZUMBANA HERRERA SERGIO ROLANDO,SPNP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603063,MEDICO 3,M
+6219,1310220742,CEDEÑO PONCE JORGE LUIS,SPNP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130603062,MEDICO 2,M
+6220,1720258795,SIMBAÑA PILLAJO EDGAR RUBEN,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705020,CARPINTERO,M
+6221,1719531749,TOPA SIMBAÑA JHONATAN ESTID,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6222,1206112961,PARRAGA CRUZ IVAN MARCELO,TRBP,0,AL22,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702012,AYUDANTE DE SALONERIA,M
+6223,1312173337,MERA CEDEÑO KAREN LUCIA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6224,1500574254,SATAMA BALLESTEROS JOHNNY ADEMIR,TRBP,0,COS2,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6225,1306370071,LOPEZ BRAVO GUSTAVO HENRY,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6226,1726923376,LOPEZ CAIZATOA IGNACIO DAMIAN,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130704016,CONDUCTOR ADMINISTRATIVO,M
+6227,1309153292,DELGADO DE LA CRUZ GRACE FERNANDA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6228,1719087668,REINOSO VALENCIA MARIA JOSE,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130503013,AUXILIAR DE ARCHIVO $,F
+6229,1718909847,GILER PONCE MAYRA ALEXANDRA,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6230,1803849411,JUIÑA LEON MARCO ANTONIO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6231,1715058705,LANDI QUISHPE LUIS RODRIGO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130704014,CONDUCTOR DE VEHICULOS MILITARES$,M
+6232,1311462665,LINO REYES LUIS FERNANDO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702011,AYUDANTE DE SALONERIA$,M
+6233,1307753812,ZAMBRANO DAZA FATIMA DANIELA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6234,1719112326,PONCE PEREZ MARIA LUISA,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6235,1310259823,SOLIS MACIAS ALVA ISABEL,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130903042,SASTRE$$,F
+6236,1309544029,LOPEZ TRIVIÑO OTTO PATRICIO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6237,1718840505,MOREIRA ORTIZ JORGE LEONARDO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705042,AUX. CUIDADO ORNAMENTACION JARDINES$,M
+6238,2100657853,JIMÉNEZ GAVILÁNES ROBINSON VINICIO,TRBP,0,BALAG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6239,1804333803,MOYA ANDA CRISTIAN RAUL,TRBP,0,ETFA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6240,2100468061,GREFA SHIGUANGO JESSICA RUTH,TRBP,0,BALAG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6241,1311253635,CARDENAS CEVALLOS KETTY MARGARITA,TRBP,0,COAD,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,F
+6242,1718747718,PILA VIVAS DAMARIS JUDITH,TRBP,0,ETFA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6243,1313337717,PONCE FUENTES CARMEN GISELLA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701031,PANIFICADOR$,F
+6244,1719782250,ARELLANO GARCÍA ALEX FERMÍN,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705011,ALBAÑIL,M
+6245,1803502507,ALARCON ARIAS VICENTE PAUL,TRBP,0,ETFA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702011,AYUDANTE DE SALONERIA$,M
+6246,1721037685,JEREZ BOLAÑOS FERNANDA MICHELLE,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6247,1723663496,CEVALLOS PADILLA ANA CAROLINA,TRBP,0,ETFA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6248,1727475343,SANTACRUZ GUAMAN KEVIN ALEJANDRO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6249,1716006745,COLUMBA ARIAS JOSE CRISTOBAL,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130704016,CONDUCTOR ADMINISTRATIVO,M
+6250,2400137317,DE LA CRUZ POZO MOISES ALEJANDRO,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6251,1724728488,CEDEÑO QUIGUANGO KEVIN JASON,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6252,1756208672,VALENZUELA PERALTA JOHANA ESTEFANIA,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6253,1801610013,CHILIQUINGA PILATAXI CARLOS ANTONIO,TRBP,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701021,AYUDANTE DE COCINA,M
+6254,1721361093,CORELLA TIPÁN SANDRA SORAYA,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705062,PELUQUERO$,F
+6255,2400057127,VELIZ ALAVA GEORGE ALEXANDER,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702011,AYUDANTE DE SALONERIA$,M
+6256,1204029811,CARRIEL LUNA LUIS JAVIER,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130903042,SASTRE$$,M
+6257,2400174971,DE LA CRUZ POZO MIGUEL ANGEL,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6258,2400129868,YAGUAL ORRALA VICTOR HUGO,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601013,COCINERO$,M
+6259,2450346305,VERA UBILLA JOYCE DAYANARA,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601011,AUXILIAR DE ENFERMERIA$,F
+6260,1719928275,PROAÑO OÑATE MELANY NOEMI,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6261,1311118937,MOLINA GRANDA LILIANA PAOLA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6262,1723706675,CANDO CALVACHE ALBA BEATRIZ,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705062,PELUQUERO$,F
+6263,1900496496,AREVALO SAMANIEGO YURI GARDENIA,TRBP,0,COS2,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,F
+6264,1716396302,LLAMBA TAPIA LILIANA ISABEL,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705060,PELUQUERO,F
+6265,1719008342,SARABIA RODRIGUEZ JORGE LUIS,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601012,AYUDANTE DE COCINA$$,M
+6266,1722387675,SANGACHA GARCIA ERIKA JOHANNA,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601011,AUXILIAR DE ENFERMERIA$,F
+6267,1708553555,CAMPUES NEPAS LUIS AMILCAR,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705050,GUARDIAN DE INSTALACIONES MILITARES,M
+6268,1306213966,ZAMBRANO ALAVA JORGE ENRIQUE,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130204090,MECANICO AUTOMOTRIZ,M
+6269,1003028386,PICUASI ANDRADE CESAR ANTONIO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6270,1305796144,CALDERON MEJIA ULBIO ABEL,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6271,1307062859,ORELLANA SUAREZ EDWIN GEOVANNY,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6272,1709551889,AMAGUAYA BERMEO JUAN ENRIQUE,TRBP,0,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6273,1304924341,ORMAZA IBARRA ZOILA CLEMENCIA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705060,PELUQUERO,F
+6274,1307474757,CEDEÑO ALAVA ROSA AMELIA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601010,AUXILIAR DE ENFERMERIA,F
+6275,1308852423,AVILA VERA LETTY MARIANA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601010,AUXILIAR DE ENFERMERIA,F
+6276,1713594438,VASCONEZ ACUÑA ISABEL ALEXANDRA,TRBP,0,ESMA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705060,PELUQUERO,F
+6277,1713677654,GOMEZ LAINEZ LUIS FELIPE,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6278,1712926797,QUIGUANGO CARANQUI WULFER NAPOLEON,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6279,2100020276,VEGA BORJA ROBINSON WILLIAM,TRBP,0,BALAG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6280,1709168767,CALDERON MOLINEROS EFREN JOSELITO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160140107010,TECNICO DE MANTTO. MAQUINAS DE PINES,M
+6281,1306651157,LASCANO CAMACHO MANUEL,TRBP,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130201030,AUXILIAR DE BODEGA,M
+6282,1710814094,ALVARADO FLORES JORGE FERNANDO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6283,1709366791,CACERES FLORES WILLIAMS FERNANDO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6284,1709554693,BENALCAZAR MEJIA OSCAR GIOVANNY,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702020,BARMAN,M
+6285,1307651693,CHINGA CEDENO DAISY LILIANA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601010,AUXILIAR DE ENFERMERIA,F
+6286,1307218170,BARTOLOME PIBAQUE KETTY ISABEL,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705060,PELUQUERO,F
+6287,1711423739,BENITEZ SALAZAR EDGAR JOSE,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6288,1710625334,CHICAIZA MAISINCHO JOSE REINALDO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6289,1203379316,CANTOS VALVERDE ELENA ISABEL,TRBP,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,F
+6290,1311520447,FORTIZ LOOR MIGUEL EDUARDO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705070,PINTOR DE INSTALACIONES,M
+6291,1712460896,CUEVA MORA RUTH ALEXANDRA,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130503013,AUXILIAR DE ARCHIVO $,F
+6292,1710361815,FARINANGO GUAÑA HUGO RAUL,TRBP,0,COS2,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130204090,MECANICO AUTOMOTRIZ,M
+6293,1203286339,MONTOYA MACIAS ALFONSO RAUL,TRBP,0,COS1,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6294,1307624799,MOREIRA VINCES WILFRIDO ANTONIO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6295,1500649171,LOPEZ GREFA SOLEDAD SOFIA,TRBP,0,COS2,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,F
+6296,1709343063,SUNTAXI LLUMIQUINGA CARLOS ENRIQUE,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130704010,CONDUCTOR DE VEHICULOS MILITARES,M
+6297,1712350212,QUISHPE BAZAN ANGEL EDUARDO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705040,AUXILIAR DE CUIDADO Y ORNAMENTACIÓN DE JARDINES,M
+6298,1713391132,TOAPANTA ANALUISA SEGUNDO TOMAS,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705050,GUARDIAN DE INSTALACIONES MILITARES,M
+6299,1712521598,MORALES POZO GEOVANNY PATRICIO,TRBP,0,AL11,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130704010,CONDUCTOR DE VEHICULOS MILITARES,M
+6300,1304213109,FREIRE BRITO JORGE FRANKLIN,TRBP,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705070,PINTOR DE INSTALACIONES,M
+6301,1708461312,ROCHA TOAQUIZA RAUL GONZALO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705100,ZAPATERO,M
+6302,1802807147,GALORA SAQUINGA JORGE RODRIGO,TRBP,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6303,1710976315,CALISPA JUELA SEGUNDO VICENTE,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705122,ELECTRICISTA,M
+6304,1710971761,SAENZ MANTILLA JAIME RODRIGO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130703040,SASTRE,M
+6305,1711414084,CANGO ARCOS DIEGO OSWALDO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130503011,AYUDANTE DE SERVICIOS ADMINISTRATIVOS,M
+6306,1305280651,SORNOZA MOREIRA BEATRIZ CELESTE,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130503013,AUXILIAR DE ARCHIVO $,F
+6307,1711306934,TOASO TIPAN MARCO ANTONIO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6308,1711760601,RIOFRIO CESAR AUGUSTO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6309,1711429694,CONDOR GUACHAMIN CARLOS,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130201030,AUXILIAR DE BODEGA,M
+6310,1309953584,PALACIOS PEÑARRIETA GREGORIO MARTIN,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6311,1711257061,TIERRA GUSQUI CARLOS OSWALDO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705050,GUARDIAN DE INSTALACIONES MILITARES,M
+6312,1201304688,JACOME MONAR PORFIRIO MISAEL,TRBP,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705020,CARPINTERO,M
+6313,1709857468,TACO CHANGO LUIS PATRICIO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705010,AUXILIAR DE CONSTRUCCION,M
+6314,1713428934,ALVARO ALVARO MANUEL MESIAS,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6315,1709843658,ENCALADA ARAUZ FABRICIO GERMAN,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210021,MENSAJERO DE ASUNTOS MILITARES $,M
+6316,1712158573,TOPA TASHIGUANO EDGAR SERAFIN,TRBP,0,AL11,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130704010,CONDUCTOR DE VEHICULOS MILITARES,M
+6317,1711249571,ESPINOZA CARDENAS OSCAR MAURICIO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210021,MENSAJERO DE ASUNTOS MILITARES $,M
+6318,1713449765,TOPA TASHIGUANO FRANKLIN RAUL,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6319,1310534035,REZABALA CEDEÑO ROBERTO CARLOS,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6320,1710207133,GARRIDO DIAZ FRANKLIN HERNAN,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6321,1306375724,DELGADO PEREZ RICHARD PATRICIO,TRBP,0,COS1,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6322,1203253321,RIOS FLORES LUIS EDUARDO,TRBP,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6323,1709997603,GUALOTO LOACHAMIN JUAN FRANCISCO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6324,1307402592,GILER MENDOZA LENIN ADOLFO,TRBP,0,COS1,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130204040,AUX. MECANICA AUTOMOTRIZ Y EQPO PESADO,M
+6325,1708517717,TOPA TASHIGUANO SEGUNDO HERNAN,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6326,1707145544,IMBAQUINGO LLAUCA RAUL GUSTAVO,TRBP,0,COS2,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130205010,SOLDADOR,M
+6327,1711847630,CAYO HIDALGO EDGAR MAURICIO,TRBP,0,COED,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6328,1715409262,PAUCAR MEJIA BYRON,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705110,AUXILIAR DE ELECTRICISTA,M
+6329,1708123060,MALDONADO ANDRADE SUSANA LOURDES,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,F
+6330,1308613718,ALONZO REZABALA WILSON DAVID,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6331,1309208625,ARCENTALES BAILON EDDY JOEL,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6332,1701792176,ROMERO GARCIA BOLIVAR ABDON,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6333,1710246487,SAAVEDRA LOJA CARLOS OSWALDO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130704010,CONDUCTOR DE VEHICULOS MILITARES,M
+6334,1307727709,CEDEÑO CEDEÑO ABILIO BASILIO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6335,1308851680,AGUAYO MOLINA ALVARO MACARIO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6336,1306029776,ALAVA ZAMBRANO ALFREDO GEOVANNY,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6337,1307974145,ALCIVAR CEDENO LINO RENEE,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6338,1305202804,ALCIVAR LAZ DANILO JOSE,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6339,1305355560,BERNAZA RIVERA WILLIAM ASDRUBAL,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6340,1308121167,CALDERON CHOEZ DARWIN WILSON,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6341,1202890867,MANZO MENDEZ AMADO EULOGIO,TRBP,0,EIA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6342,1308612512,CEDEÑO GARCIA OLFIO RODRIGO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6343,1307014819,CEDEÑO GARCIA HOLGER IVAL,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6344,1307471936,OSTAIZA PINARGOTE CARLOS JOSE,TRBP,0,EIA,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701030,PANIFICADOR,M
+6345,1308055498,DELGADO REYES JUAN CARLOS,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6346,1308105178,DUEÑAS VERA JUAN MELITON,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6347,1307781136,MACIAS CEDEÑO RICHARD PATRICIO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130204040,AUX. MECANICA AUTOMOTRIZ Y EQPO PESADO,M
+6348,1307602555,MORALES PACHAY SORAYA VERONICA,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130601010,AUXILIAR DE ENFERMERIA,F
+6349,1002440020,MORALES AREVALO FABIAN,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130204090,MECANICO AUTOMOTRIZ,M
+6350,1308272598,VITERI MACIAS FABRICIO HERNAN,TRBP,0,AL22,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130201030,AUXILIAR DE BODEGA,M
+6351,1304392440,ORTIZ CESAR ANIBAL,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701030,PANIFICADOR,M
+6352,1202546659,ZUMBA AVILA CARLOS RUBEN,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130702010,AYUDANTE DE SALONERIA,M
+6353,1307212827,PLUA LOOR ARMANDO RENE,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130703040,SASTRE,M
+6354,1306476571,PRADO SORNOZA PEDRO PABLO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130204040,AUX. MECANICA AUTOMOTRIZ Y EQPO PESADO,M
+6355,1308787348,QUIJIJE GILER EDY IVAN,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130204040,AUX. MECANICA AUTOMOTRIZ Y EQPO PESADO,M
+6356,1304673195,REYES VERA FREDY DANIEL,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6357,1706999602,SALAZAR MICHILENA JOSE LUIS,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130704010,CONDUCTOR DE VEHICULOS MILITARES,M
+6358,1303114852,SANCHEZ BONILLA RAFAEL EVARISTO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705030,GASFITERO,M
+6359,1305957845,VINCES GARCIA DAVID SIMON,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130201030,AUXILIAR DE BODEGA,M
+6360,1711012516,GARCIA HERRERIA VICENTE OSWALDO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6361,1706770797,VILLAMAR ESTRELLA LUIS ANIBAL,TRBP,0,BALAG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6362,1712232261,CASPI SIERRA JAVIER FRANKLIN,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210021,MENSAJERO DE ASUNTOS MILITARES $,M
+6363,1710587641,GUALOTO GUALOTO CESAR AUGUSTO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705110,AUXILIAR DE ELECTRICISTA,M
+6364,1900248509,SAMANIEGO ROSILIO IDELIA DEL CARMEN,TRBP,0,COS2,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,F
+6365,1202583272,ERAZO MEJIA BYRON BOLIVAR,TRBP,0,AL21,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705060,PELUQUERO,M
+6366,1711725760,ESCOBAR SALINAS CARLOS HENRY,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6367,1707141097,LARA QUIMBIURCO JOSE MIGUEL,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705010,AUXILIAR DE CONSTRUCCION,M
+6368,1711721538,MANOBANDA GUAQUIPANA JORGE ENRIQUE,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130503012,AYUDANTE DE SERVICIOS ADMINISTRATIVOS$,M
+6369,1711144467,MOROCHO COLLAGUAZO MARIO STALIN,TRBP,0,COS1,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701030,PANIFICADOR,M
+6370,1306764414,QUIJIJE GILER LUIS ALBERTO,TRBP,0,AL23,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130204040,AUX. MECANICA AUTOMOTRIZ Y EQPO PESADO,M
+6371,1709688343,RAMON GARCIA CESAR EUCLIDES,TRBP,999,BACO,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130701020,AYUDANTE DE COCINA,M
+6372,1709402984,RAMOS DIBUJES LUIS ROBERTO,TRBP,0,COMG,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130210020,MENSAJERO DE ASUNTOS MILITARES,M
+6373,1708970767,ROMO HERNANDEZ JOSE HUMBERTO,TRBP,0,BAMAS,no_elegible,false,false,false,excluir,fuera_de_reglas_oficial_aerotecnico,1160130705080,TAPICERO,M
+6374,,7908,,,TOTAL:,no_elegible,false,false,false,excluir,cedula_vacia;grado_desconocido;fuera_de_reglas_oficial_aerotecnico,,,

@@ -4,6 +4,12 @@
   "description": "Aplicacion web multi-instrumento para EMA y BarOn ICE con panel admin y exportacion.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test",
+    "import:personal:dry-run": "node scripts/import_personal.js --dry-run",
+    "import:personal:apply": "node scripts/import_personal.js --apply"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }

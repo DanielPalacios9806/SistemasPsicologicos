@@ -7,6 +7,13 @@ const { getServerConfig } = require("./lib/env");
 const { listInstruments, getInstrumentDefinition } = require("./lib/instruments");
 const { buildExcelWorkbook } = require("./lib/exportExcel");
 const { scoreInstrumentApplication, normalizeInstrumentAnswer } = require("./lib/scoring/index");
+const { verifyPassword, hashPassword, validateNewPassword } = require("./lib/auth/password");
+const {
+  createSessionToken,
+  getSessionFromRequest,
+  buildSessionCookie,
+  buildClearSessionCookie,
+} = require("./lib/auth/session");
 const {
   initializeStorage,
   shouldUseSupabase,
@@ -16,6 +23,13 @@ const {
   saveApplicationProgress,
   listApplications,
   exportApplications,
+  findAccountByUsername,
+  findAccountById,
+  updateAccountLoginState,
+  updateAccountPassword,
+  getPersonByAccount,
+  listAssignmentsForPerson,
+  hasAssignmentForInstrument,
 } = require("./lib/storage");
 
 const config = getServerConfig();
@@ -26,6 +40,7 @@ const ADMIN_PASSWORD = config.adminPassword;
 const PUBLIC_DIR = path.join(__dirname, "public");
 const APP_VERSION = process.env.RENDER_GIT_COMMIT || "local";
 const adminTokens = new Set();
+const loginAttempts = new Map();
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -39,12 +54,13 @@ const MIME_TYPES = {
   ".ico": "image/x-icon",
 };
 
-function sendJson(res, statusCode, payload) {
+function sendJson(res, statusCode, payload, extraHeaders = {}) {
   res.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "same-origin",
     "Access-Control-Allow-Methods": "GET,POST,PATCH,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,x-admin-token",
+    ...extraHeaders,
   });
   res.end(JSON.stringify(payload));
 }
@@ -58,12 +74,68 @@ function getAdminToken(req) {
 }
 
 function requireAdmin(req, res) {
+  const session = getSessionFromRequest(req);
+  if (session?.role === "admin") return true;
   const token = getAdminToken(req);
   if (!token || !adminTokens.has(token)) {
     sendJson(res, 401, { error: "Acceso administrativo no autorizado." });
     return false;
   }
   return true;
+}
+
+function isProductionRequest(req) {
+  return config.nodeEnv === "production" || String(req.headers["x-forwarded-proto"] || "").includes("https");
+}
+
+function getClientKey(req, username = "") {
+  return `${req.headers["x-forwarded-for"] || req.socket.remoteAddress || "local"}:${username}`;
+}
+
+function checkLoginRateLimit(req, username) {
+  const key = getClientKey(req, username);
+  const entry = loginAttempts.get(key);
+  if (!entry) return null;
+  if (entry.lockedUntil && entry.lockedUntil > Date.now()) return entry.lockedUntil;
+  return null;
+}
+
+function recordLoginFailure(req, username) {
+  const key = getClientKey(req, username);
+  const entry = loginAttempts.get(key) || { count: 0, lockedUntil: 0 };
+  entry.count += 1;
+  if (entry.count >= 5) {
+    entry.lockedUntil = Date.now() + 15 * 60 * 1000;
+    entry.count = 0;
+  }
+  loginAttempts.set(key, entry);
+}
+
+function clearLoginFailures(req, username) {
+  loginAttempts.delete(getClientKey(req, username));
+}
+
+async function getParticipantContext(req) {
+  const session = getSessionFromRequest(req);
+  if (!session || session.role !== "participant") return null;
+  const account = await findAccountById(session.sub);
+  if (!account || !account.active || Number(account.token_version || 0) !== Number(session.tokenVersion || 0)) return null;
+  const person = await getPersonByAccount(account);
+  if (!person) return null;
+  return { session, account, person };
+}
+
+async function requireParticipant(req, res, { allowPasswordChange = false } = {}) {
+  const context = await getParticipantContext(req);
+  if (!context) {
+    sendJson(res, 401, { error: "Sesion requerida." });
+    return null;
+  }
+  if (context.account.must_change_password && !allowPasswordChange) {
+    sendJson(res, 403, { error: "Debes cambiar tu contrasena antes de continuar.", mustChangePassword: true });
+    return null;
+  }
+  return context;
 }
 
 function sendFile(res, filePath) {
@@ -367,7 +439,7 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": "same-origin",
       "Access-Control-Allow-Methods": "GET,POST,PATCH,OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type,x-admin-token",
     });
@@ -383,11 +455,12 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (requestUrl.pathname === "/api/health" && req.method === "GET") {
+  if ((requestUrl.pathname === "/api/health" || requestUrl.pathname === "/health") && req.method === "GET") {
     sendJson(res, 200, {
-      ok: true,
+      status: "ok",
       version: APP_VERSION,
-      storageDriver: shouldUseSupabase() ? "supabase" : "local",
+      commit: APP_VERSION,
+      storage: shouldUseSupabase() ? "supabase" : "local",
     });
     return;
   }
@@ -413,6 +486,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname.startsWith("/api/check-id/") && req.method === "GET") {
+    if (!requireAdmin(req, res)) return;
     const idNumber = decodeURIComponent(requestUrl.pathname.replace("/api/check-id/", ""));
     const instrumentCode = (requestUrl.searchParams.get("instrument") || "ema").toLowerCase();
     if (!isValidIdNumber(idNumber)) {
@@ -448,6 +522,145 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (requestUrl.pathname === "/api/auth/login" && req.method === "POST") {
+    let username = "";
+    try {
+      const body = await readBody(req);
+      username = String(body.username || "").trim();
+      const password = String(body.password || "");
+      const lockedUntil = checkLoginRateLimit(req, username);
+      if (lockedUntil) {
+        sendJson(res, 429, { error: "Usuario o contrasena incorrectos." });
+        return;
+      }
+
+      const account = await findAccountByUsername(username);
+      const passwordOk = account ? await verifyPassword(password, account.password_salt, account.password_hash) : false;
+      const dbLocked = account?.locked_until && new Date(account.locked_until).getTime() > Date.now();
+      if (!account || !account.active || dbLocked || !passwordOk) {
+        recordLoginFailure(req, username);
+        if (account) {
+          const failed = Number(account.failed_login_attempts || 0) + 1;
+          await updateAccountLoginState(account.id, {
+            failed_login_attempts: failed >= 5 ? 0 : failed,
+            locked_until: failed >= 5 ? new Date(Date.now() + 15 * 60 * 1000).toISOString() : account.locked_until,
+          });
+        }
+        sendJson(res, 401, { error: "Usuario o contrasena incorrectos." });
+        return;
+      }
+
+      clearLoginFailures(req, username);
+      await updateAccountLoginState(account.id, {
+        failed_login_attempts: 0,
+        locked_until: null,
+        last_login_at: new Date().toISOString(),
+      });
+      const person = await getPersonByAccount(account);
+      const token = createSessionToken({
+        accountId: account.id,
+        personId: account.person_id,
+        role: account.role,
+        username: account.username,
+        mustChangePassword: account.must_change_password,
+        tokenVersion: account.token_version,
+      });
+      sendJson(
+        res,
+        200,
+        {
+          user: {
+            username: account.username,
+            role: account.role,
+            mustChangePassword: account.must_change_password,
+            person,
+          },
+        },
+        { "Set-Cookie": buildSessionCookie(token, { secure: isProductionRequest(req) }) }
+      );
+    } catch (error) {
+      sendJson(res, 400, { error: "Usuario o contrasena incorrectos." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/auth/me" && req.method === "GET") {
+    const participant = await getParticipantContext(req);
+    if (participant) {
+      const assignments = participant.account.must_change_password
+        ? []
+        : await listAssignmentsForPerson(participant.account.person_id);
+      sendJson(res, 200, {
+        user: {
+          username: participant.account.username,
+          role: participant.account.role,
+          mustChangePassword: participant.account.must_change_password,
+          person: participant.person,
+        },
+        assignments,
+      });
+      return;
+    }
+    const session = getSessionFromRequest(req);
+    if (session?.role === "admin") {
+      sendJson(res, 200, { user: { username: session.username, role: "admin" }, assignments: [] });
+      return;
+    }
+    sendJson(res, 401, { error: "Sesion requerida." });
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/auth/change-password" && req.method === "POST") {
+    const context = await requireParticipant(req, res, { allowPasswordChange: true });
+    if (!context) return;
+    try {
+      const body = await readBody(req);
+      const currentPassword = String(body.currentPassword || "");
+      const newPassword = String(body.newPassword || "");
+      const confirmPassword = String(body.confirmPassword || "");
+      const currentOk = await verifyPassword(currentPassword, context.account.password_salt, context.account.password_hash);
+      if (!currentOk) {
+        sendJson(res, 400, { error: "No se pudo cambiar la contrasena." });
+        return;
+      }
+      const policyError = await validateNewPassword({
+        username: context.account.username,
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+      if (policyError) {
+        sendJson(res, 400, { error: policyError });
+        return;
+      }
+      const password = await hashPassword(newPassword);
+      await updateAccountPassword(context.account.id, password);
+      const updated = await findAccountById(context.account.id);
+      const token = createSessionToken({
+        accountId: updated.id,
+        personId: updated.person_id,
+        role: updated.role,
+        username: updated.username,
+        mustChangePassword: updated.must_change_password,
+        tokenVersion: updated.token_version,
+      });
+      sendJson(
+        res,
+        200,
+        { ok: true },
+        { "Set-Cookie": buildSessionCookie(token, { secure: isProductionRequest(req) }) }
+      );
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudo cambiar la contrasena." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/auth/logout" && req.method === "POST") {
+    sendJson(res, 200, { ok: true }, { "Set-Cookie": buildClearSessionCookie() });
+    return;
+  }
+
   if (requestUrl.pathname === "/api/auth/google" && req.method === "POST") {
     try {
       const body = await readBody(req);
@@ -460,14 +673,11 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === "/api/applications/start" && req.method === "POST") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
     try {
       const body = await readBody(req);
-      const participant = sanitizeParticipant(body.participant || body);
-      const validationError = validateParticipant(participant);
-      if (validationError) {
-        sendJson(res, 400, { error: validationError });
-        return;
-      }
+      const participant = { ...context.person, personId: context.account.person_id };
 
       const instrument = getInstrumentOrThrow(body.instrumentCode);
       const application = await startApplication({ participant, instrumentDefinition: instrument });
@@ -479,14 +689,11 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === "/api/applications/resume" && req.method === "GET") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
     try {
-      const idNumber = String(requestUrl.searchParams.get("cedula") || "").trim();
       const instrumentCode = String(requestUrl.searchParams.get("instrument") || "ema").trim().toLowerCase();
-      if (!isValidIdNumber(idNumber)) {
-        sendJson(res, 400, { error: "La cedula consultada no tiene un formato valido." });
-        return;
-      }
-      const application = await findCurrentApplication(idNumber, instrumentCode);
+      const application = await findCurrentApplication(context.person.idNumber, instrumentCode);
       if (!application) {
         sendJson(res, 404, { error: "No se encontro una aplicacion para esa cedula e instrumento." });
         return;
@@ -499,12 +706,18 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname.startsWith("/api/applications/") && requestUrl.pathname.endsWith("/answers") && req.method === "POST") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
     try {
       const applicationId = requestUrl.pathname.split("/")[3];
       const body = await readBody(req);
       const application = await getApplicationById(applicationId);
       if (!application) {
         sendJson(res, 404, { error: "No se encontro la aplicacion." });
+        return;
+      }
+      if (application.personId !== context.account.person_id) {
+        sendJson(res, 403, { error: "No tienes acceso a esta aplicacion." });
         return;
       }
 
@@ -538,11 +751,17 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname.startsWith("/api/applications/") && req.method === "GET") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
     try {
       const applicationId = requestUrl.pathname.split("/")[3];
       const application = await getApplicationById(applicationId);
       if (!application) {
         sendJson(res, 404, { error: "No se encontro la aplicacion." });
+        return;
+      }
+      if (application.personId !== context.account.person_id) {
+        sendJson(res, 403, { error: "No tienes acceso a esta aplicacion." });
         return;
       }
       sendJson(res, 200, buildPublicApplicationPayload(application, getInstrumentDefinition(application.instrumentCode)));

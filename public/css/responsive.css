@@ -1,0 +1,109 @@
+/**
+ * MENTE DE ACERO V2 — RESPONSIVE STYLES
+ */
+
+/* ==========================================================================
+   TABLET BREAKPOINT (<= 1024px)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: 220px;
+    padding: 20px 12px;
+  }
+
+  .content-container {
+    padding: 0 24px 48px;
+  }
+
+  .dashboard-row-1,
+  .dashboard-row-3,
+  .results-top-row,
+  .results-bottom-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-row-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .results-middle-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   MOBILE BREAKPOINT (<= 768px) — MOCKUP SCREEN 2 EXPERIENCE
+   ========================================================================== */
+@media (max-width: 768px) {
+  .app-sidebar {
+    display: none; /* Replaced by bottom bar */
+  }
+
+  .mobile-bottom-bar {
+    display: block;
+  }
+
+  .app-topbar {
+    padding: 16px 20px;
+  }
+
+  .content-container {
+    padding: 0 16px 88px; /* Leave space for bottom bar */
+  }
+
+  .welcome-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-row-1,
+  .dashboard-row-2,
+  .dashboard-row-3,
+  .results-top-row,
+  .results-middle-row,
+  .results-bottom-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .current-eval-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .hero-eval-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .hero-eval-illustration {
+    display: none;
+  }
+
+  .support-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .support-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .stepper-track {
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .stepper-track::before {
+    display: none;
+  }
+
+  .modal-dialog {
+    max-height: 90vh;
+    border-radius: var(--radius-lg);
+  }
+}

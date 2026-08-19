@@ -1,0 +1,91 @@
+/**
+ * MENTE DE ACERO V2 — DESIGN TOKENS
+ * Philosophy: Humanized Wellness Platform & Mental Fitness (18-33 Target Audience)
+ * Values: Fortaleza + Autoconocimiento + Confidencialidad + Bienestar + Progreso
+ */
+
+:root {
+  /* Brand Palette */
+  --brand-navy: #0B192C;
+  --brand-navy-surface: #132338;
+  --brand-navy-border: #1E3550;
+  --brand-gold: #D99B26;
+  --brand-gold-soft: #FFF7E6;
+  --brand-gold-hover: #B88018;
+  --brand-teal: #0B716C;
+  --brand-teal-soft: #E6F5F4;
+  --brand-teal-dark: #075551;
+
+  /* Surfaces & Canvas */
+  --surface-canvas: #F4F7F9;
+  --surface-card: #FFFFFF;
+  --surface-card-soft: #F8FAFC;
+  --surface-card-hover: #F1F5F9;
+  --surface-border: #E2E8F0;
+  --surface-border-subtle: #EDF2F7;
+  --surface-divider: #CBD5E1;
+
+  /* Text & Ink */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-subtle: #94A3B8;
+  --text-inverse: #FFFFFF;
+  --text-gold-ink: #92400E;
+
+  /* Semantic Feedback */
+  --success-text: #065F46;
+  --success-bg: #ECFDF5;
+  --success-border: #A7F3D0;
+  --success-solid: #10B981;
+
+  --warning-text: #92400E;
+  --warning-bg: #FFFBEB;
+  --warning-border: #FDE68A;
+  --warning-solid: #F59E0B;
+
+  --danger-text: #991B1B;
+  --danger-bg: #FEF2F2;
+  --danger-border: #FECACA;
+  --danger-solid: #EF4444;
+
+  --info-text: #1E40AF;
+  --info-bg: #EFF6FF;
+  --info-border: #BFDBFE;
+  --info-solid: #3B82F6;
+
+  /* Charts & Visual Analytics */
+  --chart-polygon-stroke: #2563EB;
+  --chart-polygon-fill: rgba(37, 99, 235, 0.18);
+  --chart-trend-line: #3B82F6;
+  --chart-trend-gradient-start: rgba(59, 130, 246, 0.25);
+  --chart-trend-gradient-end: rgba(59, 130, 246, 0.00);
+  --chart-gauge-track: #E2E8F0;
+  --chart-gauge-arc-primary: #2563EB;
+  --chart-gauge-arc-accent: #F59E0B;
+
+  /* Typography */
+  --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  --shadow-card-hover: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+  --shadow-elevated: 0 20px 32px -8px rgba(11, 25, 44, 0.12);
+  --shadow-modal: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-default: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}

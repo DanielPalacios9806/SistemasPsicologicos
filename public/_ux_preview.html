@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UX Preview</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/participant.css?v=preview" />
+  </head>
+  <body class="public-body participant-app assessment-page">
+    <main class="public-shell assessment-shell">
+      <header class="brand-nav app-topbar assessment-topbar">
+        <a class="back-link" href="#"><i data-lucide="arrow-left"></i><span>Portal</span></a>
+        <a class="brand-lockup" href="#"><span class="brand-mark"><i data-lucide="brain-circuit"></i></span><span><strong>Sistemas Psicologicos</strong><small>Evaluacion personal</small></span></a>
+        <div class="assessment-context-bar">
+          <span class="context-icon"><i data-lucide="clipboard-heart"></i></span>
+          <div><strong>Asertividad</strong><small>Tte. Participante</small></div>
+          <span class="status-badge">42%</span>
+        </div>
+      </header>
+
+      <section data-screen="module" class="screen-card assessment-intro-screen">
+        <div class="assessment-intro-layout">
+          <div class="instrument-emblem"><i data-lucide="messages-square"></i></div>
+          <div class="section-heading assessment-heading"><span class="eyebrow">Escala EMA</span><h1>Asertividad</h1><p>Explora como expresas ideas, necesidades y limites en situaciones cotidianas.</p></div>
+        </div>
+        <div class="assessment-facts">
+          <div class="assessment-fact"><i data-lucide="list-checks"></i><div><span>Recorrido</span><strong>45 preguntas</strong></div></div>
+          <div class="assessment-fact"><i data-lucide="clock-3"></i><div><span>Tiempo estimado</span><strong>9 minutos</strong></div></div>
+          <div class="assessment-fact"><i data-lucide="history"></i><div><span>Estado</span><strong>42% completado</strong></div></div>
+        </div>
+        <div class="privacy-note"><i data-lucide="shield-check"></i><p><strong>Responde con naturalidad.</strong> No hay respuestas correctas o incorrectas y tu avance se guarda automaticamente.</p></div>
+        <div class="navigation-row single-action assessment-start-action"><button class="primary-button"><span>Continuar evaluacion</span><i data-lucide="arrow-right"></i></button></div>
+      </section>
+
+      <section data-screen="question" class="screen-card question-screen hidden">
+        <header class="question-header">
+          <div class="question-meta-row"><div><span class="eyebrow">Pregunta 19 de 45</span><p>Elige la opcion que mejor describa tu experiencia habitual.</p></div><span class="autosave-status"><i data-lucide="cloud-check"></i><span>Se guarda al continuar</span></span></div>
+          <div class="progress-panel question-progress"><div class="progress-meta"><strong>42% completado</strong></div><div class="progress-bar"><div class="progress-fill" style="width:42%"></div></div></div>
+        </header>
+        <article class="question-card">
+          <h2>Puedo expresar con claridad lo que necesito, incluso cuando la otra persona no esta de acuerdo.</h2>
+          <p class="question-microcopy">No hay respuestas correctas o incorrectas. Responde con naturalidad.</p>
+          <div class="rating-group">
+            <button class="rating-button"><span class="rating-emoji"><i data-lucide="chevrons-down"></i></span><span class="rating-title">Muy en desacuerdo</span></button>
+            <button class="rating-button"><span class="rating-emoji"><i data-lucide="chevron-down"></i></span><span class="rating-title">En desacuerdo</span></button>
+            <button class="rating-button"><span class="rating-emoji"><i data-lucide="minus"></i></span><span class="rating-title">Neutral</span></button>
+            <button class="rating-button selected"><span class="rating-emoji"><i data-lucide="chevron-up"></i></span><span class="rating-title">De acuerdo</span></button>
+            <button class="rating-button"><span class="rating-emoji"><i data-lucide="chevrons-up"></i></span><span class="rating-title">Muy de acuerdo</span></button>
+          </div>
+        </article>
+        <div class="navigation-row question-actions"><button class="secondary-button"><i data-lucide="arrow-left"></i><span>Anterior</span></button><button class="primary-button"><span>Siguiente</span><i data-lucide="arrow-right"></i></button></div>
+      </section>
+    </main>
+    <script src="/vendor/lucide.js"></script>
+    <script src="/ui.js"></script>
+    <script>
+      const screen = new URLSearchParams(location.search).get("screen") || "module";
+      document.querySelectorAll("[data-screen]").forEach((section) => section.classList.toggle("hidden", section.dataset.screen !== screen));
+    </script>
+  </body>
+</html>

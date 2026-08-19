@@ -1,0 +1,226 @@
+/**
+ * MENTE DE ACERO V2 — INTERACTIVE TOOLS & MODALS STYLES
+ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(11, 25, 44, 0.65);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+  padding: 16px;
+  animation: fadeIn var(--transition-fast) forwards;
+}
+
+.modal-dialog {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 520px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp var(--transition-default) forwards;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--surface-border-subtle);
+}
+
+.modal-header h3 {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.modal-close-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.modal-close-btn:hover {
+  background-color: var(--surface-card-hover);
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  background-color: var(--surface-card-soft);
+  border-top: 1px solid var(--surface-border-subtle);
+}
+
+/* ==========================================================================
+   4-7-8 GUIDED BREATHING PACER TOOL
+   ========================================================================== */
+
+.breathing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  padding: 12px 0;
+}
+
+.breathing-circle-wrapper {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: grid;
+  place-items: center;
+}
+
+.breathing-outer-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  border: 2px dashed var(--brand-teal-soft);
+}
+
+.breathing-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-pill);
+  background: radial-gradient(circle, var(--brand-teal-soft) 0%, rgba(11, 113, 108, 0.4) 100%);
+  border: 2px solid var(--brand-teal);
+  display: grid;
+  place-items: center;
+  transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 24px rgba(11, 113, 108, 0.2);
+}
+
+.breathing-circle.inhale {
+  transform: scale(1.65);
+  background: radial-gradient(circle, #E0F2FE 0%, rgba(37, 99, 235, 0.4) 100%);
+  border-color: #2563EB;
+  box-shadow: 0 0 32px rgba(37, 99, 235, 0.35);
+  transition-duration: 4s;
+}
+
+.breathing-circle.hold {
+  transform: scale(1.65);
+  background: radial-gradient(circle, var(--brand-gold-soft) 0%, rgba(217, 155, 38, 0.4) 100%);
+  border-color: var(--brand-gold);
+  box-shadow: 0 0 32px rgba(217, 155, 38, 0.35);
+  transition-duration: 7s;
+}
+
+.breathing-circle.exhale {
+  transform: scale(1);
+  background: radial-gradient(circle, var(--brand-teal-soft) 0%, rgba(11, 113, 108, 0.4) 100%);
+  border-color: var(--brand-teal);
+  box-shadow: 0 0 24px rgba(11, 113, 108, 0.2);
+  transition-duration: 8s;
+}
+
+.breathing-instruction {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.breathing-timer {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.stress-slider-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.stress-slider-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stress-slider {
+  width: 100%;
+  accent-color: var(--brand-teal);
+}
+
+/* ==========================================================================
+   MOOD CHECK-IN MODAL
+   ========================================================================== */
+
+.mood-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.mood-option-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--surface-border);
+  background-color: var(--surface-card-soft);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mood-option-card:hover {
+  background-color: #FFFFFF;
+  border-color: var(--brand-teal);
+}
+
+.mood-option-card.selected {
+  border-color: var(--brand-teal);
+  background-color: var(--brand-teal-soft);
+}
+
+.mood-option-card .mood-icon {
+  font-size: 1.8rem;
+}
+
+.mood-option-card span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

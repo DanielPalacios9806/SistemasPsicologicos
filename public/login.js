@@ -1,5 +1,6 @@
 const alertBox = document.getElementById("alert");
 const loginForm = document.getElementById("loginForm");
+const loginCard = document.querySelector(".login-card");
 const changeSection = document.getElementById("changeSection");
 const changePasswordForm = document.getElementById("changePasswordForm");
 const loginSubmitButton = document.getElementById("loginSubmitButton");
@@ -12,16 +13,26 @@ function showAlert(message, isError = true) {
 }
 
 function showChangePassword() {
+  loginCard?.classList.add("hidden");
   changeSection.classList.remove("hidden");
   changeSection.scrollIntoView({ behavior: "smooth" });
+  window.renderParticipantIcons?.(changeSection);
+}
+
+function setLoginBusy(isBusy) {
+  loginSubmitButton.disabled = isBusy;
+  loginSubmitButton.innerHTML = isBusy
+    ? '<i data-lucide="loader-circle"></i><span>Verificando...</span>'
+    : '<i data-lucide="log-in"></i><span>Ingresar al portal</span>';
+  loginSubmitButton.classList.toggle("is-loading", isBusy);
+  window.renderParticipantIcons?.(loginSubmitButton);
 }
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const username = String(document.getElementById("username").value || "").trim();
   const password = String(document.getElementById("password").value || "");
-  loginSubmitButton.disabled = true;
-  loginSubmitButton.textContent = "Verificando...";
+  setLoginBusy(true);
   try {
     const response = await fetch("/api/auth/login", {
       method: "POST",
@@ -40,8 +51,7 @@ loginForm.addEventListener("submit", async (event) => {
     }
     window.location.href = "/portal.html";
   } finally {
-    loginSubmitButton.disabled = false;
-    loginSubmitButton.textContent = "Ingresar al portal";
+    setLoginBusy(false);
   }
 });
 

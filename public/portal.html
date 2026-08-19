@@ -3,55 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portal | Sistemas Psicologicos</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <title>Mente de Acero — Plataforma de Evaluación y Bienestar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/main.css?v=2.0.0" />
   </head>
-  <body class="public-body">
-    <div id="alert" class="alert hidden" aria-live="polite"></div>
-    <main class="public-shell">
-      <header class="brand-nav">
-        <a class="brand-lockup" href="/portal.html">
-          <span>
-            <strong>Sistemas Psicologicos</strong>
-            <small>Portal del participante</small>
-          </span>
-        </a>
-        <button id="logoutButton" class="secondary-button" type="button">Salir</button>
-      </header>
+  <body>
+    <div id="app"></div>
 
-      <section class="glass-card screen-card portal-dashboard">
-        <div class="portal-hero">
-          <div class="section-heading">
-            <span class="eyebrow">Bienvenido</span>
-            <h1 id="welcomeName">Participante</h1>
-            <p id="welcomeMeta">Evaluaciones asignadas</p>
-          </div>
-          <aside class="session-panel" aria-label="Sesion actual">
-            <span class="question-category">Sesion actual</span>
-            <strong id="sessionUsername">-</strong>
-            <small id="sessionRole">Participante</small>
-          </aside>
-        </div>
-
-        <div id="profileSummary" class="profile-summary" aria-label="Perfil militar"></div>
-        <div class="progress-panel portal-progress">
-          <div class="progress-meta">
-            <p id="overallProgressLabel">Avance general</p>
-            <p id="overallProgressMessage" class="progress-message">Cargando evaluaciones asignadas...</p>
-          </div>
-          <div class="progress-bar" aria-hidden="true">
-            <div id="overallProgressFill" class="progress-fill"></div>
-          </div>
-        </div>
-
-        <div class="section-heading compact portal-section-heading">
-          <span class="step-pill">Evaluaciones</span>
-          <h2>Tu ruta psicologica</h2>
-          <p>Inicia o continua cada instrumento desde aqui. El avance se guarda en el sistema.</p>
-        </div>
-        <div id="assignmentList" class="instrument-grid"></div>
-      </section>
-    </main>
-    <script src="/portal.js"></script>
+    <script src="/vendor/lucide.js"></script>
+    <script type="module" src="/js/main.js?v=2.0.0"></script>
   </body>
 </html>

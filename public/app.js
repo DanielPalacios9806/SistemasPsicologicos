@@ -1,18 +1,45 @@
 const RESPONSE_UI = {
-  1: { emoji: "01", title: "Nivel 1" },
-  2: { emoji: "02", title: "Nivel 2" },
-  3: { emoji: "03", title: "Nivel 3" },
-  4: { emoji: "04", title: "Nivel 4" },
-  5: { emoji: "05", title: "Nivel 5" },
+  1: { icon: "chevrons-down" },
+  2: { icon: "chevron-down" },
+  3: { icon: "minus" },
+  4: { icon: "chevron-up" },
+  5: { icon: "chevrons-up" },
 };
 
-const MOTIVATION_BY_MODULE = {
-  ema: "Responde desde tu experiencia real, sin intentar adivinar el perfil final.",
-  intrapersonal: "Observa como te sientes, te nombras y te diriges internamente.",
-  interpersonal: "Piensa en como te vinculas, escuchas y sostienes a otras personas.",
-  adaptabilidad: "Aqui importa como resuelves, ajustas y verificas la realidad que enfrentas.",
-  manejo_estres: "Respira un instante y responde pensando en momentos reales de tension.",
-  estado_animo: "Mira este tramo como una lectura de energia, esperanza y disfrute cotidiano.",
+const INSTRUMENT_UI = {
+  ema: {
+    title: "Asertividad",
+    eyebrow: "Escala EMA",
+    icon: "messages-square",
+    intro: "Explora como expresas ideas, necesidades y limites en situaciones cotidianas.",
+  },
+  baron: {
+    title: "Inteligencia emocional",
+    eyebrow: "Bar-On ICE",
+    icon: "heart-pulse",
+    intro: "Observa tus recursos emocionales, tu adaptabilidad y la forma en que manejas la presion.",
+  },
+  disc: {
+    title: "Estilo conductual",
+    eyebrow: "Perfil DISC",
+    icon: "compass",
+    intro: "Identifica tendencias de comportamiento mediante elecciones simples entre palabras.",
+  },
+};
+
+const DIMENSION_ICONS = {
+  D: "zap",
+  I: "message-circle",
+  S: "hand-heart",
+  C: "scan-line",
+  intrapersonal: "user-round",
+  interpersonal: "users-round",
+  adaptabilidad: "shuffle",
+  manejo_estres: "wind",
+  estado_animo: "sun",
+  asertividad_directa: "message-square-more",
+  no_asertividad: "message-square-off",
+  asertividad_indirecta: "messages-square",
 };
 
 const state = {
@@ -50,6 +77,7 @@ const instrumentList = document.getElementById("instrumentList");
 const moduleEyebrow = document.getElementById("moduleEyebrow");
 const moduleHeading = document.getElementById("moduleHeading");
 const moduleDescription = document.getElementById("moduleDescription");
+const instrumentHeroIcon = document.getElementById("instrumentHeroIcon");
 const moduleSummaryCard = document.getElementById("moduleSummaryCard");
 const moduleList = document.getElementById("moduleList");
 const moduleActionButton = document.getElementById("moduleActionButton");
@@ -57,7 +85,6 @@ const questionHeading = document.getElementById("questionHeading");
 const questionHint = document.getElementById("questionHint");
 const questionText = document.getElementById("questionText");
 const questionMicrocopy = document.getElementById("questionMicrocopy");
-const questionMotivation = document.getElementById("questionMotivation");
 const progressLabel = document.getElementById("progressLabel");
 const progressMessage = document.getElementById("progressMessage");
 const progressFill = document.getElementById("progressFill");
@@ -96,6 +123,35 @@ const CATEGORY_LABELS = {
   pending: "Pendiente",
 };
 
+function getInstrumentPresentation(code) {
+  return INSTRUMENT_UI[code] || {
+    title: "Evaluacion psicologica",
+    eyebrow: "Instrumento",
+    icon: "clipboard-heart",
+    intro: "Responde con calma y elige la opcion que mejor represente tu experiencia.",
+  };
+}
+
+function renderIcons(root = document) {
+  window.renderParticipantIcons?.(root);
+}
+
+function setButtonContent(button, label, icon = "arrow-right", iconFirst = false) {
+  button.innerHTML = iconFirst
+    ? `<i data-lucide="${icon}"></i><span>${label}</span>`
+    : `<span>${label}</span><i data-lucide="${icon}"></i>`;
+  renderIcons(button);
+}
+
+function getEstimatedMinutes(itemCount) {
+  return Math.max(5, Math.ceil(Number(itemCount || 0) * 0.18));
+}
+
+function getDimensionIcon(key, index = 0) {
+  const fallback = ["circle-user-round", "heart-handshake", "route", "shield", "sun"][index % 5];
+  return DIMENSION_ICONS[key] || fallback;
+}
+
 function showAlert(message, isError = true) {
   alertBox.textContent = message;
   alertBox.classList.remove("hidden");
@@ -117,6 +173,7 @@ function switchScreen(target) {
   );
   target.classList.remove("hidden");
   publicFooter.classList.toggle("hidden", target !== welcomeScreen);
+  renderIcons(target);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -151,9 +208,10 @@ function updateAssessmentContext() {
   assessmentContextBar?.classList.toggle("hidden", !application);
   if (!application) return;
   const participant = application.participant || state.currentUser?.person || {};
-  contextInstrument.textContent = application.instrumentName || application.instrumentCode?.toUpperCase() || "Evaluacion";
+  const presentation = getInstrumentPresentation(application.instrumentCode);
+  contextInstrument.textContent = presentation.title;
   contextParticipant.textContent = [participant.rankCode, participant.fullName].filter(Boolean).join(". ") || "Participante autenticado";
-  contextProgress.innerHTML = `<span aria-hidden="true"></span>${application.percentageComplete || 0}%`;
+  contextProgress.textContent = `${application.percentageComplete || 0}%`;
 }
 
 async function loadSession() {
@@ -211,14 +269,16 @@ function renderInstrumentCards() {
   }
   if (continueToInstrumentButton) continueToInstrumentButton.disabled = false;
   state.instruments.forEach((instrument) => {
+    const presentation = getInstrumentPresentation(instrument.code);
     const card = document.createElement("button");
     card.type = "button";
     card.className = `instrument-card${state.selectedInstrumentCode === instrument.code ? " selected" : ""}`;
     card.innerHTML = `
-      <span class="question-category">${instrument.version}</span>
-      <h3>${instrument.name}</h3>
-      <p>${instrument.description}</p>
-      <small>${instrument.moduleCount} modulo(s) / ${instrument.itemCount} reactivos</small>
+      <span class="assignment-icon" aria-hidden="true"><i data-lucide="${presentation.icon}"></i></span>
+      <span class="question-category">${presentation.eyebrow}</span>
+      <h3>${presentation.title}</h3>
+      <p>${presentation.intro}</p>
+      <small>${instrument.itemCount} preguntas · ${getEstimatedMinutes(instrument.itemCount)} min aprox.</small>
     `;
     card.addEventListener("click", () => {
       state.selectedInstrumentCode = instrument.code;
@@ -226,6 +286,7 @@ function renderInstrumentCards() {
     });
     instrumentList.appendChild(card);
   });
+  renderIcons(instrumentList);
 }
 
 function getCurrentInstrument() {
@@ -313,30 +374,29 @@ function getModuleProgressMap() {
 function renderModuleSummary() {
   const application = state.currentApplication;
   const instrument = getCurrentInstrument();
-  const moduleProgress = getModuleProgressMap();
-  const completedCount = moduleProgress.filter((module) => module.isComplete).length;
+  const presentation = getInstrumentPresentation(instrument.code);
+  const percentage = Number(application.percentageComplete || 0);
 
-  moduleEyebrow.textContent = instrument.code === "ema" ? "EMA" : instrument.code === "disc" ? "DISC" : "BarOn ICE";
-  moduleHeading.textContent = instrument.code === "ema" ? "Instrucciones EMA" : instrument.code === "disc" ? "Instrucciones DISC" : "Progreso por modulos";
-  moduleDescription.textContent =
-    instrument.code === "ema"
-      ? "EMA conserva el flujo de una pregunta por pantalla. La lectura tecnica queda para admin y la vista publica prioriza una devolucion orientativa."
-      : instrument.code === "disc"
-        ? "DISC se responde por grupos. En cada uno elige una palabra en MAS y una palabra en MENOS."
-      : "BarOn se divide en 5 niveles para reducir fatiga, guardar avance y entregar resultados parciales por componente.";
+  moduleEyebrow.textContent = presentation.eyebrow;
+  moduleHeading.textContent = presentation.title;
+  moduleDescription.textContent = presentation.intro;
+  instrumentHeroIcon?.setAttribute("data-lucide", presentation.icon);
 
   moduleSummaryCard.innerHTML = `
-    <article class="report-score-card">
-      <p class="report-label">Instrumento</p>
-      <strong>${instrument.name}</strong>
-      <p class="report-summary">${instrument.description}</p>
-    </article>
-    <article class="report-highlight-card">
-      <p class="report-label">Avance actual</p>
-      <strong>${application.percentageComplete || 0}%</strong>
-      <p class="report-summary">${completedCount} de ${instrument.modules.length} modulo(s) listos.</p>
-    </article>
+    <div class="assessment-fact">
+      <i data-lucide="list-checks"></i>
+      <div><span>Recorrido</span><strong>${instrument.items.length} preguntas</strong></div>
+    </div>
+    <div class="assessment-fact">
+      <i data-lucide="clock-3"></i>
+      <div><span>Tiempo estimado</span><strong>${getEstimatedMinutes(instrument.items.length)} minutos</strong></div>
+    </div>
+    <div class="assessment-fact">
+      <i data-lucide="${percentage ? "history" : "play"}"></i>
+      <div><span>Estado</span><strong>${percentage ? `${percentage}% completado` : "Listo para comenzar"}</strong></div>
+    </div>
   `;
+  renderIcons(moduleScreen);
 }
 
 function renderModuleCards() {
@@ -350,6 +410,7 @@ function renderModuleCards() {
     state.activeModuleKey = nextIncomplete?.key || instrument.modules[0]?.key || "";
   }
   moduleList.innerHTML = "";
+  moduleList.classList.toggle("hidden", instrument.modules.length <= 1);
 
   instrument.modules.forEach((module) => {
     const progress = moduleProgress.get(module.key) || {};
@@ -357,9 +418,11 @@ function renderModuleCards() {
     card.type = "button";
     card.className = `module-card${state.activeModuleKey === module.key ? " selected" : ""}`;
     card.innerHTML = `
-      <span class="question-category">Modulo ${module.order}</span>
-      <h3>${module.label}</h3>
-      <p>${module.intro || module.summary}</p>
+      <span class="module-state-icon"><i data-lucide="${progress.isComplete ? "circle-check-big" : "circle"}"></i></span>
+      <div>
+        <h3>${module.label}</h3>
+        <p>${progress.answeredCount || 0} de ${progress.expectedCount || module.itemIds.length} respuestas</p>
+      </div>
       <small>${progress.completionRatio || 0}% completado</small>
     `;
     card.addEventListener("click", () => {
@@ -369,12 +432,15 @@ function renderModuleCards() {
     moduleList.appendChild(card);
   });
 
-  moduleActionButton.textContent =
+  const percentage = Number(state.currentApplication.percentageComplete || 0);
+  const actionLabel =
     state.currentApplication.status === "completed" || state.currentApplication.status === "invalid"
       ? "Ver resultado"
-      : instrument.code === "ema"
-        ? "Comenzar EMA"
-        : "Entrar al modulo seleccionado";
+      : percentage
+        ? "Continuar evaluacion"
+        : "Comenzar evaluacion";
+  setButtonContent(moduleActionButton, actionLabel);
+  renderIcons(moduleList);
 }
 
 function renderModuleScreen() {
@@ -404,33 +470,31 @@ function renderQuestion() {
   const instrument = getCurrentInstrument();
   const itemId = state.activeQuestionIds[state.activeQuestionIndex];
   const question = getQuestionById(itemId);
-  const currentValue = getCurrentAnswerMap()[itemId];
-  const percent = Math.round(((state.activeQuestionIndex + 1) / state.activeQuestionIds.length) * 100);
+  const answerMap = getCurrentAnswerMap();
+  const currentValue = answerMap[itemId];
   const module = instrument.modules.find((candidate) => candidate.key === state.activeModuleKey) || {};
+  const questionNumber = Math.max(1, (module.itemIds || []).indexOf(itemId) + 1);
+  const answeredCount = (module.itemIds || []).filter((moduleItemId) => answerMap[moduleItemId] != null).length;
+  const percent = module.itemIds?.length ? Math.round((answeredCount / module.itemIds.length) * 100) : 0;
 
-  questionHeading.textContent = `${module.label || "Pregunta"} · item ${state.activeQuestionIndex + 1}`;
+  questionHeading.textContent = `Pregunta ${questionNumber} de ${module.itemIds?.length || state.activeQuestionIds.length}`;
   questionText.textContent = question.text;
   questionHint.textContent =
     instrument.code === "disc"
-      ? "Selecciona una palabra en MAS y una palabra en MENOS. No pueden ser la misma."
-      : instrument.code === "ema"
-      ? "Marca el nivel de acuerdo que mejor describa tu experiencia habitual, sin pensar en categorias ni resultados."
-      : "Responde este reactivo pensando en situaciones reales y recientes, no en lo que seria ideal responder.";
-  questionMicrocopy.textContent = instrument.code === "disc"
-    ? "Avanza grupo por grupo; tu progreso se guarda al pasar al siguiente."
-    : question.reverse
-    ? "Este reactivo se lee tal como esta escrito. Responde segun tu experiencia habitual."
-    : "No hay respuestas correctas o incorrectas. Tu respuesta solo describe una tendencia actual.";
-  questionMotivation.textContent =
-    MOTIVATION_BY_MODULE[state.activeModuleKey] || MOTIVATION_BY_MODULE[instrument.code] || MOTIVATION_BY_MODULE.ema;
-  progressLabel.textContent = `${module.label || "Modulo"} · item ${state.activeQuestionIndex + 1} de ${state.activeQuestionIds.length}`;
-  progressMessage.textContent =
-    instrument.code === "baron"
-      ? "El avance se guarda automaticamente y podras continuar despues."
-      : "Una pregunta por hoja, sin prisa y sin juicio.";
+      ? "Elige una palabra en MAS y otra distinta en MENOS."
+      : "Elige la opcion que mejor describa tu experiencia habitual.";
+  questionMicrocopy.textContent =
+    instrument.code === "disc"
+      ? "MAS representa lo que mas se parece a ti; MENOS, lo que menos se parece."
+      : "No hay respuestas correctas o incorrectas. Responde con naturalidad.";
+  progressLabel.textContent = `${percent}% completado`;
+  progressMessage.textContent = "Se guarda al continuar";
   progressFill.style.width = `${percent}%`;
   backButton.disabled = state.activeQuestionIndex === 0;
-  nextButton.textContent = state.activeQuestionIndex === state.activeQuestionIds.length - 1 ? "Cerrar modulo" : "Siguiente";
+  setButtonContent(
+    nextButton,
+    state.activeQuestionIndex === state.activeQuestionIds.length - 1 ? "Finalizar seccion" : "Siguiente"
+  );
 
   ratingGroup.innerHTML = "";
   if (instrument.code === "disc") {
@@ -442,8 +506,8 @@ function renderQuestion() {
       row.className = "disc-choice-row";
       row.innerHTML = `
         <strong>${choice.label}</strong>
-        <button class="secondary-button${current.most === value ? " selected" : ""}" type="button">MAS</button>
-        <button class="secondary-button${current.least === value ? " selected" : ""}" type="button">MENOS</button>
+        <button class="secondary-button${current.most === value ? " selected" : ""}" type="button"><i data-lucide="arrow-up"></i><span>MAS</span></button>
+        <button class="secondary-button${current.least === value ? " selected" : ""}" type="button"><i data-lucide="arrow-down"></i><span>MENOS</span></button>
       `;
       const [mostButton, leastButton] = row.querySelectorAll("button");
       mostButton.addEventListener("click", () => {
@@ -460,6 +524,7 @@ function renderQuestion() {
       });
       ratingGroup.appendChild(row);
     });
+    renderIcons(ratingGroup);
     return;
   }
 
@@ -469,9 +534,9 @@ function renderQuestion() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `rating-button${currentValue === option.value ? " selected" : ""}`;
+    button.setAttribute("aria-pressed", currentValue === option.value ? "true" : "false");
     button.innerHTML = `
-      <span class="rating-emoji" aria-hidden="true">${ui.emoji}</span>
-      <span class="rating-value">${option.value}</span>
+      <span class="rating-emoji" aria-hidden="true"><i data-lucide="${ui.icon}"></i></span>
       <span class="rating-title">${option.shortLabel || option.label}</span>
     `;
     button.addEventListener("click", () => {
@@ -480,6 +545,7 @@ function renderQuestion() {
     });
     ratingGroup.appendChild(button);
   });
+  renderIcons(ratingGroup);
 }
 
 async function persistCurrentAnswer() {
@@ -522,21 +588,22 @@ function normalizeSummaryDate(isoDate) {
 function renderParticipantSummary(participant, date) {
   participantSummary.innerHTML = "";
   const fields = [
-    ["Cedula", participant.idNumber],
-    ["Nombre", participant.fullName],
-    ["Grado", [participant.rankCode, participant.rankName].filter(Boolean).join(" - ")],
-    ["Unidad", participant.unit || participant.unitName || participant.unitCode || participant.career],
-    ["Promocion", participant.promotion],
-    ["Genero", participant.gender],
-    ["Fecha", normalizeSummaryDate(date)],
+    ["Cedula", participant.idNumber, "badge-user"],
+    ["Nombre", participant.fullName, "user-round"],
+    ["Grado", [participant.rankCode, participant.rankName].filter(Boolean).join(" - "), "badge-check"],
+    ["Unidad", participant.unit || participant.unitName || participant.unitCode || participant.career, "building-2"],
+    ["Promocion", participant.promotion, "calendar-days"],
+    ["Genero", participant.gender, "users-round"],
+    ["Fecha", normalizeSummaryDate(date), "calendar-check"],
   ];
 
-  fields.forEach(([label, value]) => {
+  fields.forEach(([label, value, icon]) => {
     const card = document.createElement("article");
     card.className = "summary-item";
-    card.innerHTML = `<span>${label}</span><strong>${value || "-"}</strong>`;
+    card.innerHTML = `<span><i data-lucide="${icon}"></i>${label}</span><strong>${value || "-"}</strong>`;
     participantSummary.appendChild(card);
   });
+  renderIcons(participantSummary);
 }
 
 function formatCategory(category) {
@@ -554,17 +621,20 @@ function formatRawScore(result) {
 
 function renderDimensionCardsFromBaron(scoring) {
   dimensionGrid.innerHTML = "";
-  (scoring.components || []).forEach((component) => {
+  (scoring.components || []).forEach((component, index) => {
     const card = document.createElement("article");
     card.className = "dimension-card";
     card.innerHTML = `
-      <p class="question-category">${component.label}</p>
-      <h3>CE ${formatCeScore(component.ceScore)}</h3>
+      <div class="dimension-card-head">
+        <span class="dimension-icon"><i data-lucide="${getDimensionIcon(component.key, index)}"></i></span>
+        <div><p class="question-category">Area evaluada</p><h3>${component.label}</h3></div>
+      </div>
       <p>${component.description}</p>
-      <p>Categoria: ${formatCategory(component.category)}. ${formatRawScore(component)}</p>
+      <span class="dimension-tag">${formatCategory(component.category)} · CE ${formatCeScore(component.ceScore)}</span>
     `;
     dimensionGrid.appendChild(card);
   });
+  renderIcons(dimensionGrid);
 }
 
 function renderBaronFullDiagnostics(scoring) {
@@ -596,63 +666,31 @@ function renderBaronFullDiagnostics(scoring) {
 }
 
 function renderValidity(scoring) {
-  validitySection.classList.toggle("hidden", !scoring.validity);
-  if (!scoring.validity) {
+  const warnings = scoring.validity?.warnings || [];
+  const shouldShow = Boolean(scoring.validity && (!scoring.validity.valid || warnings.length));
+  validitySection.classList.toggle("hidden", !shouldShow);
+  if (!shouldShow) {
     validityGrid.innerHTML = "";
     return;
   }
 
-  validityGrid.innerHTML = "";
-  const cards = [
-    {
-      label: "Impresion positiva",
-      value: scoring.validity.impressionPositive?.ceScore ?? "Pendiente",
-      note: "Escala de validez orientada a deseabilidad social.",
-    },
-    {
-      label: "Impresion negativa",
-      value: scoring.validity.impressionNegative?.ceScore ?? "Pendiente",
-      note: "Escala de validez orientada a autodescripcion extremadamente negativa.",
-    },
-    {
-      label: "Omisiones",
-      value: scoring.validity.omissionCount ?? 0,
-      note: "Se recomienda revision cuando hay 8 o mas omisiones.",
-    },
-    {
-      label: "Inconsistencia",
-      value: scoring.validity.inconsistency?.score ?? "Pendiente",
-      note: "Indice basado en 10 pares de reactivos similares. Mayor a 12 requiere revision.",
-    },
-  ];
-
-  cards.forEach((entry) => {
-    const card = document.createElement("article");
-    card.className = "dimension-card";
-    card.innerHTML = `
-      <p class="question-category">${entry.label}</p>
-      <h3>${entry.value}</h3>
-      <p>${entry.note}</p>
-    `;
-    validityGrid.appendChild(card);
-  });
-
-  if (scoring.validity.warnings?.length) {
-    const warningCard = document.createElement("article");
-    warningCard.className = "dimension-card";
-    warningCard.innerHTML = `
-      <p class="question-category">Revision recomendada</p>
-      <h3>${scoring.validity.valid ? "Sin bloqueo" : "Revisar protocolo"}</h3>
+  validityGrid.innerHTML = `
+    <article class="dimension-card">
+      <div class="dimension-card-head">
+        <span class="dimension-icon"><i data-lucide="shield-alert"></i></span>
+        <div><p class="question-category">Estado</p><h3>${scoring.validity.valid ? "Revisar observaciones" : "Revision profesional necesaria"}</h3></div>
+      </div>
+      <p>El resultado debe interpretarse considerando las observaciones de validez de esta aplicacion.</p>
       <ul class="clean-list"></ul>
-    `;
-    const list = warningCard.querySelector("ul");
-    scoring.validity.warnings.forEach((warning) => {
-      const item = document.createElement("li");
-      item.textContent = warning;
-      list.appendChild(item);
-    });
-    validityGrid.appendChild(warningCard);
-  }
+    </article>
+  `;
+  const list = validityGrid.querySelector("ul");
+  (warnings.length ? warnings : ["Revisar el protocolo antes de usar el perfil para tomar decisiones."]).forEach((warning) => {
+    const item = document.createElement("li");
+    item.textContent = warning;
+    list.appendChild(item);
+  });
+  renderIcons(validityGrid);
 }
 
 function renderMethodology(scoring) {
@@ -700,35 +738,34 @@ function renderResult(application) {
   const scoring = application.scoring;
   const isBaron = application.instrumentCode === "baron";
   const isBaronInvalid = isBaron && scoring.validity && !scoring.validity.valid;
+  const presentation = getInstrumentPresentation(application.instrumentCode);
 
-  resultHeading.textContent = isBaron
-    ? isBaronInvalid
-      ? "Protocolo BarOn ICE requiere revision"
-      : "Perfil interpretativo BarOn ICE"
-    : "Tu lectura orientativa";
-  resultSubheading.textContent =
-    isBaron
-      ? isBaronInvalid
-        ? "La aplicacion esta completa, pero los criterios de validez impiden leerla como perfil psicometrico confiable."
-        : "Resultado integral del instrumento, con lectura academica orientativa y no clinica."
-      : "Este resultado resume patrones de comunicacion observados en tus respuestas. No representa una etiqueta fija ni un diagnostico.";
+  resultHeading.textContent = isBaronInvalid
+    ? "Resultado completado con observaciones"
+    : `Tu perfil de ${presentation.title.toLowerCase()} esta listo`;
+  resultSubheading.textContent = isBaronInvalid
+    ? "La evaluacion finalizo, pero necesita revision profesional antes de interpretar el perfil."
+    : "Esta lectura resume tendencias actuales y sirve como orientacion; no representa una etiqueta fija ni un diagnostico.";
 
   globalProfile.textContent = isBaronInvalid
-    ? "Protocolo no interpretable sin revision"
+    ? "Requiere revision profesional"
     : scoring.profile || application.finalResult?.profileGlobal || "Lectura disponible";
   globalSummary.textContent = isBaronInvalid
-    ? "Las respuestas activaron uno o mas controles de validez. Los puntajes pueden revisarse como datos, pero no deben presentarse como diagnostico del evaluado."
+    ? "Algunos patrones de respuesta requieren una mirada profesional antes de presentar conclusiones."
     : scoring.summary || application.finalResult?.interpretationJson?.summary || "";
 
   if (isBaron) {
-    overallAverage.textContent = scoring.total?.ceScore ? `CE total: ${scoring.total.ceScore}` : "Resultado parcial";
+    overallAverage.textContent = isBaronInvalid
+      ? "Lectura condicionada"
+      : `Nivel general: ${formatCategory(scoring.total?.category)}`;
     overallPercentage.textContent = scoring.validity?.valid
-      ? "La aplicacion cumple los criterios de validez implementados en esta version."
-      : "La lectura queda bloqueada como perfil interpretable y requiere revision profesional.";
+      ? "Las respuestas permiten una lectura orientativa del perfil emocional."
+      : "Consulta las observaciones de validez antes de usar este resultado.";
     renderDimensionCardsFromBaron(scoring);
     renderBaronFullDiagnostics(scoring);
     renderValidity(scoring);
-    renderMethodology(scoring);
+    methodologySection.classList.add("hidden");
+    methodologyGrid.innerHTML = "";
   } else {
     baronDetailSection.classList.add("hidden");
     baronDetailGrid.innerHTML = "";
@@ -743,13 +780,16 @@ function renderResult(application) {
         ? `Conviene observar con mas calma: ${scoring.weakestDimension.label}.`
         : "Conviene revisar tus respuestas con una mirada reflexiva y sin juicio.";
     dimensionGrid.innerHTML = "";
-    (scoring.dimensions || []).forEach((dimension) => {
+    (scoring.dimensions || []).forEach((dimension, index) => {
       const card = document.createElement("article");
       card.className = "dimension-card";
       card.innerHTML = `
-        <p class="question-category">${dimension.label}</p>
-        <h3>${dimension.interpretiveLevel || dimension.band}</h3>
+        <div class="dimension-card-head">
+          <span class="dimension-icon"><i data-lucide="${getDimensionIcon(dimension.key, index)}"></i></span>
+          <div><p class="question-category">Area evaluada</p><h3>${dimension.label}</h3></div>
+        </div>
         <p>${dimension.interpretiveNote || ""}</p>
+        <span class="dimension-tag">${dimension.interpretiveLevel || dimension.band || "Lectura disponible"}</span>
       `;
       dimensionGrid.appendChild(card);
     });
@@ -772,6 +812,7 @@ function renderResult(application) {
   );
   switchScreen(resultScreen);
   updateAssessmentContext();
+  renderIcons(resultScreen);
 }
 
 participantForm.addEventListener("submit", (event) => {

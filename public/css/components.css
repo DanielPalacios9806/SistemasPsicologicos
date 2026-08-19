@@ -1,0 +1,298 @@
+/**
+ * MENTE DE ACERO V2 — UI COMPONENTS
+ */
+
+/* ==========================================================================
+   CARDS & CONTAINERS
+   ========================================================================== */
+
+.card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-default), transform var(--transition-default);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.card-header h2,
+.card-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.card-header .card-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.card-header-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brand-teal);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-header-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-hover));
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(217, 155, 38, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--brand-gold-hover), #9E6B0F);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(217, 155, 38, 0.4);
+}
+
+.btn-teal {
+  background-color: var(--brand-teal);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(11, 113, 108, 0.25);
+}
+
+.btn-teal:hover {
+  background-color: var(--brand-teal-dark);
+  transform: translateY(-1px);
+}
+
+.btn-navy {
+  background-color: var(--brand-navy);
+  color: #FFFFFF;
+}
+
+.btn-navy:hover {
+  background-color: var(--brand-navy-surface);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--surface-card-hover);
+  color: var(--text-primary);
+  border-color: var(--surface-divider);
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   STATUS BADGES & TAGS
+   ========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+}
+
+.badge-success {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-border);
+}
+.badge-success .badge-dot { background-color: var(--success-solid); }
+
+.badge-warning {
+  background-color: var(--warning-bg);
+  color: var(--warning-text);
+  border: 1px solid var(--warning-border);
+}
+.badge-warning .badge-dot { background-color: var(--warning-solid); }
+
+.badge-info {
+  background-color: var(--info-bg);
+  color: var(--info-text);
+  border: 1px solid var(--info-border);
+}
+.badge-info .badge-dot { background-color: var(--info-solid); }
+
+.badge-subtle {
+  background-color: var(--surface-card-soft);
+  color: var(--text-muted);
+  border: 1px solid var(--surface-border);
+}
+
+/* ==========================================================================
+   PROGRESS BARS
+   ========================================================================== */
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-border-subtle);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--brand-teal), #2563EB);
+  transition: width var(--transition-smooth);
+}
+
+.progress-fill.gold {
+  background: linear-gradient(90deg, var(--brand-gold), #F59E0B);
+}
+
+/* ==========================================================================
+   BANNERS (TRUST, CONFIDENTIALITY, CRISIS)
+   ========================================================================== */
+
+.trust-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.9), rgba(255, 255, 255, 0.95));
+  border: 1px solid var(--info-border);
+}
+
+.trust-banner .banner-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--info-bg);
+  color: var(--info-solid);
+  flex-shrink: 0;
+}
+
+.trust-banner-content h4 {
+  font-size: 0.92rem;
+  color: var(--brand-navy);
+  margin-bottom: 2px;
+}
+
+.trust-banner-content p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* Emergency Helpline Support Banner */
+.support-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 24px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #FFFFFF, #F8FAFC);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-card);
+  margin-top: 24px;
+}
+
+.support-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.support-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-pill);
+  background-color: rgba(11, 113, 108, 0.1);
+  color: var(--brand-teal);
+  flex-shrink: 0;
+}
+
+.support-left h4 {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.support-left p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.support-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.helpline-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-card-soft);
+  border: 1px solid var(--surface-border);
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.helpline-pill i {
+  color: var(--brand-teal);
+}

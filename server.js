@@ -37,6 +37,9 @@ const GOOGLE_CLIENT_ID = config.googleClientId;
 const ADMIN_USERNAME = config.adminUsername;
 const ADMIN_PASSWORD = config.adminPassword;
 const PUBLIC_DIR = path.join(__dirname, "public");
+const VENDOR_FILES = {
+  "/vendor/lucide.js": path.join(__dirname, "node_modules", "lucide", "dist", "umd", "lucide.min.js"),
+};
 const APP_VERSION = process.env.RENDER_GIT_COMMIT || "local";
 const adminTokens = new Set();
 const loginAttempts = new Map();
@@ -893,6 +896,108 @@ const server = http.createServer(async (req, res) => {
       console.error("No se pudo generar el archivo Excel:", error);
       sendJson(res, 500, { error: error.message || "No se pudo generar el archivo Excel." });
     }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/wellness/summary" && req.method === "GET") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
+    sendJson(res, 200, {
+      wellnessIndex: 76,
+      category: "Adecuado",
+      deltaWeek: 8,
+      habitRatio: "3 de 5 completados",
+      weeklyTrend: [
+        { day: "L", score: 68 },
+        { day: "M", score: 72 },
+        { day: "M", score: 70 },
+        { day: "J", score: 74 },
+        { day: "V", score: 76 },
+        { day: "S", score: 78 },
+        { day: "D", score: 80 }
+      ]
+    });
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/habits/today" && req.method === "GET") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
+    sendJson(res, 200, [
+      { key: "sleep", label: "Dormir 7–8 h", target: "6.5 h prom.", completed: true, icon: "bed" },
+      { key: "water", label: "Beber agua", target: "2.0 L", completed: true, icon: "droplet" },
+      { key: "movement", label: "Moverte", target: "3/5 días", completed: false, icon: "footprints" },
+      { key: "breathing", label: "Respirar", target: "5 min", completed: true, icon: "flower-2" },
+      { key: "journal", label: "Diario", target: "5 min", completed: false, icon: "book-open" }
+    ]);
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/habits/toggle" && req.method === "POST") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
+    try {
+      const body = await readBody(req);
+      sendJson(res, 200, { ok: true, habitKey: body.habitKey, completed: Boolean(body.completed) });
+    } catch {
+      sendJson(res, 400, { error: "No se pudo actualizar el hábito." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/mood/history" && req.method === "GET") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
+    sendJson(res, 200, [
+      { date: "4 may", valence: 2 },
+      { date: "6 may", valence: 2 },
+      { date: "8 may", valence: 1 },
+      { date: "10 may", valence: 2 },
+      { date: "12 may", valence: 3 },
+      { date: "14 may", valence: 2 },
+      { date: "16 may", valence: 3 },
+      { date: "18 may", valence: 3 }
+    ]);
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/mood/log" && req.method === "POST") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
+    try {
+      const body = await readBody(req);
+      sendJson(res, 200, { ok: true, valenceLevel: Number(body.valenceLevel) || 2 });
+    } catch {
+      sendJson(res, 400, { error: "No se pudo registrar el estado de ánimo." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/tools/session" && req.method === "POST") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
+    try {
+      const body = await readBody(req);
+      sendJson(res, 200, { ok: true, toolType: body.toolType, duration: body.durationSeconds });
+    } catch {
+      sendJson(res, 400, { error: "No se pudo registrar la sesión." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/support-resources" && req.method === "GET") {
+    sendJson(res, 200, {
+      organizationName: "Línea de Orientación Psicológica",
+      phoneNumber: "01 800 123 4567",
+      availableHours: "24/7",
+      countryCode: "CO",
+      active: true
+    });
+    return;
+  }
+
+  if (VENDOR_FILES[requestUrl.pathname]) {
+    sendFile(res, VENDOR_FILES[requestUrl.pathname]);
     return;
   }
 

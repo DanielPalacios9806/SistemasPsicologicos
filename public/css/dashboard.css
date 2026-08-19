@@ -1,0 +1,442 @@
+/**
+ * MENTE DE ACERO V2 — DASHBOARD & HOME STYLES
+ */
+
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ==========================================================================
+   WELCOME ROW & HEADER
+   ========================================================================== */
+
+.welcome-row {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: center;
+}
+
+.welcome-text h1 {
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.welcome-text p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   ROW 1: CURRENT EVALUATION & RECENT RESULTS
+   ========================================================================== */
+
+.dashboard-row-1 {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+}
+
+/* Current In-Progress Evaluation Card */
+.current-eval-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+  border: 1px solid var(--surface-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.current-eval-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--brand-teal), #2563EB);
+}
+
+.current-eval-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(11, 113, 108, 0.12), rgba(37, 99, 235, 0.12));
+  color: var(--brand-teal);
+  flex-shrink: 0;
+  border: 1px solid rgba(11, 113, 108, 0.2);
+}
+
+.current-eval-icon i {
+  width: 36px;
+  height: 36px;
+}
+
+.current-eval-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 10px;
+}
+
+.current-eval-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.current-eval-body h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.current-eval-body p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.current-eval-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.time-estimate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Recent Results List */
+.recent-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recent-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background-color: var(--surface-card-soft);
+  border: 1px solid var(--surface-border-subtle);
+  transition: all var(--transition-fast);
+}
+
+.recent-result-item:hover {
+  background-color: #FFFFFF;
+  border-color: var(--surface-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.result-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.result-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(37, 99, 235, 0.08);
+  color: #2563EB;
+}
+
+.result-meta h4 {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.result-meta small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.result-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ==========================================================================
+   ROW 2: PROFILE GAUGE, WELLNESS HABITS, WEEKLY PROGRESS
+   ========================================================================== */
+
+.dashboard-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 24px;
+}
+
+/* Psychological Profile Gauge Card */
+.profile-gauge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.gauge-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 12px 0;
+  display: grid;
+  place-items: center;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.gauge-track {
+  fill: none;
+  stroke: var(--surface-border-subtle);
+  stroke-width: 12;
+}
+
+.gauge-fill {
+  fill: none;
+  stroke: url(#gaugeGradient);
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.gauge-content {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-score {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.gauge-max {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.profile-gauge-desc {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+/* Habits Tracker Grid */
+.habits-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.habit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background-color: var(--surface-card-soft);
+  border: 1px solid var(--surface-border-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.habit-item:hover {
+  background-color: #FFFFFF;
+  border-color: var(--surface-border);
+}
+
+.habit-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.habit-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(11, 113, 108, 0.1);
+  color: var(--brand-teal);
+}
+
+.habit-name {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.habit-target {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.habit-check {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--surface-border);
+  display: grid;
+  place-items: center;
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  transition: all var(--transition-fast);
+}
+
+.habit-item.completed .habit-check {
+  background-color: var(--success-solid);
+  border-color: var(--success-solid);
+}
+
+/* Weekly Progress Sparkline Card */
+.weekly-progress-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sparkline-wrapper {
+  height: 130px;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.sparkline-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sparkline-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.delta-badge {
+  color: var(--success-solid);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   ROW 3: MOOD TRACKER SPLINE & PERSONALIZED RECOMMENDATIONS
+   ========================================================================== */
+
+.dashboard-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* 14-Day Mood Spline */
+.mood-spline-wrapper {
+  height: 180px;
+  width: 100%;
+  margin: 12px 0;
+}
+
+.mood-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Recommendations List */
+.recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recommendation-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  background-color: var(--surface-card-soft);
+  border: 1px solid var(--surface-border-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.recommendation-card-item:hover {
+  background-color: #FFFFFF;
+  border-color: var(--brand-teal);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(2px);
+}
+
+.rec-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rec-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: rgba(11, 113, 108, 0.1);
+  color: var(--brand-teal);
+  flex-shrink: 0;
+}
+
+.rec-body h4 {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.rec-body p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.rec-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+}

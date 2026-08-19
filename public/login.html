@@ -5,72 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acceso | Sistemas Psicologicos</title>
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/participant.css?v=20260819-1" />
   </head>
-  <body class="public-body">
+  <body class="public-body participant-app login-page">
     <div id="alert" class="alert hidden" aria-live="polite"></div>
     <main class="public-shell">
-      <header class="brand-nav">
+      <header class="brand-nav app-topbar">
         <a class="brand-lockup" href="/login.html">
+          <span class="brand-mark" aria-hidden="true"><i data-lucide="brain-circuit"></i></span>
           <span>
             <strong>Sistemas Psicologicos</strong>
-            <small>Evaluacion segura</small>
+            <small>Bienestar y evaluacion</small>
           </span>
         </a>
-        <span class="brand-status">Portal militar</span>
+        <span class="brand-status"><i data-lucide="shield-check"></i> Acceso protegido</span>
       </header>
 
-      <section class="glass-card screen-card login-card">
+      <section class="screen-card login-card">
         <div class="login-hero">
           <div class="section-heading">
-            <span class="eyebrow">Acceso individual</span>
-            <h1>Ingresa con tu cedula.</h1>
-            <p>Tu sesion abre un portal personal con las evaluaciones asignadas segun tu registro militar.</p>
+            <span class="eyebrow">Portal personal</span>
+            <h1>Tu espacio de evaluacion.</h1>
+            <p>Consulta tus instrumentos asignados, continua tu avance y revisa tus resultados en un solo lugar.</p>
           </div>
           <div class="login-assurance" aria-label="Estado del acceso">
-            <span>01</span>
-            <strong>Identidad verificada</strong>
-            <p>Los datos de grado, unidad y evaluaciones provienen del escalafon cargado en el sistema.</p>
+            <span class="assurance-icon"><i data-lucide="lock-keyhole"></i></span>
+            <div>
+              <strong>Informacion confidencial</strong>
+              <p>Tu perfil y tus respuestas solo se muestran dentro de una sesion autenticada.</p>
+            </div>
           </div>
         </div>
 
-        <form id="loginForm" class="participant-form">
+        <form id="loginForm" class="participant-form login-form">
+          <div class="form-heading">
+            <span class="form-icon"><i data-lucide="user-round"></i></span>
+            <div>
+              <h2>Iniciar sesion</h2>
+              <p>Usa las credenciales asignadas a tu perfil.</p>
+            </div>
+          </div>
           <label>
             Usuario
-            <input id="username" name="username" type="text" inputmode="numeric" autocomplete="username" required />
+            <span class="input-shell"><i data-lucide="badge-user"></i><input id="username" name="username" type="text" inputmode="numeric" autocomplete="username" placeholder="Cedula" required /></span>
           </label>
           <label>
             Contrasena
-            <input id="password" name="password" type="password" autocomplete="current-password" required />
+            <span class="input-shell"><i data-lucide="key-round"></i><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Contrasena" required /></span>
           </label>
-          <button id="loginSubmitButton" class="primary-button" type="submit">Ingresar al portal</button>
+          <button id="loginSubmitButton" class="primary-button" type="submit"><i data-lucide="log-in"></i><span>Ingresar al portal</span></button>
           <p class="form-microcopy">Primer acceso: usuario y contrasena temporal son tu cedula.</p>
         </form>
       </section>
 
-      <section id="changeSection" class="glass-card screen-card hidden">
-        <div class="section-heading">
-          <span class="eyebrow">Cambio obligatorio</span>
-          <h1>Crea una nueva contrasena.</h1>
-          <p>Debe tener al menos 8 caracteres y no puede ser igual a tu cedula.</p>
-        </div>
-
-        <form id="changePasswordForm" class="participant-form">
+      <section id="changeSection" class="screen-card password-card hidden">
+        <form id="changePasswordForm" class="participant-form login-form password-form">
+          <div class="form-heading">
+            <span class="form-icon"><i data-lucide="shield-check"></i></span>
+            <div>
+              <h2>Protege tu cuenta</h2>
+              <p>Crea una contrasena personal para continuar.</p>
+            </div>
+          </div>
           <label>
             Contrasena actual
-            <input id="currentPassword" type="password" autocomplete="current-password" required />
+            <span class="input-shell"><i data-lucide="key-round"></i><input id="currentPassword" type="password" autocomplete="current-password" required /></span>
           </label>
           <label>
             Nueva contrasena
-            <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required />
+            <span class="input-shell"><i data-lucide="lock-keyhole"></i><input id="newPassword" type="password" autocomplete="new-password" minlength="8" required /></span>
           </label>
           <label>
             Confirmar nueva contrasena
-            <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required />
+            <span class="input-shell"><i data-lucide="check"></i><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required /></span>
           </label>
-          <button class="primary-button" type="submit">Guardar contrasena</button>
+          <p class="form-microcopy">Usa al menos 8 caracteres y evita repetir tu cedula.</p>
+          <button class="primary-button" type="submit"><i data-lucide="save"></i><span>Guardar contrasena</span></button>
         </form>
       </section>
     </main>
-    <script src="/login.js"></script>
+    <script src="/vendor/lucide.js"></script>
+    <script src="/ui.js?v=20260819-1"></script>
+    <script src="/login.js?v=20260819-1"></script>
   </body>
 </html>

@@ -23,6 +23,24 @@ function statusLabel(status) {
   return "Pendiente";
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatMilitaryMeta(person) {
+  const rank = [person.rankCode, person.rankName].filter(Boolean).join(" - ");
+  const details = [];
+  if (rank) details.push(rank);
+  if (person.unit || person.unitName || person.unitCode) details.push(`Unidad: ${person.unit || person.unitName || person.unitCode}`);
+  if (person.promotion != null && person.promotion !== "") details.push(`Promocion: ${person.promotion}`);
+  return details.join(" · ") || "Evaluaciones asignadas";
+}
+
 async function loadPortal() {
   const response = await fetch("/api/auth/me");
   if (!response.ok) {
@@ -35,19 +53,34 @@ async function loadPortal() {
     return;
   }
   const person = payload.user?.person || {};
-  welcomeName.textContent = `${person.fullName || "Participante"}`;
-  welcomeMeta.textContent = [person.career, person.gender].filter(Boolean).join(" · ") || "Evaluaciones asignadas";
+  const rankPrefix = person.rankCode ? `${person.rankCode}. ` : "";
+  welcomeName.textContent = `${rankPrefix}${person.fullName || "Participante"}`;
+  welcomeMeta.textContent = formatMilitaryMeta(person);
 
   assignmentList.innerHTML = "";
-  for (const assignment of payload.assignments || []) {
+  const assignments = payload.assignments || [];
+  if (!assignments.length) {
+    assignmentList.innerHTML = `
+      <article class="instrument-card">
+        <span class="question-category">Sin asignaciones</span>
+        <h3>No tienes evaluaciones asignadas actualmente.</h3>
+        <p>Tu cuenta esta activa, pero no hay instrumentos disponibles para este perfil.</p>
+      </article>
+    `;
+    return;
+  }
+
+  for (const assignment of assignments) {
     const card = document.createElement("article");
     card.className = "instrument-card";
-    const disabled = assignment.status === "completed" && assignment.applicationId;
+    const percentage = assignment.percentageComplete || 0;
+    const actionLabel = assignment.status === "completed" ? "VER RESULTADO" : assignment.status === "in_progress" ? "CONTINUAR" : "INICIAR";
     card.innerHTML = `
-      <span class="question-category">${statusLabel(assignment.status)}</span>
-      <h3>${LABELS[assignment.instrumentCode] || assignment.instrumentCode.toUpperCase()}</h3>
+      <span class="question-category">${escapeHtml(statusLabel(assignment.status))}</span>
+      <h3>${escapeHtml(LABELS[assignment.instrumentCode] || assignment.instrumentCode.toUpperCase())}</h3>
       <p>${assignment.required ? "Instrumento obligatorio" : "Instrumento opcional"}</p>
-      <small>${assignment.completedAt ? `Finalizado: ${new Date(assignment.completedAt).toLocaleDateString()}` : "Disponible"}</small>
+      <small>${assignment.completedAt ? `Finalizado: ${new Date(assignment.completedAt).toLocaleDateString()}` : `${statusLabel(assignment.status)} · ${percentage}%`}</small>
+      <button class="primary-button" type="button">${actionLabel}</button>
     `;
     card.addEventListener("click", () => {
       window.location.href = `/index.html?instrument=${encodeURIComponent(assignment.instrumentCode)}`;

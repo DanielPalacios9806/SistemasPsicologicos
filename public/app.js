@@ -135,7 +135,9 @@ async function loadInstruments() {
   const payload = await response.json();
   const instruments = payload.instruments || [];
   const assignedCodes = new Set(state.assignments.map((item) => item.instrumentCode));
-  state.instruments = assignedCodes.size ? instruments.filter((instrument) => assignedCodes.has(instrument.code)) : instruments;
+  state.instruments = state.currentUser
+    ? instruments.filter((instrument) => assignedCodes.has(instrument.code))
+    : instruments;
   instrumentDescription.textContent =
     "Una lectura privada para reconocer como respondes, decides y sostienes presion en situaciones reales.";
 }
@@ -188,6 +190,12 @@ function validateParticipantLocally(participant) {
 
 function renderInstrumentCards() {
   instrumentList.innerHTML = "";
+  if (!state.instruments.length) {
+    instrumentList.innerHTML = `<article class="instrument-card"><h3>No tienes evaluaciones asignadas actualmente.</h3><p>Si crees que esto es un error, contacta al administrador.</p></article>`;
+    if (continueToInstrumentButton) continueToInstrumentButton.disabled = true;
+    return;
+  }
+  if (continueToInstrumentButton) continueToInstrumentButton.disabled = false;
   state.instruments.forEach((instrument) => {
     const card = document.createElement("button");
     card.type = "button";
@@ -218,6 +226,12 @@ function getCurrentAnswerMap() {
   return { ...map, ...state.draftAnswers };
 }
 
+function decodeDiscAnswer(value) {
+  const numeric = Number(value);
+  if (!Number.isInteger(numeric)) return { most: null, least: null };
+  return { most: Math.floor(numeric / 10), least: numeric % 10 };
+}
+
 async function startSelectedInstrument() {
   if (!state.selectedInstrumentCode) {
     showAlert("Selecciona un instrumento antes de continuar.");
@@ -225,9 +239,17 @@ async function startSelectedInstrument() {
   }
 
   const participant = collectParticipantData();
-  const validationError = validateParticipantLocally(participant);
-  if (validationError) {
-    showAlert(validationError);
+  if (!state.currentUser?.person) {
+    const validationError = validateParticipantLocally(participant);
+    if (validationError) {
+      showAlert(validationError);
+      return;
+    }
+  } else if (!state.assignments.some((assignment) => assignment.instrumentCode === state.selectedInstrumentCode)) {
+    showAlert("Esta evaluacion no esta asignada a tu cuenta.");
+    setTimeout(() => {
+      window.location.href = "/portal.html";
+    }, 1200);
     return;
   }
 
@@ -279,11 +301,13 @@ function renderModuleSummary() {
   const moduleProgress = getModuleProgressMap();
   const completedCount = moduleProgress.filter((module) => module.isComplete).length;
 
-  moduleEyebrow.textContent = instrument.code === "ema" ? "EMA" : "BarOn ICE";
-  moduleHeading.textContent = instrument.code === "ema" ? "Instrucciones EMA" : "Progreso por modulos";
+  moduleEyebrow.textContent = instrument.code === "ema" ? "EMA" : instrument.code === "disc" ? "DISC" : "BarOn ICE";
+  moduleHeading.textContent = instrument.code === "ema" ? "Instrucciones EMA" : instrument.code === "disc" ? "Instrucciones DISC" : "Progreso por modulos";
   moduleDescription.textContent =
     instrument.code === "ema"
       ? "EMA conserva el flujo de una pregunta por pantalla. La lectura tecnica queda para admin y la vista publica prioriza una devolucion orientativa."
+      : instrument.code === "disc"
+        ? "DISC se responde por grupos. En cada uno elige una palabra en MAS y una palabra en MENOS."
       : "BarOn se divide en 5 niveles para reducir fatiga, guardar avance y entregar resultados parciales por componente.";
 
   moduleSummaryCard.innerHTML = `
@@ -372,10 +396,14 @@ function renderQuestion() {
   questionHeading.textContent = `${module.label || "Pregunta"} · item ${state.activeQuestionIndex + 1}`;
   questionText.textContent = question.text;
   questionHint.textContent =
-    instrument.code === "ema"
+    instrument.code === "disc"
+      ? "Selecciona una palabra en MAS y una palabra en MENOS. No pueden ser la misma."
+      : instrument.code === "ema"
       ? "Marca el nivel de acuerdo que mejor describa tu experiencia habitual, sin pensar en categorias ni resultados."
       : "Responde este reactivo pensando en situaciones reales y recientes, no en lo que seria ideal responder.";
-  questionMicrocopy.textContent = question.reverse
+  questionMicrocopy.textContent = instrument.code === "disc"
+    ? "Avanza grupo por grupo; tu progreso se guarda al pasar al siguiente."
+    : question.reverse
     ? "Este reactivo se lee tal como esta escrito. Responde segun tu experiencia habitual."
     : "No hay respuestas correctas o incorrectas. Tu respuesta solo describe una tendencia actual.";
   questionMotivation.textContent =
@@ -390,6 +418,37 @@ function renderQuestion() {
   nextButton.textContent = state.activeQuestionIndex === state.activeQuestionIds.length - 1 ? "Cerrar modulo" : "Siguiente";
 
   ratingGroup.innerHTML = "";
+  if (instrument.code === "disc") {
+    const current = decodeDiscAnswer(currentValue);
+    ratingGroup.classList.add("disc-choice-group");
+    question.choices.forEach((choice, index) => {
+      const value = index + 1;
+      const row = document.createElement("div");
+      row.className = "disc-choice-row";
+      row.innerHTML = `
+        <strong>${choice.label}</strong>
+        <button class="secondary-button${current.most === value ? " selected" : ""}" type="button">MAS</button>
+        <button class="secondary-button${current.least === value ? " selected" : ""}" type="button">MENOS</button>
+      `;
+      const [mostButton, leastButton] = row.querySelectorAll("button");
+      mostButton.addEventListener("click", () => {
+        const nextLeast = current.least === value ? null : current.least;
+        state.draftAnswers[itemId] = value && nextLeast ? value * 10 + nextLeast : null;
+        if (!nextLeast) showAlert("Ahora elige una palabra distinta en MENOS.", false);
+        renderQuestion();
+      });
+      leastButton.addEventListener("click", () => {
+        const nextMost = current.most === value ? null : current.most;
+        state.draftAnswers[itemId] = nextMost && value ? nextMost * 10 + value : null;
+        if (!nextMost) showAlert("Ahora elige una palabra distinta en MAS.", false);
+        renderQuestion();
+      });
+      ratingGroup.appendChild(row);
+    });
+    return;
+  }
+
+  ratingGroup.classList.remove("disc-choice-group");
   instrument.responseScale.forEach((option) => {
     const ui = RESPONSE_UI[option.value];
     const button = document.createElement("button");
@@ -828,8 +887,18 @@ async function initialize() {
   if (!hasSession) return;
   await loadInstruments();
   const requestedInstrument = new URLSearchParams(window.location.search).get("instrument");
-  if (requestedInstrument && state.instruments.some((instrument) => instrument.code === requestedInstrument)) {
+  if (requestedInstrument) {
+    if (!state.instruments.some((instrument) => instrument.code === requestedInstrument)) {
+      showAlert("Esta evaluacion no esta asignada a tu cuenta.");
+      setTimeout(() => {
+        window.location.href = "/portal.html";
+      }, 1200);
+      return;
+    }
     state.selectedInstrumentCode = requestedInstrument;
+    renderIntroSlide();
+    await startSelectedInstrument();
+    return;
   }
   renderIntroSlide();
   await initializeAuthenticatedAssessment();

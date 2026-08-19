@@ -1406,6 +1406,34 @@ button:focus {
   color: #07101c;
 }
 
+.disc-choice-group {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.disc-choice-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.disc-choice-row strong {
+  min-width: 0;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.disc-choice-row .secondary-button.selected {
+  color: #07101c;
+  border-color: rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, rgba(245, 184, 47, 0.98), rgba(15, 154, 176, 0.84));
+}
+
 .rating-value {
   background: rgba(255, 255, 255, 0.11);
 }

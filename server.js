@@ -29,7 +29,6 @@ const {
   updateAccountPassword,
   getPersonByAccount,
   listAssignmentsForPerson,
-  hasAssignmentForInstrument,
 } = require("./lib/storage");
 
 const config = getServerConfig();
@@ -299,6 +298,19 @@ function buildPartialResults(instrumentCode, scoringSnapshot) {
     }));
   }
 
+  if (instrumentCode === "disc") {
+    return (scoringSnapshot.dimensions || []).map((dimension) => ({
+      scopeType: "dimension",
+      scopeKey: dimension.key,
+      scopeLabel: dimension.label,
+      rawScore: dimension.rawTotal,
+      normalizedScore: dimension.favorablePercentage,
+      category: dimension.band,
+      completionRatio: scoringSnapshot.overallPercentage,
+      detailJson: dimension,
+    }));
+  }
+
   const moduleRows = (scoringSnapshot.modules || []).map((module) => ({
     scopeType: "module",
     scopeKey: module.key,
@@ -339,6 +351,20 @@ function buildFinalResult(instrumentCode, scoringSnapshot, isValid, isComplete) 
   if (!isComplete) return null;
 
   if (instrumentCode === "ema") {
+    return {
+      totalRaw: scoringSnapshot.totalRaw,
+      totalNormalized: scoringSnapshot.overallPercentage,
+      profileGlobal: scoringSnapshot.profile,
+      valid: true,
+      interpretationJson: {
+        summary: scoringSnapshot.summary,
+        observations: scoringSnapshot.observations,
+      },
+      detailJson: scoringSnapshot,
+    };
+  }
+
+  if (instrumentCode === "disc") {
     return {
       totalRaw: scoringSnapshot.totalRaw,
       totalNormalized: scoringSnapshot.overallPercentage,
@@ -683,7 +709,7 @@ const server = http.createServer(async (req, res) => {
       const application = await startApplication({ participant, instrumentDefinition: instrument });
       sendJson(res, 200, buildPublicApplicationPayload(application, instrument));
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo iniciar la aplicacion." });
+      sendJson(res, error.statusCode || 400, { error: error.message || "No se pudo iniciar la aplicacion." });
     }
     return;
   }
@@ -726,7 +752,12 @@ const server = http.createServer(async (req, res) => {
       for (const answer of body.answers || []) {
         const normalized = normalizeInstrumentAnswer(instrument.code, answer.value);
         if (normalized == null) {
-          sendJson(res, 400, { error: "Cada respuesta debe estar entre 1 y 5." });
+          sendJson(res, 400, {
+            error:
+              instrument.code === "disc"
+                ? "Cada grupo DISC debe tener una opcion MAS y una opcion MENOS distintas."
+                : "Cada respuesta debe estar entre 1 y 5.",
+          });
           return;
         }
         answerMap[answer.itemId] = normalized;

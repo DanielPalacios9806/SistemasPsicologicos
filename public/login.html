@@ -16,13 +16,21 @@
             <small>Evaluacion segura</small>
           </span>
         </a>
+        <span class="brand-status">Portal militar</span>
       </header>
 
-      <section class="glass-card screen-card">
-        <div class="section-heading">
-          <span class="eyebrow">Acceso individual</span>
-          <h1>Ingresa con tu cedula.</h1>
-          <p>Si es tu primer acceso, usuario y contrasena temporal son tu cedula.</p>
+      <section class="glass-card screen-card login-card">
+        <div class="login-hero">
+          <div class="section-heading">
+            <span class="eyebrow">Acceso individual</span>
+            <h1>Ingresa con tu cedula.</h1>
+            <p>Tu sesion abre un portal personal con las evaluaciones asignadas segun tu registro militar.</p>
+          </div>
+          <div class="login-assurance" aria-label="Estado del acceso">
+            <span>01</span>
+            <strong>Identidad verificada</strong>
+            <p>Los datos de grado, unidad y evaluaciones provienen del escalafon cargado en el sistema.</p>
+          </div>
         </div>
 
         <form id="loginForm" class="participant-form">
@@ -34,7 +42,8 @@
             Contrasena
             <input id="password" name="password" type="password" autocomplete="current-password" required />
           </label>
-          <button class="primary-button" type="submit">Ingresar</button>
+          <button id="loginSubmitButton" class="primary-button" type="submit">Ingresar al portal</button>
+          <p class="form-microcopy">Primer acceso: usuario y contrasena temporal son tu cedula.</p>
         </form>
       </section>
 

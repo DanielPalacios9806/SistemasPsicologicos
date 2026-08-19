@@ -19,11 +19,35 @@
         <button id="logoutButton" class="secondary-button" type="button">Salir</button>
       </header>
 
-      <section class="glass-card screen-card">
-        <div class="section-heading">
-          <span class="eyebrow">Bienvenido</span>
-          <h1 id="welcomeName">Participante</h1>
-          <p id="welcomeMeta">Evaluaciones asignadas</p>
+      <section class="glass-card screen-card portal-dashboard">
+        <div class="portal-hero">
+          <div class="section-heading">
+            <span class="eyebrow">Bienvenido</span>
+            <h1 id="welcomeName">Participante</h1>
+            <p id="welcomeMeta">Evaluaciones asignadas</p>
+          </div>
+          <aside class="session-panel" aria-label="Sesion actual">
+            <span class="question-category">Sesion actual</span>
+            <strong id="sessionUsername">-</strong>
+            <small id="sessionRole">Participante</small>
+          </aside>
+        </div>
+
+        <div id="profileSummary" class="profile-summary" aria-label="Perfil militar"></div>
+        <div class="progress-panel portal-progress">
+          <div class="progress-meta">
+            <p id="overallProgressLabel">Avance general</p>
+            <p id="overallProgressMessage" class="progress-message">Cargando evaluaciones asignadas...</p>
+          </div>
+          <div class="progress-bar" aria-hidden="true">
+            <div id="overallProgressFill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="section-heading compact portal-section-heading">
+          <span class="step-pill">Evaluaciones</span>
+          <h2>Tu ruta psicologica</h2>
+          <p>Inicia o continua cada instrumento desde aqui. El avance se guarda en el sistema.</p>
         </div>
         <div id="assignmentList" class="instrument-grid"></div>
       </section>

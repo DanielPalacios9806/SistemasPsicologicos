@@ -2,6 +2,7 @@ const alertBox = document.getElementById("alert");
 const loginForm = document.getElementById("loginForm");
 const changeSection = document.getElementById("changeSection");
 const changePasswordForm = document.getElementById("changePasswordForm");
+const loginSubmitButton = document.getElementById("loginSubmitButton");
 
 function showAlert(message, isError = true) {
   alertBox.textContent = message;
@@ -19,22 +20,29 @@ loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const username = String(document.getElementById("username").value || "").trim();
   const password = String(document.getElementById("password").value || "");
-  const response = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
-  const payload = await response.json();
-  if (!response.ok) {
-    showAlert(payload.error || "Usuario o contrasena incorrectos.");
-    return;
+  loginSubmitButton.disabled = true;
+  loginSubmitButton.textContent = "Verificando...";
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      showAlert(payload.error || "Usuario o contrasena incorrectos.");
+      return;
+    }
+    if (payload.user?.mustChangePassword) {
+      showAlert("Debes cambiar tu contrasena para continuar.", false);
+      showChangePassword();
+      return;
+    }
+    window.location.href = "/portal.html";
+  } finally {
+    loginSubmitButton.disabled = false;
+    loginSubmitButton.textContent = "Ingresar al portal";
   }
-  if (payload.user?.mustChangePassword) {
-    showAlert("Debes cambiar tu contrasena para continuar.", false);
-    showChangePassword();
-    return;
-  }
-  window.location.href = "/portal.html";
 });
 
 changePasswordForm.addEventListener("submit", async (event) => {

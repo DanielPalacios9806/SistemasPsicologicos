@@ -1003,6 +1003,203 @@ body::after {
   background: rgba(15, 154, 176, 0.1);
 }
 
+.login-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.78fr);
+  align-items: center;
+  gap: 28px;
+}
+
+.login-hero {
+  display: grid;
+  gap: 22px;
+}
+
+.login-assurance,
+.session-panel {
+  border: 1px solid rgba(15, 154, 176, 0.22);
+  border-radius: 14px;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(15, 154, 176, 0.12), rgba(255, 255, 255, 0.035)),
+    rgba(5, 15, 28, 0.68);
+}
+
+.login-assurance span {
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  color: #06101c;
+  background: var(--accent);
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 900;
+}
+
+.login-assurance strong,
+.session-panel strong {
+  display: block;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.login-assurance p,
+.session-panel small {
+  color: var(--muted);
+}
+
+.portal-dashboard {
+  display: grid;
+  gap: 18px;
+  min-height: auto;
+}
+
+.portal-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 18px;
+  align-items: start;
+}
+
+.session-panel {
+  align-self: stretch;
+}
+
+.profile-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-summary-item {
+  min-height: 96px;
+  border-radius: 12px;
+}
+
+.portal-progress {
+  display: grid;
+  gap: 12px;
+}
+
+.portal-section-heading {
+  margin-top: 8px;
+}
+
+.portal-section-heading h2 {
+  font-size: 2.2rem;
+  max-width: none;
+}
+
+.assignment-card {
+  display: grid;
+  gap: 14px;
+  min-height: 250px;
+  padding: 18px;
+}
+
+.assignment-card-top,
+.assignment-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.assignment-card-top small,
+.assignment-progress small {
+  color: var(--muted);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  border: 1px solid rgba(210, 224, 239, 0.16);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: var(--muted-strong);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.status-badge span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(15, 154, 176, 0.12);
+}
+
+.assignment-card.is-completed .status-badge span {
+  background: #7bd88f;
+  box-shadow: 0 0 0 4px rgba(123, 216, 143, 0.14);
+}
+
+.assignment-card.is-progress .status-badge span,
+.assessment-context-bar .status-badge span {
+  background: #f5b82f;
+  box-shadow: 0 0 0 4px rgba(245, 184, 47, 0.14);
+}
+
+.assignment-card.is-pending .status-badge span {
+  background: #8ca3b8;
+  box-shadow: 0 0 0 4px rgba(140, 163, 184, 0.14);
+}
+
+.assignment-progress {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+.assignment-action {
+  align-self: end;
+  width: 100%;
+}
+
+.assessment-context-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: clamp(8px, 1.2vh, 14px);
+  padding: 12px 14px;
+  border: 1px solid rgba(210, 224, 239, 0.14);
+  border-radius: 14px;
+  background: rgba(7, 14, 25, 0.7);
+  backdrop-filter: blur(18px);
+}
+
+.assessment-context-bar div {
+  min-width: 0;
+}
+
+.assessment-context-bar span:not(.status-badge) {
+  display: block;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.assessment-context-bar strong {
+  display: block;
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .glass-card,
 .benefit-list,
 .progress-panel,
@@ -1492,6 +1689,15 @@ button:focus {
     align-items: flex-start;
   }
 
+  .login-card,
+  .portal-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .benefit-list {
     grid-template-columns: 1fr;
   }
@@ -1523,6 +1729,42 @@ button:focus {
 
   .brand-status {
     display: none;
+  }
+
+  .login-card {
+    gap: 18px;
+  }
+
+  .profile-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-hero .section-heading h1 {
+    font-size: 2.35rem;
+    max-width: 100%;
+  }
+
+  .portal-section-heading h2 {
+    font-size: 1.8rem;
+  }
+
+  .assignment-card-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .assignment-progress {
+    grid-template-columns: 1fr;
+  }
+
+  .assessment-context-bar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .assessment-context-bar .back-link {
+    grid-column: 1 / -1;
+    width: 100%;
+    text-align: center;
   }
 
   .screen-card {

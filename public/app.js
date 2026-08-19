@@ -82,6 +82,10 @@ const strengthList = document.getElementById("strengthList");
 const attentionList = document.getElementById("attentionList");
 const suggestionList = document.getElementById("suggestionList");
 const newAssessmentButton = document.getElementById("newAssessmentButton");
+const assessmentContextBar = document.getElementById("assessmentContextBar");
+const contextInstrument = document.getElementById("contextInstrument");
+const contextParticipant = document.getElementById("contextParticipant");
+const contextProgress = document.getElementById("contextProgress");
 
 const CATEGORY_LABELS = {
   very_low: "Muy bajo",
@@ -140,6 +144,16 @@ async function loadInstruments() {
     : instruments;
   instrumentDescription.textContent =
     "Una lectura privada para reconocer como respondes, decides y sostienes presion en situaciones reales.";
+}
+
+function updateAssessmentContext() {
+  const application = state.currentApplication;
+  assessmentContextBar?.classList.toggle("hidden", !application);
+  if (!application) return;
+  const participant = application.participant || state.currentUser?.person || {};
+  contextInstrument.textContent = application.instrumentName || application.instrumentCode?.toUpperCase() || "Evaluacion";
+  contextParticipant.textContent = [participant.rankCode, participant.fullName].filter(Boolean).join(". ") || "Participante autenticado";
+  contextProgress.innerHTML = `<span aria-hidden="true"></span>${application.percentageComplete || 0}%`;
 }
 
 async function loadSession() {
@@ -265,6 +279,7 @@ async function startSelectedInstrument() {
 
   state.currentApplication = payload;
   state.draftAnswers = {};
+  updateAssessmentContext();
 
   if (payload.status === "completed" || payload.status === "invalid") {
     renderResult(payload);
@@ -485,6 +500,7 @@ async function persistCurrentAnswer() {
   if (!response.ok) throw new Error(payload.error || "No se pudo guardar el avance.");
 
   state.currentApplication = payload;
+  updateAssessmentContext();
   delete state.draftAnswers[itemId];
   return payload;
 }
@@ -508,8 +524,9 @@ function renderParticipantSummary(participant, date) {
   const fields = [
     ["Cedula", participant.idNumber],
     ["Nombre", participant.fullName],
-    ["Carrera", participant.career],
-    ["Edad", participant.age],
+    ["Grado", [participant.rankCode, participant.rankName].filter(Boolean).join(" - ")],
+    ["Unidad", participant.unit || participant.unitName || participant.unitCode || participant.career],
+    ["Promocion", participant.promotion],
     ["Genero", participant.gender],
     ["Fecha", normalizeSummaryDate(date)],
   ];
@@ -754,6 +771,7 @@ function renderResult(application) {
       : scoring.observations?.suggestions || []
   );
   switchScreen(resultScreen);
+  updateAssessmentContext();
 }
 
 participantForm.addEventListener("submit", (event) => {
@@ -878,6 +896,7 @@ async function resetLocalAssessmentState() {
   state.draftAnswers = {};
   state.introSlideIndex = 0;
   renderIntroSlide();
+  updateAssessmentContext();
   switchScreen(welcomeScreen);
 }
 

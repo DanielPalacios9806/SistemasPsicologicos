@@ -3,11 +3,29 @@ const welcomeName = document.getElementById("welcomeName");
 const welcomeMeta = document.getElementById("welcomeMeta");
 const assignmentList = document.getElementById("assignmentList");
 const logoutButton = document.getElementById("logoutButton");
+const sessionUsername = document.getElementById("sessionUsername");
+const sessionRole = document.getElementById("sessionRole");
+const profileSummary = document.getElementById("profileSummary");
+const overallProgressLabel = document.getElementById("overallProgressLabel");
+const overallProgressMessage = document.getElementById("overallProgressMessage");
+const overallProgressFill = document.getElementById("overallProgressFill");
 
 const LABELS = {
   ema: "Asertividad EMA",
   baron: "Bar-On ICE",
   disc: "DISC",
+};
+
+const DESCRIPTIONS = {
+  ema: "Asertividad y estilo de respuesta interpersonal.",
+  baron: "Perfil emocional por componentes y controles de validez.",
+  disc: "Estilo conductual por eleccion forzada MAS/MENOS.",
+};
+
+const STATUS_CLASS = {
+  completed: "is-completed",
+  in_progress: "is-progress",
+  pending: "is-pending",
 };
 
 function showAlert(message, isError = true) {
@@ -21,6 +39,12 @@ function statusLabel(status) {
   if (status === "completed") return "Completado";
   if (status === "in_progress") return "En progreso";
   return "Pendiente";
+}
+
+function actionLabel(status) {
+  if (status === "completed") return "Ver resultado";
+  if (status === "in_progress") return "Continuar";
+  return "Iniciar";
 }
 
 function escapeHtml(value) {
@@ -41,6 +65,40 @@ function formatMilitaryMeta(person) {
   return details.join(" · ") || "Evaluaciones asignadas";
 }
 
+function renderProfileSummary(person) {
+  const fields = [
+    ["Grado", [person.rankCode, person.rankName].filter(Boolean).join(" - ")],
+    ["Unidad", person.unit || person.unitName || person.unitCode],
+    ["Promocion", person.promotion],
+    ["Cedula", person.idNumber],
+  ];
+  profileSummary.innerHTML = fields
+    .map(
+      ([label, value]) => `
+        <article class="summary-item profile-summary-item">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value || "-")}</strong>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderOverallProgress(assignments) {
+  const total = assignments.length;
+  const completed = assignments.filter((assignment) => assignment.status === "completed").length;
+  const inProgress = assignments.filter((assignment) => assignment.status === "in_progress").length;
+  const progress = total
+    ? Math.round(assignments.reduce((sum, assignment) => sum + Number(assignment.percentageComplete || 0), 0) / total)
+    : 0;
+
+  overallProgressLabel.textContent = total ? `Avance general · ${progress}%` : "Sin evaluaciones asignadas";
+  overallProgressMessage.textContent = total
+    ? `${completed} completada(s), ${inProgress} en progreso, ${total - completed - inProgress} pendiente(s).`
+    : "Tu cuenta esta activa, pero no hay instrumentos asignados para este perfil.";
+  overallProgressFill.style.width = `${progress}%`;
+}
+
 async function loadPortal() {
   const response = await fetch("/api/auth/me");
   if (!response.ok) {
@@ -56,9 +114,13 @@ async function loadPortal() {
   const rankPrefix = person.rankCode ? `${person.rankCode}. ` : "";
   welcomeName.textContent = `${rankPrefix}${person.fullName || "Participante"}`;
   welcomeMeta.textContent = formatMilitaryMeta(person);
+  sessionUsername.textContent = payload.user?.username || person.idNumber || "-";
+  sessionRole.textContent = payload.user?.role === "admin" ? "Administrador" : "Participante autenticado";
+  renderProfileSummary(person);
 
   assignmentList.innerHTML = "";
   const assignments = payload.assignments || [];
+  renderOverallProgress(assignments);
   if (!assignments.length) {
     assignmentList.innerHTML = `
       <article class="instrument-card">
@@ -72,17 +134,24 @@ async function loadPortal() {
 
   for (const assignment of assignments) {
     const card = document.createElement("article");
-    card.className = "instrument-card";
+    card.className = `instrument-card assignment-card ${STATUS_CLASS[assignment.status] || STATUS_CLASS.pending}`;
     const percentage = assignment.percentageComplete || 0;
-    const actionLabel = assignment.status === "completed" ? "VER RESULTADO" : assignment.status === "in_progress" ? "CONTINUAR" : "INICIAR";
     card.innerHTML = `
-      <span class="question-category">${escapeHtml(statusLabel(assignment.status))}</span>
+      <div class="assignment-card-top">
+        <span class="status-badge"><span aria-hidden="true"></span>${escapeHtml(statusLabel(assignment.status))}</span>
+        <small>${assignment.required ? "Obligatorio" : "Opcional"}</small>
+      </div>
       <h3>${escapeHtml(LABELS[assignment.instrumentCode] || assignment.instrumentCode.toUpperCase())}</h3>
-      <p>${assignment.required ? "Instrumento obligatorio" : "Instrumento opcional"}</p>
-      <small>${assignment.completedAt ? `Finalizado: ${new Date(assignment.completedAt).toLocaleDateString()}` : `${statusLabel(assignment.status)} · ${percentage}%`}</small>
-      <button class="primary-button" type="button">${actionLabel}</button>
+      <p>${escapeHtml(DESCRIPTIONS[assignment.instrumentCode] || "Evaluacion asignada a tu perfil.")}</p>
+      <div class="assignment-progress">
+        <div class="progress-bar" aria-hidden="true">
+          <div class="progress-fill" style="width: ${Number(percentage)}%"></div>
+        </div>
+        <small>${assignment.completedAt ? `Finalizado: ${new Date(assignment.completedAt).toLocaleDateString()}` : `${percentage}% completado`}</small>
+      </div>
+      <button class="primary-button assignment-action" type="button">${escapeHtml(actionLabel(assignment.status))}</button>
     `;
-    card.addEventListener("click", () => {
+    card.querySelector("button").addEventListener("click", () => {
       window.location.href = `/index.html?instrument=${encodeURIComponent(assignment.instrumentCode)}`;
     });
     assignmentList.appendChild(card);

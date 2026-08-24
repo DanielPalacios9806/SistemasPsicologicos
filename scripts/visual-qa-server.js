@@ -1,10 +1,12 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { listInstruments, getInstrumentDefinition } = require('../lib/instruments');
 
 const PORT = Number(process.env.QA_PORT || 3011);
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const LUCIDE_FILE = path.join(__dirname, '..', 'node_modules', 'lucide', 'dist', 'umd', 'lucide.min.js');
+const assessmentApplications = new Map();
 
 const authPayload = {
   user: {
@@ -68,9 +70,74 @@ const applicationPayload = {
   ],
 };
 
-function sendJson(res, payload) {
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+function sendJson(res, payload, status = 200) {
+  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(payload));
+}
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let raw = '';
+    req.on('data', (chunk) => {
+      raw += chunk;
+    });
+    req.on('end', () => {
+      try {
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch (error) {
+        reject(error);
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
+function buildAssessmentPayload(instrumentCode) {
+  const instrument = getInstrumentDefinition(instrumentCode);
+  if (!assessmentApplications.has(instrumentCode)) {
+    assessmentApplications.set(instrumentCode, {
+      id: `qa-${instrumentCode}-application`,
+      participant: authPayload.user.person,
+      instrumentCode,
+      instrumentName: instrument.name,
+      instrumentVersion: instrument.version,
+      status: 'in_progress',
+      currentModuleKey: instrument.modules[0].key,
+      percentageComplete: 0,
+      valid: null,
+      startedAt: '2026-08-24T12:00:00.000Z',
+      completedAt: null,
+      answers: [],
+      partialResults: null,
+      finalResult: null,
+      scoring: null,
+    });
+  }
+  return { ...assessmentApplications.get(instrumentCode), instrument };
+}
+
+function saveAssessmentAnswers(applicationId, submittedAnswers) {
+  const application = [...assessmentApplications.values()].find((candidate) => candidate.id === applicationId);
+  if (!application) return null;
+  const instrument = getInstrumentDefinition(application.instrumentCode);
+  const answers = new Map(application.answers.map((answer) => [answer.itemId, answer.value]));
+  submittedAnswers.forEach((answer) => answers.set(Number(answer.itemId), Number(answer.value)));
+  application.answers = [...answers.entries()].map(([itemId, value]) => ({ itemId, value }));
+  application.percentageComplete = Math.round((application.answers.length / instrument.items.length) * 100);
+  application.scoring = {
+    modules: instrument.modules.map((module) => {
+      const answeredCount = module.itemIds.filter((itemId) => answers.has(itemId)).length;
+      return {
+        key: module.key,
+        label: module.label,
+        answeredCount,
+        expectedCount: module.itemIds.length,
+        completionRatio: Math.round((answeredCount / module.itemIds.length) * 100),
+        isComplete: answeredCount === module.itemIds.length,
+      };
+    }),
+  };
+  return { ...application, instrument };
 }
 
 function sendFile(res, filePath) {
@@ -87,10 +154,38 @@ function sendFile(res, filePath) {
   fs.createReadStream(filePath).pipe(res);
 }
 
-http.createServer((req, res) => {
+http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
+  if (url.pathname === '/api/config') return sendJson(res, {});
   if (url.pathname === '/api/auth/me') return sendJson(res, authPayload);
   if (url.pathname === '/api/me/applications') return sendJson(res, applicationPayload);
+  if (url.pathname === '/api/instruments') return sendJson(res, { instruments: listInstruments() });
+  if (url.pathname.startsWith('/api/instruments/')) {
+    try {
+      return sendJson(res, getInstrumentDefinition(url.pathname.split('/').pop()));
+    } catch (error) {
+      return sendJson(res, { error: error.message }, 404);
+    }
+  }
+  if (url.pathname === '/api/applications/start' && req.method === 'POST') {
+    try {
+      const body = await readJson(req);
+      return sendJson(res, buildAssessmentPayload(String(body.instrumentCode || '').toLowerCase()));
+    } catch (error) {
+      return sendJson(res, { error: error.message }, 400);
+    }
+  }
+  if (/^\/api\/applications\/[^/]+\/answers$/.test(url.pathname) && req.method === 'POST') {
+    try {
+      const body = await readJson(req);
+      const application = saveAssessmentAnswers(url.pathname.split('/')[3], body.answers || []);
+      return application
+        ? sendJson(res, application)
+        : sendJson(res, { error: 'Aplicacion QA no encontrada.' }, 404);
+    } catch (error) {
+      return sendJson(res, { error: error.message }, 400);
+    }
+  }
   if (url.pathname === '/vendor/lucide.js') return sendFile(res, LUCIDE_FILE);
 
   const requested = url.pathname === '/' ? '/portal.html' : url.pathname;

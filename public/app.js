@@ -55,6 +55,7 @@ const state = {
   activeQuestionIndex: 0,
   activeModuleKey: "",
   draftAnswers: {},
+  discSelections: {},
 };
 
 const alertBox = document.getElementById("alert");
@@ -68,7 +69,6 @@ const instrumentScreen = document.getElementById("instrumentScreen");
 const moduleScreen = document.getElementById("moduleScreen");
 const questionScreen = document.getElementById("questionScreen");
 const resultScreen = document.getElementById("resultScreen");
-const publicFooter = document.getElementById("publicFooter");
 const participantForm = document.getElementById("participantForm");
 const idNumberInput = document.getElementById("idNumber");
 const idNumberFeedback = document.getElementById("idNumberFeedback");
@@ -103,12 +103,9 @@ const baronDetailSection = document.getElementById("baronDetailSection");
 const baronDetailGrid = document.getElementById("baronDetailGrid");
 const validitySection = document.getElementById("validitySection");
 const validityGrid = document.getElementById("validityGrid");
-const methodologySection = document.getElementById("methodologySection");
-const methodologyGrid = document.getElementById("methodologyGrid");
 const strengthList = document.getElementById("strengthList");
 const attentionList = document.getElementById("attentionList");
 const suggestionList = document.getElementById("suggestionList");
-const newAssessmentButton = document.getElementById("newAssessmentButton");
 const assessmentContextBar = document.getElementById("assessmentContextBar");
 const contextInstrument = document.getElementById("contextInstrument");
 const contextParticipant = document.getElementById("contextParticipant");
@@ -172,7 +169,6 @@ function switchScreen(target) {
     section.classList.add("hidden")
   );
   target.classList.remove("hidden");
-  publicFooter.classList.toggle("hidden", target !== welcomeScreen);
   renderIcons(target);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -301,6 +297,48 @@ function getCurrentAnswerMap() {
   return { ...map, ...state.draftAnswers };
 }
 
+function validateInstrumentBank(instrument, expectedCode) {
+  if (!instrument || instrument.code !== expectedCode) {
+    throw new Error("No se pudo cargar el banco de preguntas de esta evaluacion.");
+  }
+  if (!Array.isArray(instrument.items) || !instrument.items.length || !Array.isArray(instrument.modules) || !instrument.modules.length) {
+    throw new Error("El banco de preguntas esta incompleto. Intenta nuevamente.");
+  }
+
+  const itemIds = new Set(instrument.items.map((item) => item.id));
+  const moduleItemIds = instrument.modules.flatMap((module) => module.itemIds || []);
+  if (
+    moduleItemIds.length !== itemIds.size ||
+    new Set(moduleItemIds).size !== itemIds.size ||
+    moduleItemIds.some((itemId) => !itemIds.has(itemId))
+  ) {
+    throw new Error("La secuencia de preguntas no coincide con el instrumento asignado.");
+  }
+
+  if (instrument.code === "disc") {
+    if (instrument.items.some((item) => !Array.isArray(item.choices) || item.choices.length !== 4)) {
+      throw new Error("El banco DISC no contiene todos sus grupos de respuesta.");
+    }
+  } else if (!Array.isArray(instrument.responseScale) || instrument.responseScale.length !== 5) {
+    throw new Error("La escala de respuesta de esta evaluacion esta incompleta.");
+  }
+
+  return instrument;
+}
+
+async function hydrateApplicationInstrument(application) {
+  const code = application?.instrumentCode || state.selectedInstrumentCode;
+  if (application?.instrument?.items?.length) {
+    validateInstrumentBank(application.instrument, code);
+    return application;
+  }
+
+  const response = await fetch(`/api/instruments/${encodeURIComponent(code)}`);
+  const instrument = await response.json();
+  if (!response.ok) throw new Error(instrument.error || "No se pudo recuperar el banco de preguntas.");
+  return { ...application, instrument: validateInstrumentBank(instrument, code) };
+}
+
 function decodeDiscAnswer(value) {
   const numeric = Number(value);
   if (!Number.isInteger(numeric)) return { most: null, least: null };
@@ -338,12 +376,13 @@ async function startSelectedInstrument() {
   const payload = await response.json();
   if (!response.ok) throw new Error(payload.error || "No se pudo iniciar el instrumento.");
 
-  state.currentApplication = payload;
+  state.currentApplication = await hydrateApplicationInstrument(payload);
   state.draftAnswers = {};
+  state.discSelections = {};
   updateAssessmentContext();
 
-  if (payload.status === "completed" || payload.status === "invalid") {
-    renderResult(payload);
+  if (state.currentApplication.status === "completed" || state.currentApplication.status === "invalid") {
+    renderResult(state.currentApplication);
     return;
   }
 
@@ -458,10 +497,10 @@ function enterModule(moduleKey) {
   const module = instrument.modules.find((candidate) => candidate.key === moduleKey);
   if (!module) return;
   const answerMap = getCurrentAnswerMap();
-  const pendingItemIds = module.itemIds.filter((itemId) => answerMap[itemId] == null);
+  const firstPendingIndex = module.itemIds.findIndex((itemId) => answerMap[itemId] == null);
   state.activeModuleKey = moduleKey;
-  state.activeQuestionIds = pendingItemIds.length ? pendingItemIds : module.itemIds;
-  state.activeQuestionIndex = 0;
+  state.activeQuestionIds = [...module.itemIds];
+  state.activeQuestionIndex = firstPendingIndex >= 0 ? firstPendingIndex : 0;
   renderQuestion();
   switchScreen(questionScreen);
 }
@@ -470,6 +509,9 @@ function renderQuestion() {
   const instrument = getCurrentInstrument();
   const itemId = state.activeQuestionIds[state.activeQuestionIndex];
   const question = getQuestionById(itemId);
+  if (!question) {
+    throw new Error("No se encontro la pregunta solicitada en el banco del instrumento.");
+  }
   const answerMap = getCurrentAnswerMap();
   const currentValue = answerMap[itemId];
   const module = instrument.modules.find((candidate) => candidate.key === state.activeModuleKey) || {};
@@ -490,7 +532,9 @@ function renderQuestion() {
   progressLabel.textContent = `${percent}% completado`;
   progressMessage.textContent = "Se guarda al continuar";
   progressFill.style.width = `${percent}%`;
-  backButton.disabled = state.activeQuestionIndex === 0;
+  backButton.disabled = false;
+  nextButton.disabled = currentValue == null;
+  setButtonContent(backButton, state.activeQuestionIndex === 0 ? "Resumen" : "Anterior", "arrow-left", true);
   setButtonContent(
     nextButton,
     state.activeQuestionIndex === state.activeQuestionIds.length - 1 ? "Finalizar seccion" : "Siguiente"
@@ -498,7 +542,7 @@ function renderQuestion() {
 
   ratingGroup.innerHTML = "";
   if (instrument.code === "disc") {
-    const current = decodeDiscAnswer(currentValue);
+    const current = state.discSelections[itemId] || decodeDiscAnswer(currentValue);
     ratingGroup.classList.add("disc-choice-group");
     question.choices.forEach((choice, index) => {
       const value = index + 1;
@@ -506,19 +550,21 @@ function renderQuestion() {
       row.className = "disc-choice-row";
       row.innerHTML = `
         <strong>${choice.label}</strong>
-        <button class="secondary-button${current.most === value ? " selected" : ""}" type="button"><i data-lucide="arrow-up"></i><span>MAS</span></button>
-        <button class="secondary-button${current.least === value ? " selected" : ""}" type="button"><i data-lucide="arrow-down"></i><span>MENOS</span></button>
+        <button class="secondary-button${current.most === value ? " selected" : ""}" type="button" aria-pressed="${current.most === value}"><i data-lucide="arrow-up"></i><span>MAS</span></button>
+        <button class="secondary-button${current.least === value ? " selected" : ""}" type="button" aria-pressed="${current.least === value}"><i data-lucide="arrow-down"></i><span>MENOS</span></button>
       `;
       const [mostButton, leastButton] = row.querySelectorAll("button");
       mostButton.addEventListener("click", () => {
         const nextLeast = current.least === value ? null : current.least;
-        state.draftAnswers[itemId] = value && nextLeast ? value * 10 + nextLeast : null;
+        state.discSelections[itemId] = { most: value, least: nextLeast };
+        state.draftAnswers[itemId] = nextLeast ? value * 10 + nextLeast : null;
         if (!nextLeast) showAlert("Ahora elige una palabra distinta en MENOS.", false);
         renderQuestion();
       });
       leastButton.addEventListener("click", () => {
         const nextMost = current.most === value ? null : current.most;
-        state.draftAnswers[itemId] = nextMost && value ? nextMost * 10 + value : null;
+        state.discSelections[itemId] = { most: nextMost, least: value };
+        state.draftAnswers[itemId] = nextMost ? nextMost * 10 + value : null;
         if (!nextMost) showAlert("Ahora elige una palabra distinta en MAS.", false);
         renderQuestion();
       });
@@ -551,7 +597,7 @@ function renderQuestion() {
 async function persistCurrentAnswer() {
   const itemId = state.activeQuestionIds[state.activeQuestionIndex];
   const value = getCurrentAnswerMap()[itemId];
-  if (!value) {
+  if (value == null) {
     throw new Error("Selecciona una respuesta antes de continuar.");
   }
 
@@ -568,6 +614,7 @@ async function persistCurrentAnswer() {
   state.currentApplication = payload;
   updateAssessmentContext();
   delete state.draftAnswers[itemId];
+  delete state.discSelections[itemId];
   return payload;
 }
 
@@ -693,47 +740,6 @@ function renderValidity(scoring) {
   renderIcons(validityGrid);
 }
 
-function renderMethodology(scoring) {
-  methodologySection.classList.remove("hidden");
-  methodologyGrid.innerHTML = "";
-
-  const notes = [
-    {
-      label: "Conversion CE",
-      title: "Media 100, DE 15",
-      detail: "CE = ((puntaje bruto - media normativa) / desviacion estandar normativa) * 15 + 100.",
-    },
-    {
-      label: "Baremos",
-      title: "Muestra peruana",
-      detail: "El algoritmo usa medias y desviaciones del manual adulto BarOn ICE adaptado y estandarizado en Lima Metropolitana.",
-    },
-    {
-      label: "Validez",
-      title: scoring.validity?.valid ? "Interpretable" : "No interpretable",
-      detail:
-        "Antes de leer el perfil se revisan item 133, omisiones, impresion positiva, impresion negativa e inconsistencia.",
-    },
-    {
-      label: "Alcance",
-      title: "Orientativo",
-      detail:
-        "El informe no reemplaza entrevista, historia clinica ni juicio profesional; describe un perfil psicometrico actual.",
-    },
-  ];
-
-  notes.forEach((note) => {
-    const card = document.createElement("article");
-    card.className = "dimension-card";
-    card.innerHTML = `
-      <p class="question-category">${note.label}</p>
-      <h3>${note.title}</h3>
-      <p>${note.detail}</p>
-    `;
-    methodologyGrid.appendChild(card);
-  });
-}
-
 function renderResult(application) {
   const scoring = application.scoring;
   const isBaron = application.instrumentCode === "baron";
@@ -764,13 +770,9 @@ function renderResult(application) {
     renderDimensionCardsFromBaron(scoring);
     renderBaronFullDiagnostics(scoring);
     renderValidity(scoring);
-    methodologySection.classList.add("hidden");
-    methodologyGrid.innerHTML = "";
   } else {
     baronDetailSection.classList.add("hidden");
     baronDetailGrid.innerHTML = "";
-    methodologySection.classList.add("hidden");
-    methodologyGrid.innerHTML = "";
     overallAverage.textContent =
       scoring.strongestDimension?.label === scoring.weakestDimension?.label
         ? "Perfil relativamente equilibrado"
@@ -908,12 +910,11 @@ nextButton.addEventListener("click", async () => {
   } catch (error) {
     showAlert(error.message);
   } finally {
-    nextButton.disabled = false;
+    if (!questionScreen.classList.contains("hidden")) {
+      const itemId = state.activeQuestionIds[state.activeQuestionIndex];
+      nextButton.disabled = getCurrentAnswerMap()[itemId] == null;
+    }
   }
-});
-
-newAssessmentButton.addEventListener("click", () => {
-  window.location.href = "/portal.html";
 });
 
 async function initializeAuthenticatedAssessment() {
@@ -935,6 +936,7 @@ async function resetLocalAssessmentState() {
   state.activeQuestionIndex = 0;
   state.activeModuleKey = "";
   state.draftAnswers = {};
+  state.discSelections = {};
   state.introSlideIndex = 0;
   renderIntroSlide();
   updateAssessmentContext();
@@ -946,7 +948,9 @@ async function initialize() {
   const hasSession = await loadSession();
   if (!hasSession) return;
   await loadInstruments();
-  const requestedInstrument = new URLSearchParams(window.location.search).get("instrument");
+  const requestedInstrument = String(new URLSearchParams(window.location.search).get("instrument") || "")
+    .trim()
+    .toLowerCase();
   if (requestedInstrument) {
     if (!state.instruments.some((instrument) => instrument.code === requestedInstrument)) {
       showAlert("Esta evaluacion no esta asignada a tu cuenta.");

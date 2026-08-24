@@ -1,11 +1,36 @@
 /**
- * MENTE DE ACERO V2 — APP SHELL & ROUTER COMPONENT
+ * MENTE DE ACERO V2 - APP SHELL & ROUTER
  */
 
 import { api } from '../core/api.js';
+import { escapeHtml, getFirstName } from '../core/assessmentData.mjs';
 import { renderHomeDashboard } from '../pages/homeDashboard.js';
 import { renderResultsHub } from '../pages/resultsHub.js';
 import { renderProfileView } from '../pages/profileView.js';
+import { renderProgressView } from '../pages/progressView.js';
+
+const ROUTES = {
+  home: {
+    title: 'Inicio',
+    subtitle: 'Tu espacio de evaluación y desarrollo personal',
+    render: renderHomeDashboard,
+  },
+  results: {
+    title: 'Evaluaciones y resultados',
+    subtitle: 'Consulta tus avances y resultados disponibles',
+    render: renderResultsHub,
+  },
+  progress: {
+    title: 'Mi progreso',
+    subtitle: 'Seguimiento de evaluaciones asignadas',
+    render: renderProgressView,
+  },
+  profile: {
+    title: 'Mi perfil',
+    subtitle: 'Tus perfiles psicológicos, separados por instrumento',
+    render: renderProfileView,
+  },
+};
 
 export class AppShell {
   constructor(rootElement) {
@@ -15,208 +40,192 @@ export class AppShell {
   }
 
   async init() {
+    this.renderLoading();
     try {
-      this.userData = await api.getAuthMe();
-      if (this.userData?.user?.mustChangePassword) {
-        window.location.href = '/login.html?change=1';
+      const auth = await api.getAuthMe();
+      if (auth?.user?.role === 'admin') {
+        window.location.replace('/admin.html');
         return;
       }
-    } catch {
+      if (auth?.user?.mustChangePassword) {
+        window.location.replace('/login.html?change=1');
+        return;
+      }
+      const applicationPayload = await api.getMyApplications();
       this.userData = {
-        user: {
-          username: 'participante.demo',
-          role: 'participant',
-          person: {
-            fullName: 'Alex Rivera Mendoza',
-            idNumber: '1723456789',
-            rankName: 'Participante'
-          }
-        },
-        assignments: [
-          {
-            instrumentCode: 'baron',
-            instrumentName: 'Inventario de Cociente Emocional Bar-On ICE',
-            status: 'in_progress',
-            percentageComplete: 65
-          },
-          {
-            instrumentCode: 'ema',
-            instrumentName: 'Escala de Asertividad EMA',
-            status: 'completed',
-            percentageComplete: 100
-          },
-          {
-            instrumentCode: 'disc',
-            instrumentName: 'Perfil Conductual DISC',
-            status: 'completed',
-            percentageComplete: 100
-          }
-        ]
+        ...auth,
+        applications: applicationPayload?.applications || [],
       };
+    } catch (error) {
+      if (error?.status === 401 || error?.status === 403) {
+        window.location.replace('/login.html');
+        return;
+      }
+      this.renderFatalError(error);
+      return;
     }
+
     this.render();
     this.setupRouting();
     this.navigate(window.location.hash.replace('#', '') || 'home');
   }
 
+  renderLoading() {
+    this.root.innerHTML = `
+      <div class="portal-loading" role="status">
+        <img src="/mente-de-acero-emblem.png" alt="" />
+        <span>Cargando tu espacio seguro...</span>
+      </div>
+    `;
+  }
+
+  renderFatalError(error) {
+    this.root.innerHTML = `
+      <main class="portal-error-state">
+        <img src="/mente-de-acero-emblem.png" alt="Mente de Acero" />
+        <h1>No pudimos cargar tu portal</h1>
+        <p>${escapeHtml(error?.message || 'Inténtalo nuevamente en unos momentos.')}</p>
+        <button class="btn btn-navy" type="button" id="retryPortalBtn">
+          <i data-lucide="refresh-cw"></i> Reintentar
+        </button>
+      </main>
+    `;
+    this.root.querySelector('#retryPortalBtn')?.addEventListener('click', () => window.location.reload());
+    window.lucide?.createIcons();
+  }
+
   render() {
     const person = this.userData?.user?.person || {};
-    const initials = person.fullName
-      ? person.fullName.split(' ').map((p) => p[0]).slice(0, 2).join('')
-      : 'MA';
+    const safeName = escapeHtml(person.fullName || 'Participante');
+    const initials = escapeHtml(
+      person.fullName
+        ? person.fullName.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase()
+        : 'MA'
+    );
 
     this.root.innerHTML = `
       <div class="app-shell">
-        <!-- DESKTOP SIDEBAR -->
         <aside class="app-sidebar">
           <div class="sidebar-top">
-            <a href="#home" class="brand-lockup">
-              <div class="brand-mark"><i data-lucide="shield"></i></div>
+            <a href="#home" class="brand-lockup" aria-label="Ir al inicio">
+              <img class="brand-emblem" src="/mente-de-acero-emblem.png" alt="" />
               <div class="brand-info">
-                <span class="brand-name">MENTE DE ACERO</span>
-                <span class="brand-tagline">Evaluación & Bienestar</span>
+                <span class="brand-name">MENTE <small>DE</small> ACERO</span>
+                <span class="brand-tagline">Mente · Cuerpo · Espíritu</span>
               </div>
             </a>
 
-            <!-- User Profile Badge -->
             <div class="user-profile-badge">
               <div class="user-avatar">${initials}</div>
               <div class="user-meta">
-                <span class="user-name">${person.fullName || 'Participante'}</span>
-                <span class="user-role">${person.rankName || 'Participante'}</span>
+                <span class="user-name">${safeName}</span>
+                <span class="user-role">${escapeHtml(person.rankName || person.personnelCategory || 'Participante')}</span>
               </div>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="sidebar-nav">
-              <a href="#home" class="nav-link active" data-route="home">
-                <i data-lucide="home"></i> <span>Inicio</span>
-              </a>
-              <a href="#results" class="nav-link" data-route="results">
-                <i data-lucide="bar-chart-2"></i> <span>Resultados</span>
-              </a>
-              <a href="#profile" class="nav-link" data-route="profile">
-                <i data-lucide="user"></i> <span>Mi Perfil</span>
-              </a>
-              <a href="#habits" class="nav-link" data-route="habits">
-                <i data-lucide="heart"></i> <span>Hábitos & Progreso</span>
-              </a>
-              <a href="/index.html" class="nav-link">
-                <i data-lucide="clipboard-list"></i> <span>Evaluaciones</span>
-              </a>
+            <nav class="sidebar-nav" aria-label="Navegación principal">
+              ${this.renderNavLinks('nav-link')}
             </nav>
 
-            <!-- Motivational Card -->
             <div class="sidebar-motivational-card">
-              <div class="card-head"><i data-lucide="sparkles"></i> Mente Fuerte</div>
-              <p>Tu bienestar mental es tu mayor fortaleza. Sigue evaluándote y conoce tu evolución.</p>
+              <div class="card-head"><i data-lucide="shield-check"></i> Información protegida</div>
+              <p>Tus respuestas son confidenciales y se muestran únicamente dentro de tu sesión.</p>
             </div>
           </div>
 
-          <!-- Sidebar Footer -->
           <div class="sidebar-bottom">
-            <div class="sidebar-links">
-              <a href="#">Ayuda</a> · <a href="#">Privacidad</a> · <a href="#">Términos</a>
-            </div>
-            <button class="logout-btn" id="sidebarLogoutBtn">
+            <p class="sidebar-privacy">Evaluación orientativa y de uso institucional.</p>
+            <button class="logout-btn" id="sidebarLogoutBtn" type="button">
               <span>Cerrar sesión</span> <i data-lucide="log-out"></i>
             </button>
           </div>
         </aside>
 
-        <!-- MAIN VIEWPORT -->
         <main class="app-main">
           <header class="app-topbar">
+            <a href="#home" class="mobile-brand" aria-label="Mente de Acero">
+              <img src="/mente-de-acero-emblem.png" alt="" />
+              <span>MENTE <strong>DE ACERO</strong></span>
+            </a>
             <div class="topbar-heading">
               <h1 id="pageTitle">Inicio</h1>
-              <p id="pageSubtitle">Plataforma de evaluación y bienestar psicológico</p>
+              <p id="pageSubtitle">Tu espacio de evaluación y desarrollo personal</p>
             </div>
-            <div class="topbar-actions">
-              <button class="icon-badge-btn" title="Notificaciones" aria-label="Notificaciones">
-                <i data-lucide="bell"></i>
-                <span class="badge-dot"></span>
-              </button>
-              <button class="topbar-btn" id="helpCenterBtn">
-                <i data-lucide="help-circle"></i> <span>Centro de ayuda</span>
-              </button>
+            <div class="topbar-user" title="Sesión activa">
+              <div class="user-avatar">${initials}</div>
+              <div>
+                <span>Hola, ${escapeHtml(getFirstName(person.fullName))}</span>
+                <small>Sesión segura</small>
+              </div>
             </div>
           </header>
 
-          <div class="content-container" id="pageContentContainer">
-            <!-- Dynamic page view injected here -->
-          </div>
+          <div class="content-container" id="pageContentContainer" aria-live="polite"></div>
         </main>
 
-        <!-- MOBILE BOTTOM NAVIGATION (SCREEN 2) -->
         <nav class="mobile-bottom-bar" aria-label="Navegación móvil">
           <div class="mobile-nav-items">
-            <a href="#home" class="mobile-nav-link active" data-route="home">
-              <i data-lucide="home"></i> <span>Inicio</span>
-            </a>
-            <a href="#results" class="mobile-nav-link" data-route="results">
-              <i data-lucide="bar-chart-2"></i> <span>Resultados</span>
-            </a>
-            <a href="/index.html" class="mobile-nav-link">
-              <i data-lucide="clipboard-list"></i> <span>Test</span>
-            </a>
-            <a href="#habits" class="mobile-nav-link" data-route="habits">
-              <i data-lucide="trending-up"></i> <span>Progreso</span>
-            </a>
-            <a href="#profile" class="mobile-nav-link" data-route="profile">
-              <i data-lucide="user"></i> <span>Perfil</span>
-            </a>
+            ${this.renderNavLinks('mobile-nav-link', true)}
           </div>
         </nav>
       </div>
     `;
 
-    // Logout trigger
     this.root.querySelector('#sidebarLogoutBtn')?.addEventListener('click', () => api.logout());
-    this.root.querySelector('#helpCenterBtn')?.addEventListener('click', () => {
-      alert('Centro de ayuda Mente de Acero: Acceso a guías psicométricas, soporte técnico y línea de orientación psicológica 24/7 (01 800 123 4567).');
-    });
+    window.lucide?.createIcons();
+  }
 
-    if (window.lucide) window.lucide.createIcons();
+  renderNavLinks(className, mobile = false) {
+    const links = [
+      ['home', 'home', 'Inicio'],
+      ['evaluations', 'clipboard-list', mobile ? 'Evaluar' : 'Evaluaciones'],
+      ['results', 'bar-chart-3', 'Resultados'],
+      ['progress', 'trending-up', 'Progreso'],
+      ['profile', 'user-round', 'Perfil'],
+    ];
+    return links.map(([route, icon, label]) => {
+      const href = route === 'evaluations' ? '/index.html' : `#${route}`;
+      const routeAttribute = route === 'evaluations' ? '' : ` data-route="${route}"`;
+      return `
+        <a href="${href}" class="${className}${route === 'home' ? ' active' : ''}"${routeAttribute}>
+          <i data-lucide="${icon}"></i><span>${label}</span>
+        </a>
+      `;
+    }).join('');
   }
 
   setupRouting() {
     window.addEventListener('hashchange', () => {
-      const route = window.location.hash.replace('#', '') || 'home';
-      this.navigate(route);
+      this.navigate(window.location.hash.replace('#', '') || 'home');
     });
   }
 
-  navigate(route) {
+  async navigate(requestedRoute) {
+    const route = ROUTES[requestedRoute] ? requestedRoute : 'home';
     this.activeRoute = route;
     const container = document.getElementById('pageContentContainer');
     if (!container) return;
 
-    // Update active nav link classes
-    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach((el) => {
-      if (el.dataset.route === route) el.classList.add('active');
-      else el.classList.remove('active');
+    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach((element) => {
+      element.classList.toggle('active', element.dataset.route === route);
     });
 
-    const pageTitle = document.getElementById('pageTitle');
-    const pageSubtitle = document.getElementById('pageSubtitle');
+    const config = ROUTES[route];
+    document.getElementById('pageTitle').textContent = config.title;
+    document.getElementById('pageSubtitle').textContent = config.subtitle;
+    container.innerHTML = '<div class="view-loading"><span></span> Cargando información...</div>';
 
-    if (route === 'results') {
-      if (pageTitle) pageTitle.textContent = 'Evaluaciones y Resultados';
-      if (pageSubtitle) pageSubtitle.textContent = 'Conócete mejor. Entrena tu mente. Fortalece tu vida.';
-      renderResultsHub(container, this.userData);
-    } else if (route === 'profile') {
-      if (pageTitle) pageTitle.textContent = 'Mi Perfil';
-      if (pageSubtitle) pageSubtitle.textContent = 'Dimensiones e indicadores psicológicos personales';
-      renderProfileView(container, this.userData);
-    } else if (route === 'habits') {
-      if (pageTitle) pageTitle.textContent = 'Hábitos & Progreso';
-      if (pageSubtitle) pageSubtitle.textContent = 'Seguimiento diario de bienestar y autorregulación';
-      renderHomeDashboard(container, this.userData);
-    } else {
-      // Default: 'home'
-      if (pageTitle) pageTitle.textContent = 'Inicio';
-      if (pageSubtitle) pageSubtitle.textContent = 'Plataforma de evaluación y bienestar psicológico';
-      renderHomeDashboard(container, this.userData);
+    try {
+      await config.render(container, this.userData);
+    } catch (error) {
+      container.innerHTML = `
+        <div class="empty-state page-error">
+          <i data-lucide="triangle-alert"></i>
+          <h2>No pudimos mostrar esta sección</h2>
+          <p>${escapeHtml(error?.message || 'Actualiza la página para volver a intentarlo.')}</p>
+        </div>
+      `;
+      window.lucide?.createIcons();
     }
   }
 }

@@ -5,16 +5,12 @@
 
 export function renderRadarChart(container, dimensions = []) {
   if (!container) return;
+  if (dimensions.length < 3) {
+    container.innerHTML = '<div class="empty-inline">No hay suficientes dimensiones para generar esta gráfica.</div>';
+    return;
+  }
 
-  const defaultDims = [
-    { axis: 'Ansiedad / Manejo Estrés', value: 75 },
-    { axis: 'Autoestima', value: 80 },
-    { axis: 'Resiliencia', value: 85 },
-    { axis: 'Estado emocional', value: 70 },
-    { axis: 'Bienestar percibido', value: 78 }
-  ];
-
-  const data = dimensions.length ? dimensions : defaultDims;
+  const data = dimensions;
   const numAxes = data.length;
   const size = 300;
   const center = size / 2;
@@ -48,7 +44,8 @@ export function renderRadarChart(container, dimensions = []) {
     spokesAndLabels += `<line x1="${center}" y1="${center}" x2="${xEnd.toFixed(1)}" y2="${yEnd.toFixed(1)}" stroke="#E2E8F0" stroke-width="1.2" />`;
 
     // User score vertex
-    const normalizedScore = Math.min(Math.max((dim.value || 0) / 100, 0.1), 1.0);
+    const maxValue = Number(dim.max) > 0 ? Number(dim.max) : 100;
+    const normalizedScore = Math.min(Math.max((Number(dim.value) || 0) / maxValue, 0), 1.0);
     const ux = center + radius * normalizedScore * Math.cos(angle);
     const uy = center + radius * normalizedScore * Math.sin(angle);
     userPoints.push(`${ux.toFixed(1)},${uy.toFixed(1)}`);
@@ -57,11 +54,13 @@ export function renderRadarChart(container, dimensions = []) {
     const labelRadius = radius + 24;
     const lx = center + labelRadius * Math.cos(angle);
     const ly = center + labelRadius * Math.sin(angle);
-    const anchor = Math.abs(Math.cos(angle)) < 0.2 ? 'middle' : Math.cos(angle) > 0 ? 'start' : 'end';
+    const horizontalDirection = Math.cos(angle);
+    const anchor = Math.abs(horizontalDirection) < 0.2 ? 'middle' : horizontalDirection > 0 ? 'end' : 'start';
+    const label = String(dim.axis || '').length > 20 ? `${String(dim.axis).slice(0, 19)}…` : String(dim.axis || '');
 
     spokesAndLabels += `
       <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="10.5" font-family="'Inter', sans-serif" font-weight="600" fill="#475569">
-        ${dim.axis}
+        ${label}
       </text>
     `;
   });

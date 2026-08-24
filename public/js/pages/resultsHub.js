@@ -1,246 +1,230 @@
 /**
- * MENTE DE ACERO V2 — RESULTS & EVALUATIONS HUB PAGE (SCREEN 1)
+ * MENTE DE ACERO V2 - EVALUATIONS & RESULTS
  */
 
-import { api } from '../core/api.js';
+import {
+  buildEvaluationRows,
+  escapeHtml,
+  formatDate,
+  getDimensions,
+  getObservationGroups,
+  getOverallProgress,
+  getScoreSummary,
+  sortApplications,
+  statusClass,
+  statusLabel,
+} from '../core/assessmentData.mjs';
 import { renderRadarChart } from '../charts/radarChart.js';
 import { generateReportPdf } from '../services/reportGenerator.js';
-import { getPersonalizedRecommendations } from '../services/recommendations.js';
 
-export async function renderResultsHub(container, userData) {
-  const person = userData?.user?.person || {};
-  const assignments = userData?.assignments || [];
+function renderHero(row) {
+  if (!row) {
+    return `
+      <div class="hero-eval-content">
+        <span class="eyebrow">EVALUACIONES</span>
+        <h2>Sin instrumentos asignados</h2>
+        <p>Tu ruta aparecerá cuando la administración active una evaluación para tu perfil.</p>
+      </div>
+      <div class="hero-eval-illustration"><i data-lucide="clipboard-check"></i></div>
+    `;
+  }
+  const completed = row.status === 'completed' || row.status === 'invalid';
+  return `
+    <div class="hero-eval-content">
+      <span class="eyebrow">${completed ? 'RESULTADO DISPONIBLE' : 'EVALUACIÓN ACTUAL'}</span>
+      <h2>${escapeHtml(row.name)}</h2>
+      <p>${completed ? 'Consulta el perfil y las dimensiones calculadas para este instrumento.' : `Tienes ${row.percentageComplete}% completado. Puedes continuar sin perder tus respuestas.`}</p>
+      <div>
+        <a href="${completed ? '#resultDetail' : `/index.html?instrument=${encodeURIComponent(row.instrumentCode)}`}" class="btn btn-primary">
+          ${completed ? 'Ver resultado' : row.status === 'in_progress' ? 'Continuar evaluación' : 'Iniciar evaluación'}
+          <i data-lucide="arrow-right"></i>
+        </a>
+      </div>
+    </div>
+    <div class="hero-eval-illustration accent-${row.accent}"><i data-lucide="${row.icon}"></i></div>
+  `;
+}
 
-  const recommendations = getPersonalizedRecommendations(assignments);
-
-  // Radar dimensions from user's real scores (e.g. Bar-On composites)
-  const radarDimensions = [
-    { axis: 'Ansiedad / Manejo Estrés', value: 75 },
-    { axis: 'Autoestima', value: 80 },
-    { axis: 'Resiliencia', value: 85 },
-    { axis: 'Estado emocional', value: 70 },
-    { axis: 'Bienestar percibido', value: 78 }
+function renderStepper(rows, completedApplications) {
+  const allCompleted = rows.length > 0 && rows.every((row) => ['completed', 'invalid'].includes(row.status));
+  const hasResult = completedApplications.length > 0;
+  const steps = [
+    { label: 'Información personal', state: 'completed' },
+    { label: 'Cuestionarios', state: allCompleted ? 'completed' : 'active' },
+    { label: 'Resultados', state: hasResult ? 'completed' : allCompleted ? 'active' : '' },
+    { label: 'Perfil', state: hasResult ? 'completed' : '' },
   ];
+  return steps.map((step, index) => `
+    <div class="step-node ${step.state}">
+      <div class="step-circle">${step.state === 'completed' ? '✓' : index + 1}</div>
+      <span class="step-label">${step.label}</span>
+    </div>
+  `).join('');
+}
+
+function renderEvaluationList(rows) {
+  if (!rows.length) {
+    return '<div class="empty-inline">No hay evaluaciones asignadas.</div>';
+  }
+  return rows.map((row) => {
+    const completed = ['completed', 'invalid'].includes(row.status);
+    return `
+      <div class="active-eval-item">
+        <div class="active-eval-left">
+          <div class="active-eval-icon accent-${row.accent}"><i data-lucide="${row.icon}"></i></div>
+          <div class="active-eval-info">
+            <span>${escapeHtml(row.shortName)}</span>
+            <small>${statusLabel(row.status)} · ${row.percentageComplete}%</small>
+            <div class="progress-track"><div class="progress-fill" style="width:${row.percentageComplete}%"></div></div>
+          </div>
+        </div>
+        <a href="${completed ? '#resultDetail' : `/index.html?instrument=${encodeURIComponent(row.instrumentCode)}`}" class="btn btn-secondary btn-sm">
+          ${completed ? 'Ver' : row.status === 'in_progress' ? 'Continuar' : 'Iniciar'}
+        </a>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderResultSelector(applications, selectedId) {
+  if (!applications.length) {
+    return `
+      <div class="empty-state compact-empty">
+        <i data-lucide="file-clock"></i>
+        <h3>No hay informes disponibles</h3>
+        <p>Los resultados aparecerán después de completar una evaluación.</p>
+      </div>
+    `;
+  }
+  return applications.map((application) => {
+    const summary = getScoreSummary(application);
+    const selected = application.id === selectedId;
+    return `
+      <button class="result-selector ${selected ? 'active' : ''}" type="button" data-result-id="${escapeHtml(application.id)}">
+        <div>
+          <strong>${escapeHtml(application.instrumentName)}</strong>
+          <span>${formatDate(application.completedAt)}</span>
+        </div>
+        <span class="badge ${statusClass(application.status)}">${escapeHtml(summary?.value || summary?.profile || statusLabel(application.status))}</span>
+        <i data-lucide="chevron-right"></i>
+      </button>
+    `;
+  }).join('');
+}
+
+function renderInsight(title, icon, items, className) {
+  if (!items.length) return '';
+  return `
+    <div class="insight-block ${className}">
+      <div class="insight-header"><i data-lucide="${icon}"></i>${title}</div>
+      ${items.slice(0, 2).map((item) => `<p>${escapeHtml(item)}</p>`).join('')}
+    </div>
+  `;
+}
+
+function renderDetail(application) {
+  if (!application) {
+    return `
+      <div class="result-detail-empty">
+        <i data-lucide="chart-radar"></i>
+        <h3>Completa una evaluación para construir tu perfil</h3>
+        <p>Esta sección no utiliza valores de referencia ni puntajes simulados.</p>
+      </div>
+    `;
+  }
+  const summary = getScoreSummary(application);
+  const dimensions = getDimensions(application);
+  const observations = getObservationGroups(application);
+  return `
+    <div class="result-detail-heading">
+      <div>
+        <span class="eyebrow">${escapeHtml(application.instrumentCode.toUpperCase())} · ${formatDate(application.completedAt)}</span>
+        <h2>${escapeHtml(application.instrumentName)}</h2>
+        <p>${escapeHtml(summary?.profile || 'Resultado disponible')}</p>
+      </div>
+      <span class="result-main-score ${summary?.valid === false ? 'warning' : ''}">${escapeHtml(summary?.value || 'Perfil')}</span>
+    </div>
+    ${summary?.valid === false ? '<div class="result-validity-warning"><i data-lucide="triangle-alert"></i>Este resultado requiere revisión por sus indicadores de validez.</div>' : ''}
+    <div class="result-detail-grid">
+      <div class="result-chart-panel">
+        <h3>Dimensiones evaluadas</h3>
+        <div id="resultsRadarContainer" class="radar-wrapper"></div>
+      </div>
+      <div class="result-dimension-list">
+        ${dimensions.length ? dimensions.map((dimension) => `
+          <div class="dimension-progress-row">
+            <div><span>${escapeHtml(dimension.label)}</span><strong>${escapeHtml(dimension.displayValue)}</strong></div>
+            <div class="progress-track"><div class="progress-fill" style="width:${Math.min((dimension.value / dimension.max) * 100, 100)}%"></div></div>
+            <small>${escapeHtml(dimension.level)}</small>
+          </div>
+        `).join('') : '<div class="empty-inline">Este instrumento no tiene dimensiones disponibles para graficar.</div>'}
+      </div>
+    </div>
+    <div class="result-insights-grid">
+      ${renderInsight('Fortalezas', 'star', observations.strengths, 'strengths')}
+      ${renderInsight('Áreas de atención', 'target', observations.attentionAreas, 'opportunities')}
+      ${renderInsight('Sugerencias', 'lightbulb', observations.suggestions, 'suggestions')}
+    </div>
+  `;
+}
+
+export async function renderResultsHub(container, userData, selectedResultId = null) {
+  const person = userData?.user?.person || {};
+  const applications = userData?.applications || [];
+  const rows = buildEvaluationRows(userData?.assignments || [], applications);
+  const completedApplications = sortApplications(applications).filter((item) => ['completed', 'invalid'].includes(item.status));
+  const selected = completedApplications.find((item) => item.id === selectedResultId) || completedApplications[0] || null;
+  const currentRow = rows.find((row) => row.status === 'in_progress') || rows.find((row) => row.status === 'pending') || rows[0];
 
   container.innerHTML = `
     <div class="results-hub-grid">
-      <!-- TOP ROW: HERO EVALUATION & 5-STEP STEPPER -->
       <div class="results-top-row">
-        <div class="card hero-eval-card">
-          <div class="hero-eval-content">
-            <span class="eyebrow">EVALUACIÓN PRINCIPAL</span>
-            <h2>Evaluación de perfil mental</h2>
-            <p>Conoce tu estado actual en las principales dimensiones de tu bienestar y funcionamiento adaptativo.</p>
-            <div>
-              <a href="/index.html?instrument=baron" class="btn btn-primary">
-                Iniciar evaluación <i data-lucide="arrow-right"></i>
-              </a>
-            </div>
-          </div>
-          <div class="hero-eval-illustration">
-            <svg viewBox="0 0 140 140" fill="none">
-              <circle cx="70" cy="70" r="60" fill="rgba(11, 113, 108, 0.08)" />
-              <path d="M70 25 C45 25 35 45 35 70 C35 95 50 115 70 115 C90 115 105 95 105 70 C105 45 95 25 70 25 Z" fill="rgba(37, 99, 235, 0.15)" />
-              <circle cx="65" cy="55" r="4" fill="#0B716C" />
-              <circle cx="80" cy="65" r="5" fill="#2563EB" />
-              <circle cx="60" cy="80" r="4" fill="#D99B26" />
-              <path d="M65 55 L80 65 L60 80 Z" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="2,2" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="card stepper-card">
+        <section class="card hero-eval-card">${renderHero(currentRow)}</section>
+        <section class="card stepper-card">
           <div class="card-header">
-            <h3>Tu progreso en la evaluación</h3>
-            <span class="badge badge-info">Paso 2 de 5</span>
+            <div><h3>Tu ruta de evaluación</h3><span class="card-subtitle">${getOverallProgress(rows)}% de avance general</span></div>
           </div>
-          <div class="stepper-track">
-            <div class="step-node completed">
-              <div class="step-circle">✓</div>
-              <span class="step-label">Información personal</span>
-            </div>
-            <div class="step-node active">
-              <div class="step-circle">2</div>
-              <span class="step-label">Cuestionarios</span>
-            </div>
-            <div class="step-node">
-              <div class="step-circle">3</div>
-              <span class="step-label">Análisis</span>
-            </div>
-            <div class="step-node">
-              <div class="step-circle">4</div>
-              <span class="step-label">Informe</span>
-            </div>
-            <div class="step-node">
-              <div class="step-circle">5</div>
-              <span class="step-label">Recomendaciones</span>
-            </div>
-          </div>
-          <p class="stepper-footer">Vas por buen camino. Completa todos los pasos para obtener tu informe completo.</p>
-        </div>
+          <div class="stepper-track">${renderStepper(rows, completedApplications)}</div>
+          <p class="stepper-footer">El progreso se actualiza automáticamente al guardar cada respuesta.</p>
+        </section>
       </div>
 
-      <!-- MIDDLE ROW: ACTIVE ASSESSMENTS, RADAR CHART, INSIGHTS -->
-      <div class="results-middle-row">
-        <!-- Active Assessments Card -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h3>Evaluaciones activas</h3>
-              <span class="card-subtitle">Tus evaluaciones en progreso</span>
-            </div>
-          </div>
-          <div class="active-evals-list">
-            <div class="active-eval-item">
-              <div class="active-eval-left">
-                <div class="active-eval-icon"><i data-lucide="wind"></i></div>
-                <div class="active-eval-info">
-                  <span>Manejo de ansiedad</span>
-                  <div class="progress-track" style="height:6px;">
-                    <div class="progress-fill" style="width:65%;"></div>
-                  </div>
-                </div>
-              </div>
-              <a href="/index.html?instrument=baron" class="btn btn-secondary btn-sm">Continuar</a>
-            </div>
-
-            <div class="active-eval-item">
-              <div class="active-eval-left">
-                <div class="active-eval-icon" style="color:#D99B26; background:rgba(217,155,38,0.1);"><i data-lucide="heart"></i></div>
-                <div class="active-eval-info">
-                  <span>Autoestima (EMA)</span>
-                  <div class="progress-track" style="height:6px;">
-                    <div class="progress-fill gold" style="width:40%;"></div>
-                  </div>
-                </div>
-              </div>
-              <a href="/index.html?instrument=ema" class="btn btn-secondary btn-sm">Continuar</a>
-            </div>
-
-            <div class="active-eval-item">
-              <div class="active-eval-left">
-                <div class="active-eval-icon" style="color:#10B981; background:rgba(16,185,129,0.1);"><i data-lucide="mountain"></i></div>
-                <div class="active-eval-info">
-                  <span>Resiliencia adaptativa</span>
-                  <div class="progress-track" style="height:6px;">
-                    <div class="progress-fill" style="width:80%; background:#10B981;"></div>
-                  </div>
-                </div>
-              </div>
-              <a href="/index.html?instrument=baron" class="btn btn-secondary btn-sm">Continuar</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Radar Chart Card (Real Dimensions) -->
-        <div class="card radar-chart-card">
-          <div class="card-header" style="width:100%;">
-            <div>
-              <h3>Perfil psicológico multidimensional</h3>
-              <span class="card-subtitle">Dimensiones de tu evaluación</span>
-            </div>
-          </div>
-          <div id="resultsRadarContainer" class="radar-wrapper"></div>
-        </div>
-
-        <!-- Interpretation Insights Card -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h3>¿Qué significa tu resultado?</h3>
-              <span class="card-subtitle">Análisis orientativo</span>
-            </div>
-          </div>
-          <div class="insight-card-wrapper">
-            <div class="insight-block strengths">
-              <div class="insight-header">
-                <i data-lucide="star"></i> Fortalezas
-              </div>
-              <p>Tienes una sólida capacidad de resiliencia y adaptabilidad frente a los desafíos cotidianos.</p>
-            </div>
-
-            <div class="insight-block opportunities">
-              <div class="insight-header">
-                <i data-lucide="target"></i> Áreas de oportunidad
-              </div>
-              <p>Podrías trabajar en la gestión de pausas conscientes para alcanzar un mayor equilibrio diario.</p>
-            </div>
-
-            <p style="font-size:0.75rem; color:#64748B; font-style:italic;">
-              Recuerda: cada paso cuenta. Sigue entrenando tu mente con disciplina y constancia.
-            </p>
-          </div>
-        </div>
+      <div class="results-workspace-row">
+        <section class="card">
+          <div class="card-header"><div><h3>Instrumentos asignados</h3><span class="card-subtitle">Acceso directo a cada evaluación</span></div></div>
+          <div class="active-evals-list">${renderEvaluationList(rows)}</div>
+        </section>
+        <section class="card result-selector-card">
+          <div class="card-header"><div><h3>Informes disponibles</h3><span class="card-subtitle">Selecciona un resultado para revisarlo</span></div></div>
+          <div class="result-selector-list">${renderResultSelector(completedApplications, selected?.id)}</div>
+        </section>
       </div>
 
-      <!-- BOTTOM ROW: RECOMMENDATIONS & PDF REPORT CARD -->
-      <div class="results-bottom-row">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h3>Recomendaciones personalizadas</h3>
-              <span class="card-subtitle">Sugerencias basadas en tus resultados</span>
-            </div>
+      <section class="card result-detail-card" id="resultDetail">
+        ${renderDetail(selected)}
+        ${selected ? `
+          <div class="report-actions">
+            <div><i data-lucide="lock-keyhole"></i><span>Informe personal y confidencial</span></div>
+            <button class="btn btn-primary btn-sm" id="downloadPdfBtn" type="button"><i data-lucide="download"></i>Descargar informe</button>
           </div>
-          <div class="recommendations-list" id="resultsRecommendationsList"></div>
-        </div>
+        ` : ''}
+      </section>
 
-        <div class="card report-pdf-card">
-          <div class="report-pdf-icon">
-            <i data-lucide="file-text"></i>
-          </div>
-          <div class="report-pdf-body">
-            <h4>Informe de perfil mental</h4>
-            <div class="report-pdf-checklist">
-              <span><i data-lucide="check" style="color:#10B981; width:14px;"></i> Resultados detallados</span>
-              <span><i data-lucide="check" style="color:#10B981; width:14px;"></i> Análisis e interpretación</span>
-              <span><i data-lucide="check" style="color:#10B981; width:14px;"></i> Recomendaciones personalizadas</span>
-            </div>
-            <button class="btn btn-primary btn-sm" id="downloadPdfBtn" style="margin-top:8px;">
-              <i data-lucide="download"></i> Descargar informe (PDF)
-            </button>
-            <small style="font-size:0.72rem; color:#64748B;"><i data-lucide="shield-check" style="width:12px;"></i> Documento seguro y confidencial</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- CONFIDENTIALITY GLOBAL BANNER -->
-      <div class="trust-banner" style="margin-top: 8px;">
-        <div class="banner-icon"><i data-lucide="lock"></i></div>
-        <div class="trust-banner-content">
-          <h4>Privacidad y Reserva Profesional</h4>
-          <p>En Mente de Acero, tus respuestas son estrictamente confidenciales y utilizadas únicamente para tu desarrollo personal.</p>
-        </div>
+      <div class="privacy-footer-banner">
+        <i data-lucide="shield-check"></i>
+        <p>Las puntuaciones mostradas provienen de tus respuestas guardadas y no sustituyen una valoración clínica.</p>
       </div>
     </div>
   `;
 
-  // Render Radar Chart
-  const radarEl = container.querySelector('#resultsRadarContainer');
-  renderRadarChart(radarEl, radarDimensions);
+  if (selected) {
+    const dimensions = getDimensions(selected).map((item) => ({ axis: item.label, value: item.value, max: item.max }));
+    renderRadarChart(container.querySelector('#resultsRadarContainer'), dimensions);
+    container.querySelector('#downloadPdfBtn')?.addEventListener('click', () => generateReportPdf(selected, person));
+  }
 
-  // Render Recommendations List
-  const recList = container.querySelector('#resultsRecommendationsList');
-  recList.innerHTML = recommendations.map((r) => `
-    <div class="recommendation-card-item">
-      <div class="rec-left">
-        <div class="rec-icon"><i data-lucide="${r.icon || 'sparkles'}"></i></div>
-        <div class="rec-body">
-          <h4>${r.title}</h4>
-          <p>${r.description}</p>
-        </div>
-      </div>
-      <div class="rec-right">
-        <span class="badge badge-subtle">${r.tag}</span>
-        <i data-lucide="chevron-right"></i>
-      </div>
-    </div>
-  `).join('');
-
-  // Wire PDF download
-  container.querySelector('#downloadPdfBtn')?.addEventListener('click', () => {
-    generateReportPdf(assignments[0] || {}, person);
+  container.querySelectorAll('[data-result-id]').forEach((button) => {
+    button.addEventListener('click', () => renderResultsHub(container, userData, button.dataset.resultId));
   });
-
-  if (window.lucide) window.lucide.createIcons();
+  window.lucide?.createIcons();
 }

@@ -48,6 +48,7 @@ const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
+  ".mjs": "application/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".png": "image/png",
   ".jpg": "image/jpeg",
@@ -451,6 +452,24 @@ function buildPublicApplicationPayload(application, instrumentDefinition) {
   };
 }
 
+function buildParticipantApplicationSummary(application) {
+  return {
+    id: application.id,
+    instrumentCode: application.instrumentCode,
+    instrumentName: application.instrumentName,
+    instrumentVersion: application.instrumentVersion,
+    status: application.status,
+    currentModuleKey: application.currentModuleKey,
+    percentageComplete: application.percentageComplete,
+    valid: application.valid,
+    startedAt: application.startedAt,
+    completedAt: application.completedAt,
+    partialResults: application.partialResults,
+    finalResult: application.finalResult,
+    scoring: application.scoringSnapshot,
+  };
+}
+
 async function sendExcel(res, filter = {}) {
   const applications = await exportApplications(filter);
   const instrumentCode = filter.instrumentCode || "";
@@ -717,6 +736,20 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (requestUrl.pathname === "/api/me/applications" && req.method === "GET") {
+    const context = await requireParticipant(req, res);
+    if (!context) return;
+    try {
+      const applications = await listApplications({ idNumber: context.person.idNumber });
+      sendJson(res, 200, {
+        applications: applications.map(buildParticipantApplicationSummary),
+      });
+    } catch (error) {
+      sendJson(res, 500, { error: error.message || "No se pudieron cargar tus evaluaciones." });
+    }
+    return;
+  }
+
   if (requestUrl.pathname === "/api/applications/resume" && req.method === "GET") {
     const context = await requireParticipant(req, res);
     if (!context) return;
@@ -903,19 +936,12 @@ const server = http.createServer(async (req, res) => {
     const context = await requireParticipant(req, res);
     if (!context) return;
     sendJson(res, 200, {
-      wellnessIndex: 76,
-      category: "Adecuado",
-      deltaWeek: 8,
-      habitRatio: "3 de 5 completados",
-      weeklyTrend: [
-        { day: "L", score: 68 },
-        { day: "M", score: 72 },
-        { day: "M", score: 70 },
-        { day: "J", score: 74 },
-        { day: "V", score: 76 },
-        { day: "S", score: 78 },
-        { day: "D", score: 80 }
-      ]
+      configured: false,
+      wellnessIndex: null,
+      category: null,
+      deltaWeek: null,
+      habitRatio: null,
+      weeklyTrend: [],
     });
     return;
   }
@@ -923,13 +949,7 @@ const server = http.createServer(async (req, res) => {
   if (requestUrl.pathname === "/api/habits/today" && req.method === "GET") {
     const context = await requireParticipant(req, res);
     if (!context) return;
-    sendJson(res, 200, [
-      { key: "sleep", label: "Dormir 7–8 h", target: "6.5 h prom.", completed: true, icon: "bed" },
-      { key: "water", label: "Beber agua", target: "2.0 L", completed: true, icon: "droplet" },
-      { key: "movement", label: "Moverte", target: "3/5 días", completed: false, icon: "footprints" },
-      { key: "breathing", label: "Respirar", target: "5 min", completed: true, icon: "flower-2" },
-      { key: "journal", label: "Diario", target: "5 min", completed: false, icon: "book-open" }
-    ]);
+    sendJson(res, 200, { configured: false, habits: [] });
     return;
   }
 
@@ -937,8 +957,8 @@ const server = http.createServer(async (req, res) => {
     const context = await requireParticipant(req, res);
     if (!context) return;
     try {
-      const body = await readBody(req);
-      sendJson(res, 200, { ok: true, habitKey: body.habitKey, completed: Boolean(body.completed) });
+      await readBody(req);
+      sendJson(res, 501, { error: "El registro de hábitos todavía no está habilitado." });
     } catch {
       sendJson(res, 400, { error: "No se pudo actualizar el hábito." });
     }
@@ -948,16 +968,7 @@ const server = http.createServer(async (req, res) => {
   if (requestUrl.pathname === "/api/mood/history" && req.method === "GET") {
     const context = await requireParticipant(req, res);
     if (!context) return;
-    sendJson(res, 200, [
-      { date: "4 may", valence: 2 },
-      { date: "6 may", valence: 2 },
-      { date: "8 may", valence: 1 },
-      { date: "10 may", valence: 2 },
-      { date: "12 may", valence: 3 },
-      { date: "14 may", valence: 2 },
-      { date: "16 may", valence: 3 },
-      { date: "18 may", valence: 3 }
-    ]);
+    sendJson(res, 200, { configured: false, entries: [] });
     return;
   }
 
@@ -965,8 +976,8 @@ const server = http.createServer(async (req, res) => {
     const context = await requireParticipant(req, res);
     if (!context) return;
     try {
-      const body = await readBody(req);
-      sendJson(res, 200, { ok: true, valenceLevel: Number(body.valenceLevel) || 2 });
+      await readBody(req);
+      sendJson(res, 501, { error: "El registro de estado de ánimo todavía no está habilitado." });
     } catch {
       sendJson(res, 400, { error: "No se pudo registrar el estado de ánimo." });
     }
@@ -977,8 +988,8 @@ const server = http.createServer(async (req, res) => {
     const context = await requireParticipant(req, res);
     if (!context) return;
     try {
-      const body = await readBody(req);
-      sendJson(res, 200, { ok: true, toolType: body.toolType, duration: body.durationSeconds });
+      await readBody(req);
+      sendJson(res, 501, { error: "El registro de ejercicios todavía no está habilitado." });
     } catch {
       sendJson(res, 400, { error: "No se pudo registrar la sesión." });
     }
@@ -986,13 +997,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === "/api/support-resources" && req.method === "GET") {
-    sendJson(res, 200, {
-      organizationName: "Línea de Orientación Psicológica",
-      phoneNumber: "01 800 123 4567",
-      availableHours: "24/7",
-      countryCode: "CO",
-      active: true
-    });
+    sendJson(res, 200, { resources: [] });
     return;
   }
 

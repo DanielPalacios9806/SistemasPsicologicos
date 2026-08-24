@@ -19,6 +19,18 @@ const adminExportButton = document.getElementById("adminExportButton");
 const adminInstrumentFilter = document.getElementById("adminInstrumentFilter");
 const adminStatusFilter = document.getElementById("adminStatusFilter");
 const adminApplicationList = document.getElementById("adminApplicationList");
+const adminSummary = document.getElementById("adminSummary");
+const adminRefreshButton = document.getElementById("adminRefreshButton");
+const adminLogoutButton = document.getElementById("adminLogoutButton");
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 function showAdminAlert(message, isError = true) {
   adminAlert.textContent = message;
@@ -66,7 +78,7 @@ function renderSummary(application) {
   fields.forEach(([label, value]) => {
     const card = document.createElement("article");
     card.className = "summary-item";
-    card.innerHTML = `<span>${label}</span><strong>${value || "-"}</strong>`;
+    card.innerHTML = `<span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "-")}</strong>`;
     adminParticipantSummary.appendChild(card);
   });
 }
@@ -80,10 +92,10 @@ function renderDimensions(application) {
       const card = document.createElement("article");
       card.className = "dimension-card";
       card.innerHTML = `
-        <p class="question-category">${component.label}</p>
-        <h3>${component.ceScore ?? "Parcial"}</h3>
-        <p>Categoria: ${component.category || "pendiente"}</p>
-        <p>Puntaje bruto: ${component.rawScore} | Avance: ${component.answeredCount}/${component.expectedCount}</p>
+        <p class="question-category">${escapeHtml(component.label)}</p>
+        <h3>${escapeHtml(component.ceScore ?? "Parcial")}</h3>
+        <p>Categoria: ${escapeHtml(component.category || "pendiente")}</p>
+        <p>Puntaje bruto: ${escapeHtml(component.rawScore)} | Avance: ${escapeHtml(component.answeredCount)}/${escapeHtml(component.expectedCount)}</p>
       `;
       adminDimensionGrid.appendChild(card);
     });
@@ -93,7 +105,7 @@ function renderDimensions(application) {
       card.innerHTML = `
         <p class="question-category">Validez</p>
         <h3>Revisar</h3>
-        <p>${warning}</p>
+        <p>${escapeHtml(warning)}</p>
       `;
       adminDimensionGrid.appendChild(card);
     });
@@ -104,11 +116,11 @@ function renderDimensions(application) {
     const card = document.createElement("article");
     card.className = "dimension-card";
     card.innerHTML = `
-      <p class="question-category">${dimension.label}</p>
-      <h3>${dimension.favorablePercentage}%</h3>
-      <p>${dimension.interpretiveLevel}</p>
-      <p>${dimension.interpretiveNote}</p>
-      <p>Puntaje bruto: ${dimension.rawTotal} | Promedio: ${dimension.rawAverage}</p>
+      <p class="question-category">${escapeHtml(dimension.label)}</p>
+      <h3>${escapeHtml(dimension.favorablePercentage ?? dimension.rawTotal ?? "Parcial")}${dimension.favorablePercentage != null ? "%" : ""}</h3>
+      <p>${escapeHtml(dimension.interpretiveLevel || dimension.band || "")}</p>
+      <p>${escapeHtml(dimension.interpretiveNote || "")}</p>
+      <p>Puntaje bruto: ${escapeHtml(dimension.rawTotal ?? "-")} | Promedio: ${escapeHtml(dimension.rawAverage ?? "-")}</p>
     `;
     adminDimensionGrid.appendChild(card);
   });
@@ -120,9 +132,9 @@ function renderAnswers(answers) {
     const row = document.createElement("article");
     row.className = "answer-row";
     row.innerHTML = `
-      <strong>Item ${answer.itemId}</strong>
-      <span>Respuesta: ${answer.value}</span>
-      <span>${answer.moduleKey || ""}</span>
+      <strong>Item ${escapeHtml(answer.itemId)}</strong>
+      <span>Respuesta: ${escapeHtml(answer.value)}</span>
+      <span>${escapeHtml(answer.moduleKey || "")}</span>
     `;
     adminAnswersList.appendChild(row);
   });
@@ -140,18 +152,35 @@ function renderApplication(application) {
 
 function renderApplicationList() {
   adminApplicationList.innerHTML = "";
+  if (!adminState.applications.length) {
+    adminApplicationList.innerHTML = '<div class="admin-empty-state"><strong>Sin registros</strong><span>No hay aplicaciones que coincidan con los filtros.</span></div>';
+    return;
+  }
   adminState.applications.forEach((application) => {
     const row = document.createElement("button");
     row.type = "button";
     row.className = "answer-row application-row";
     row.innerHTML = `
-      <strong>${application.participant.fullName}</strong>
-      <span>${application.participant.idNumber} · ${application.instrumentCode.toUpperCase()}</span>
-      <span>${application.status} · ${application.percentageComplete || 0}%</span>
+      <strong>${escapeHtml(application.participant.fullName)}</strong>
+      <span>${escapeHtml(application.participant.idNumber)} · ${escapeHtml(application.instrumentCode.toUpperCase())}</span>
+      <span>${escapeHtml(application.status)} · ${escapeHtml(application.percentageComplete || 0)}%</span>
     `;
     row.addEventListener("click", () => renderApplication(application));
     adminApplicationList.appendChild(row);
   });
+}
+
+function renderAdminSummary() {
+  const total = adminState.applications.length;
+  const completed = adminState.applications.filter((item) => item.status === "completed").length;
+  const inProgress = adminState.applications.filter((item) => item.status === "in_progress").length;
+  const review = adminState.applications.filter((item) => item.status === "invalid" || item.valid === false).length;
+  adminSummary.innerHTML = [
+    ["Registros", total],
+    ["Completados", completed],
+    ["En progreso", inProgress],
+    ["Requieren revisión", review],
+  ].map(([label, value]) => `<article><span>${label}</span><strong>${value}</strong></article>`).join("");
 }
 
 async function loadApplications() {
@@ -167,6 +196,7 @@ async function loadApplications() {
   const payload = await response.json();
   if (!response.ok) throw new Error(payload.error || "No se pudieron cargar las aplicaciones.");
   adminState.applications = payload.applications || [];
+  renderAdminSummary();
   renderApplicationList();
   if (adminState.applications[0]) {
     renderApplication(adminState.applications[0]);
@@ -237,4 +267,29 @@ adminExportButton.addEventListener("click", async () => {
   }
 });
 
+adminRefreshButton.addEventListener("click", async () => {
+  try {
+    await loadApplications();
+    showAdminAlert("Información actualizada.", false);
+  } catch (error) {
+    showAdminAlert(error.message);
+  }
+});
+
+adminLogoutButton.addEventListener("click", () => {
+  adminState.token = "";
+  adminState.applications = [];
+  sessionStorage.removeItem("adminToken");
+  adminResultCard.classList.add("hidden");
+  switchAdminScreen();
+});
+
 switchAdminScreen();
+if (adminState.token) {
+  loadApplications().catch(() => {
+    adminState.token = "";
+    sessionStorage.removeItem("adminToken");
+    switchAdminScreen();
+    showAdminAlert("La sesión administrativa expiró. Ingresa nuevamente.");
+  });
+}

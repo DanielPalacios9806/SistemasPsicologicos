@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "qa:serve": "node scripts/visual-qa-server.js",
     "test": "node --test",
     "import:personal:dry-run": "node scripts/import_personal.js --dry-run",
     "import:personal:apply": "node scripts/import_personal.js --apply"

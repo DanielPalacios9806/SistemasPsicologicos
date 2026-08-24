@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin | Evaluacion de Asertividad</title>
+    <title>Administración | Mente de Acero</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -45,15 +45,18 @@
       <section id="adminPanelScreen" class="glass-card admin-card hidden">
         <div class="panel-head">
           <div>
-            <span class="step-pill">Admin</span>
-            <h2>Panel de consulta</h2>
-            <p>Filtra por instrumento, estado o cedula. Aqui si se muestran resultados mas tecnicos y avances parciales.</p>
+            <span class="step-pill">Mente de Acero · Administración</span>
+            <h2>Evaluaciones y resultados</h2>
+            <p>Consulta el avance por instrumento, revisa resultados técnicos y exporta el consolidado.</p>
           </div>
           <div class="admin-actions">
             <button id="adminExportButton" class="primary-button" type="button">Descargar Excel</button>
-            <a href="/" class="secondary-button back-link">Regresar</a>
+            <button id="adminRefreshButton" class="secondary-button" type="button">Actualizar</button>
+            <button id="adminLogoutButton" class="secondary-button" type="button">Cerrar sesión</button>
           </div>
         </div>
+
+        <section id="adminSummary" class="admin-summary" aria-label="Resumen de evaluaciones"></section>
 
         <form id="adminSearchForm" class="search-form">
           <input id="adminSearchIdNumber" name="adminSearchIdNumber" type="text" inputmode="numeric" placeholder="Cedula (opcional)" />
@@ -61,6 +64,7 @@
             <option value="">Todos los instrumentos</option>
             <option value="ema">EMA</option>
             <option value="baron">BarOn ICE</option>
+            <option value="disc">DISC</option>
           </select>
           <select id="adminStatusFilter" name="adminStatusFilter">
             <option value="">Todos los estados</option>

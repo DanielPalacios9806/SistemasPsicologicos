@@ -3,7 +3,7 @@
  * Renders habit adherence or single-metric percentage.
  */
 
-export function renderRadialGauge(container, score = 72, maxScore = 100, category = 'Adherencia Saludable', unit = '%') {
+export function renderRadialGauge(container, score = 0, maxScore = 100, category = 'Sin datos', unit = '%') {
   if (!container) return;
 
   const size = 150;

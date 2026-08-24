@@ -17,12 +17,13 @@ export async function renderProgressView(container, userData) {
   const overallProgress = getOverallProgress(rows);
   const completedCount = rows.filter((row) => row.status === 'completed').length;
   const hasActiveCampaign = (userData?.assignments || []).length > 0;
+  const campaignName = userData?.assignments?.[0]?.campaignName || '';
 
   container.innerHTML = `
     <div class="progress-page">
       <section class="progress-summary-band">
         <div class="progress-summary-copy">
-          <span class="eyebrow">${hasActiveCampaign ? 'CAMPAÑA ACTIVA' : 'HISTORIAL DE EVALUACIONES'}</span>
+          <span class="eyebrow">${hasActiveCampaign ? escapeHtml(campaignName || 'CAMPAÑA ACTIVA') : 'HISTORIAL DE EVALUACIONES'}</span>
           <h2>${rows.length ? `${completedCount} de ${rows.length} evaluaciones completadas` : 'Sin evaluaciones asignadas'}</h2>
           <p>${rows.length ? 'Tu avance se guarda automáticamente después de cada respuesta.' : 'La administración todavía no ha asignado instrumentos a tu perfil.'}</p>
         </div>

@@ -825,6 +825,13 @@ body.participant-app::after,
   width: min(100%, 1040px);
 }
 
+.participant-app .brand-logo-mini {
+  width: 34px;
+  height: 44px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .participant-app .assessment-topbar {
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr);

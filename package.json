@@ -7,6 +7,7 @@
     "start": "node server.js",
     "qa:serve": "node scripts/visual-qa-server.js",
     "test": "node --test",
+    "backup:supabase": "node scripts/backup_supabase.js",
     "import:personal:dry-run": "node scripts/import_personal.js --dry-run",
     "import:personal:apply": "node scripts/import_personal.js --apply"
   },

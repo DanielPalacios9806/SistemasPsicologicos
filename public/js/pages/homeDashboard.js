@@ -148,6 +148,12 @@ export async function renderHomeDashboard(container, userData) {
   const completedApplications = sortApplications(applications).filter((item) => item.status === 'completed');
   const overallProgress = getOverallProgress(rows);
   const hasActiveCampaign = (userData?.assignments || []).length > 0;
+  const activeCampaign = userData?.assignments?.[0]?.campaignName || '';
+  const profileContext = [
+    [person.rankName || person.rankCode, 'badge-check'],
+    [person.unitName || person.unit, 'building-2'],
+    [person.promotion != null ? `Promoción ${person.promotion}` : '', 'calendar-days'],
+  ].filter(([value]) => value);
 
   container.innerHTML = `
     <div class="dashboard-grid">
@@ -155,7 +161,8 @@ export async function renderHomeDashboard(container, userData) {
         <div class="welcome-text">
           <span class="eyebrow">PORTAL PERSONAL</span>
           <h2>Bienvenido, ${escapeHtml(getFirstName(person.fullName))}</h2>
-          <p>Revisa tus evaluaciones asignadas y consulta tus resultados en un solo lugar.</p>
+          <p>${escapeHtml(activeCampaign || 'Revisa tus evaluaciones asignadas y consulta tus resultados.')}</p>
+          <div class="identity-context-row">${profileContext.map(([value, icon]) => `<span><i data-lucide="${icon}"></i>${escapeHtml(value)}</span>`).join('')}</div>
         </div>
         <div class="trust-banner">
           <div class="banner-icon"><i data-lucide="lock-keyhole"></i></div>

@@ -22,26 +22,37 @@ const {
   findCurrentApplication,
   saveApplicationProgress,
   listApplications,
-  exportApplications,
+  listApplicationSummaries,
   findAccountByUsername,
   findAccountById,
   updateAccountLoginState,
   updateAccountPassword,
   getPersonByAccount,
   listAssignmentsForPerson,
+  createStaffAccount,
+  listStaffAccounts,
+  updateStaffAccount,
+  listCampaigns,
+  createCampaign,
+  updateCampaign,
+  createAssignmentsForPerson,
+  listStaffCampaignAccess,
+  replaceStaffCampaignAccess,
+  listPersonIdsForCampaigns,
+  recordAuditEvent,
+  listDirectory,
+  supabaseRequestAll,
+  TABLES,
 } = require("./lib/storage");
 
 const config = getServerConfig();
 const PORT = config.port;
 const GOOGLE_CLIENT_ID = config.googleClientId;
-const ADMIN_USERNAME = config.adminUsername;
-const ADMIN_PASSWORD = config.adminPassword;
 const PUBLIC_DIR = path.join(__dirname, "public");
 const VENDOR_FILES = {
   "/vendor/lucide.js": path.join(__dirname, "node_modules", "lucide", "dist", "umd", "lucide.min.js"),
 };
 const APP_VERSION = process.env.RENDER_GIT_COMMIT || "local";
-const adminTokens = new Set();
 const loginAttempts = new Map();
 
 const MIME_TYPES = {
@@ -61,30 +72,37 @@ function sendJson(res, statusCode, payload, extraHeaders = {}) {
   res.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "same-origin",
-    "Access-Control-Allow-Methods": "GET,POST,PATCH,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type,x-admin-token",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
     ...extraHeaders,
   });
   res.end(JSON.stringify(payload));
 }
 
-function createAdminToken() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
-
-function getAdminToken(req) {
-  return req.headers["x-admin-token"] || "";
-}
-
-function requireAdmin(req, res) {
+async function getAuthenticatedContext(req) {
   const session = getSessionFromRequest(req);
-  if (session?.role === "admin") return true;
-  const token = getAdminToken(req);
-  if (!token || !adminTokens.has(token)) {
-    sendJson(res, 401, { error: "Acceso administrativo no autorizado." });
-    return false;
+  if (!session?.sub) return null;
+  const account = await findAccountById(session.sub);
+  if (!account || !account.active || Number(account.token_version || 0) !== Number(session.tokenVersion || 0)) return null;
+  const person = account.person_id ? await getPersonByAccount(account) : null;
+  return { session, account, person };
+}
+
+async function requireStaff(req, res, roles = ["admin", "psychologist"]) {
+  const context = await getAuthenticatedContext(req);
+  if (context && roles.includes(context.account.role)) {
+    if (context.account.must_change_password) {
+      sendJson(res, 403, { error: "Debes cambiar tu contrasena antes de continuar.", mustChangePassword: true });
+      return null;
+    }
+    return context;
   }
-  return true;
+  sendJson(res, 401, { error: "Acceso de personal no autorizado." });
+  return null;
+}
+
+async function requireAdmin(req, res) {
+  return requireStaff(req, res, ["admin"]);
 }
 
 function isProductionRequest(req) {
@@ -119,13 +137,9 @@ function clearLoginFailures(req, username) {
 }
 
 async function getParticipantContext(req) {
-  const session = getSessionFromRequest(req);
-  if (!session || session.role !== "participant") return null;
-  const account = await findAccountById(session.sub);
-  if (!account || !account.active || Number(account.token_version || 0) !== Number(session.tokenVersion || 0)) return null;
-  const person = await getPersonByAccount(account);
-  if (!person) return null;
-  return { session, account, person };
+  const context = await getAuthenticatedContext(req);
+  if (!context || context.account.role !== "participant" || !context.person) return null;
+  return context;
 }
 
 async function requireParticipant(req, res, { allowPasswordChange = false } = {}) {
@@ -139,6 +153,105 @@ async function requireParticipant(req, res, { allowPasswordChange = false } = {}
     return null;
   }
   return context;
+}
+
+async function getStaffPersonScope(context) {
+  if (!context || context.account?.role === "admin") return null;
+  const campaignIds = await listStaffCampaignAccess(context.account.id);
+  return new Set(await listPersonIdsForCampaigns(campaignIds));
+}
+
+async function listApplicationsForStaff(context, filter = {}, { summaries = false } = {}) {
+  const applications = summaries ? await listApplicationSummaries(filter) : await listApplications(filter);
+  const personScope = await getStaffPersonScope(context);
+  return personScope ? applications.filter((application) => personScope.has(application.personId)) : applications;
+}
+
+async function staffCanAccessApplication(context, application) {
+  const personScope = await getStaffPersonScope(context);
+  return !personScope || personScope.has(application.personId);
+}
+
+async function auditSafely(event) {
+  if (!shouldUseSupabase()) return;
+  try {
+    await recordAuditEvent(event);
+  } catch (error) {
+    console.warn("No se pudo registrar el evento de auditoria:", error.message);
+  }
+}
+
+function buildUserPayload(context) {
+  return {
+    username: context.account.username,
+    role: context.account.role,
+    mustChangePassword: context.account.must_change_password,
+    person: context.person,
+  };
+}
+
+function requireSupabaseManagement(res) {
+  if (shouldUseSupabase()) return true;
+  sendJson(res, 503, { error: "La gestion institucional requiere la base de datos configurada." });
+  return false;
+}
+
+function parseBoolean(value, fallback = false) {
+  if (typeof value === "boolean") return value;
+  if (value == null) return fallback;
+  return String(value).toLowerCase() === "true";
+}
+
+function validateCampaignInput({ name, startsAt, endsAt }) {
+  const normalizedName = String(name || "").trim();
+  const start = new Date(startsAt);
+  const end = new Date(endsAt);
+  if (normalizedName.length < 4) throw new Error("El nombre de la campana debe tener al menos 4 caracteres.");
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) throw new Error("Las fechas de la campana no son validas.");
+  if (end <= start) throw new Error("La fecha de cierre debe ser posterior a la fecha de inicio.");
+  return { name: normalizedName, startsAt: start.toISOString(), endsAt: end.toISOString() };
+}
+
+function validateInstrumentCodes(codes) {
+  const instruments = [...new Set((Array.isArray(codes) ? codes : []).map((code) => String(code).toLowerCase()))];
+  if (!instruments.length || instruments.some((code) => !["ema", "baron", "disc"].includes(code))) {
+    throw new Error("Selecciona al menos un instrumento valido.");
+  }
+  return instruments;
+}
+
+async function buildAdminOverview(context) {
+  const [campaigns, applications, staff, peopleRows, assignmentRows] = await Promise.all([
+    listCampaigns(),
+    listApplicationsForStaff(context, {}, { summaries: true }),
+    listStaffAccounts(),
+    supabaseRequestAll(`/rest/v1/${TABLES.people}?select=id`),
+    supabaseRequestAll(`/rest/v1/${TABLES.assessmentAssignments}?select=person_id,campaign_id,instrument_code,status`),
+  ]);
+  const personScope = await getStaffPersonScope(context);
+  const scopedAssignments = personScope
+    ? assignmentRows.filter((assignment) => personScope.has(assignment.person_id))
+    : assignmentRows;
+  const statuses = { pending: 0, in_progress: 0, completed: 0 };
+  for (const assignment of scopedAssignments) statuses[assignment.status] = (statuses[assignment.status] || 0) + 1;
+  const instruments = { ema: 0, baron: 0, disc: 0 };
+  for (const application of applications) instruments[application.instrumentCode] = (instruments[application.instrumentCode] || 0) + 1;
+  return {
+    totals: {
+      participants: personScope ? personScope.size : peopleRows.length,
+      assignments: scopedAssignments.length,
+      applications: applications.length,
+      completed: applications.filter((application) => ["completed", "invalid"].includes(application.status)).length,
+      staff: context.account.role === "admin" ? staff.length : null,
+    },
+    statuses,
+    instruments,
+    campaigns,
+    recentApplications: applications
+      .slice()
+      .sort((left, right) => new Date(right.completedAt || right.startedAt || 0) - new Date(left.completedAt || left.startedAt || 0))
+      .slice(0, 8),
+  };
 }
 
 function sendFile(res, filePath) {
@@ -470,14 +583,14 @@ function buildParticipantApplicationSummary(application) {
   };
 }
 
-async function sendExcel(res, filter = {}) {
-  const applications = await exportApplications(filter);
-  const instrumentCode = filter.instrumentCode || "";
-  const sheetName = instrumentCode ? `Resultados ${instrumentCode.toUpperCase()}` : "Resultados";
-  const workbook = buildExcelWorkbook(applications, sheetName);
+function sendExcel(res, applications, instrumentCode = "") {
+  const workbook = buildExcelWorkbook(applications);
+  const date = new Date().toISOString().slice(0, 10);
+  const suffix = instrumentCode ? `_${instrumentCode.toUpperCase()}` : "_Consolidado";
   res.writeHead(200, {
-    "Content-Type": "application/vnd.ms-excel",
-    "Content-Disposition": `attachment; filename="resultados-${instrumentCode || "consolidado"}.xls"`,
+    "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "Content-Disposition": `attachment; filename="MENTE_DE_ACERO_Resultados${suffix}_${date}.xlsx"`,
+    "Cache-Control": "no-store",
   });
   res.end(workbook);
 }
@@ -488,8 +601,8 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
       "Access-Control-Allow-Origin": "same-origin",
-      "Access-Control-Allow-Methods": "GET,POST,PATCH,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type,x-admin-token",
+      "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
     });
     res.end();
     return;
@@ -534,7 +647,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname.startsWith("/api/check-id/") && req.method === "GET") {
-    if (!requireAdmin(req, res)) return;
+    if (!(await requireAdmin(req, res))) return;
     const idNumber = decodeURIComponent(requestUrl.pathname.replace("/api/check-id/", ""));
     const instrumentCode = (requestUrl.searchParams.get("instrument") || "ema").toLowerCase();
     if (!isValidIdNumber(idNumber)) {
@@ -547,26 +660,6 @@ const server = http.createServer(async (req, res) => {
       status: application?.status || null,
       instrumentCode,
     });
-    return;
-  }
-
-  if (requestUrl.pathname === "/api/admin/login" && req.method === "POST") {
-    try {
-      const body = await readBody(req);
-      const username = String(body.username || "").trim();
-      const password = String(body.password || "");
-
-      if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
-        sendJson(res, 401, { error: "Credenciales administrativas invalidas." });
-        return;
-      }
-
-      const token = createAdminToken();
-      adminTokens.add(token);
-      sendJson(res, 200, { token });
-    } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo procesar el login." });
-    }
     return;
   }
 
@@ -604,7 +697,11 @@ const server = http.createServer(async (req, res) => {
         locked_until: null,
         last_login_at: new Date().toISOString(),
       });
-      const person = await getPersonByAccount(account);
+      const person = account.person_id ? await getPersonByAccount(account) : null;
+      if (account.role === "participant" && !person) {
+        sendJson(res, 403, { error: "La cuenta no esta vinculada a un perfil institucional. Contacta al administrador." });
+        return;
+      }
       const token = createSessionToken({
         accountId: account.id,
         personId: account.person_id,
@@ -617,15 +714,11 @@ const server = http.createServer(async (req, res) => {
         res,
         200,
         {
-          user: {
-            username: account.username,
-            role: account.role,
-            mustChangePassword: account.must_change_password,
-            person,
-          },
+          user: buildUserPayload({ account, person }),
         },
         { "Set-Cookie": buildSessionCookie(token, { secure: isProductionRequest(req) }) }
       );
+      await auditSafely({ accountId: account.id, eventType: "auth.login", targetType: "account", targetId: account.id });
     } catch (error) {
       sendJson(res, 400, { error: "Usuario o contrasena incorrectos." });
     }
@@ -633,34 +726,42 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === "/api/auth/me" && req.method === "GET") {
-    const participant = await getParticipantContext(req);
-    if (participant) {
-      const assignments = participant.account.must_change_password
+    const context = await getAuthenticatedContext(req);
+    if (!context) {
+      sendJson(res, 401, { error: "Sesion requerida." });
+      return;
+    }
+    if (context.account.role === "participant") {
+      if (!context.person) {
+        sendJson(res, 403, { error: "La cuenta no esta vinculada a un perfil institucional." });
+        return;
+      }
+      const assignments = context.account.must_change_password
         ? []
-        : await listAssignmentsForPerson(participant.account.person_id);
+        : await listAssignmentsForPerson(context.account.person_id);
       sendJson(res, 200, {
-        user: {
-          username: participant.account.username,
-          role: participant.account.role,
-          mustChangePassword: participant.account.must_change_password,
-          person: participant.person,
-        },
+        user: buildUserPayload(context),
         assignments,
       });
       return;
     }
-    const session = getSessionFromRequest(req);
-    if (session?.role === "admin") {
-      sendJson(res, 200, { user: { username: session.username, role: "admin" }, assignments: [] });
+    if (["admin", "psychologist"].includes(context.account.role)) {
+      const campaignIds = context.account.role === "admin"
+        ? (await listCampaigns()).map((campaign) => campaign.id)
+        : await listStaffCampaignAccess(context.account.id);
+      sendJson(res, 200, { user: buildUserPayload(context), assignments: [], campaignIds });
       return;
     }
-    sendJson(res, 401, { error: "Sesion requerida." });
+    sendJson(res, 403, { error: "Rol de cuenta no permitido." });
     return;
   }
 
   if (requestUrl.pathname === "/api/auth/change-password" && req.method === "POST") {
-    const context = await requireParticipant(req, res, { allowPasswordChange: true });
-    if (!context) return;
+    const context = await getAuthenticatedContext(req);
+    if (!context) {
+      sendJson(res, 401, { error: "Sesion requerida." });
+      return;
+    }
     try {
       const body = await readBody(req);
       const currentPassword = String(body.currentPassword || "");
@@ -698,6 +799,7 @@ const server = http.createServer(async (req, res) => {
         { ok: true },
         { "Set-Cookie": buildSessionCookie(token, { secure: isProductionRequest(req) }) }
       );
+      await auditSafely({ accountId: updated.id, eventType: "auth.password_changed", targetType: "account", targetId: updated.id });
     } catch (error) {
       sendJson(res, 400, { error: error.message || "No se pudo cambiar la contrasena." });
     }
@@ -705,6 +807,17 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === "/api/auth/logout" && req.method === "POST") {
+    try {
+      const context = await getAuthenticatedContext(req);
+      if (context) {
+        await updateAccountLoginState(context.account.id, {
+          token_version: Number(context.account.token_version || 0) + 1,
+        });
+        await auditSafely({ accountId: context.account.id, eventType: "auth.logout", targetType: "account", targetId: context.account.id });
+      }
+    } catch (error) {
+      console.warn("No se pudo invalidar la sesion en el servidor:", error.message);
+    }
     sendJson(res, 200, { ok: true }, { "Set-Cookie": buildClearSessionCookie() });
     return;
   }
@@ -839,13 +952,18 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === "/api/results" && req.method === "GET") {
-    if (!requireAdmin(req, res)) return;
+    const staff = await requireStaff(req, res);
+    if (!staff) return;
     try {
       const idNumber = String(requestUrl.searchParams.get("cedula") || "").trim();
       const instrumentCode = String(requestUrl.searchParams.get("instrument") || "ema").trim().toLowerCase();
       const application = await findCurrentApplication(idNumber, instrumentCode);
       if (!application) {
         sendJson(res, 404, { error: "No se encontro ningun resultado para esa cedula e instrumento." });
+        return;
+      }
+      if (!(await staffCanAccessApplication(staff, application))) {
+        sendJson(res, 403, { error: "No tienes acceso a esta campana." });
         return;
       }
       sendJson(res, 200, buildPublicApplicationPayload(application, getInstrumentDefinition(instrumentCode)));
@@ -855,14 +973,216 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (requestUrl.pathname === "/api/admin/applications" && req.method === "GET") {
-    if (!requireAdmin(req, res)) return;
+  if (requestUrl.pathname === "/api/admin/overview" && req.method === "GET") {
+    const staff = await requireStaff(req, res);
+    if (!staff || !requireSupabaseManagement(res)) return;
     try {
-      const applications = await listApplications({
+      sendJson(res, 200, await buildAdminOverview(staff));
+    } catch (error) {
+      sendJson(res, 500, { error: error.message || "No se pudo cargar el resumen institucional." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/admin/directory" && req.method === "GET") {
+    const admin = await requireAdmin(req, res);
+    if (!admin || !requireSupabaseManagement(res)) return;
+    try {
+      const people = await listDirectory({
+        search: requestUrl.searchParams.get("search") || "",
+        limit: requestUrl.searchParams.get("limit") || 50,
+      });
+      sendJson(res, 200, { people });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudo consultar el personal." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/admin/campaigns" && req.method === "GET") {
+    const staff = await requireStaff(req, res);
+    if (!staff || !requireSupabaseManagement(res)) return;
+    try {
+      const campaigns = await listCampaigns();
+      const campaignIds = staff.account.role === "admin"
+        ? null
+        : new Set(await listStaffCampaignAccess(staff.account.id));
+      sendJson(res, 200, { campaigns: campaignIds ? campaigns.filter((campaign) => campaignIds.has(campaign.id)) : campaigns });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudieron consultar las campanas." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/admin/campaigns" && req.method === "POST") {
+    const admin = await requireAdmin(req, res);
+    if (!admin || !requireSupabaseManagement(res)) return;
+    try {
+      const body = await readBody(req);
+      const campaignInput = validateCampaignInput(body);
+      const campaign = await createCampaign({ ...campaignInput, active: parseBoolean(body.active, true) });
+      await auditSafely({ accountId: admin.account.id, eventType: "campaign.created", targetType: "campaign", targetId: campaign.id });
+      sendJson(res, 201, { campaign });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudo crear la campana." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname.startsWith("/api/admin/campaigns/") && req.method === "PATCH") {
+    const admin = await requireAdmin(req, res);
+    if (!admin || !requireSupabaseManagement(res)) return;
+    try {
+      const campaignId = decodeURIComponent(requestUrl.pathname.replace("/api/admin/campaigns/", ""));
+      const body = await readBody(req);
+      const current = (await listCampaigns()).find((campaign) => campaign.id === campaignId);
+      if (!current) {
+        sendJson(res, 404, { error: "No se encontro la campana." });
+        return;
+      }
+      const campaignInput = validateCampaignInput({
+        name: body.name ?? current.name,
+        startsAt: body.startsAt ?? current.startsAt,
+        endsAt: body.endsAt ?? current.endsAt,
+      });
+      const campaign = await updateCampaign(campaignId, {
+        ...campaignInput,
+        ...(typeof body.active === "boolean" ? { active: body.active } : {}),
+      });
+      await auditSafely({ accountId: admin.account.id, eventType: "campaign.updated", targetType: "campaign", targetId: campaignId });
+      sendJson(res, 200, { campaign });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudo actualizar la campana." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/admin/staff" && req.method === "GET") {
+    const admin = await requireAdmin(req, res);
+    if (!admin || !requireSupabaseManagement(res)) return;
+    try {
+      const accounts = await listStaffAccounts();
+      const staff = await Promise.all(accounts.map(async (account) => ({
+        ...account,
+        campaignIds: account.role === "admin" ? [] : await listStaffCampaignAccess(account.id),
+      })));
+      sendJson(res, 200, { staff });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudo consultar el personal autorizado." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/admin/staff" && req.method === "POST") {
+    const admin = await requireAdmin(req, res);
+    if (!admin || !requireSupabaseManagement(res)) return;
+    try {
+      const body = await readBody(req);
+      const username = String(body.username || "").trim();
+      const temporaryPassword = String(body.temporaryPassword || "");
+      if (!/^[a-zA-Z0-9._-]{4,64}$/.test(username)) throw new Error("El usuario debe tener entre 4 y 64 caracteres validos.");
+      const policyError = await validateNewPassword({ username, currentPassword: "", newPassword: temporaryPassword, confirmPassword: temporaryPassword });
+      if (policyError) throw new Error(policyError);
+      const role = body.role === "admin" ? "admin" : "psychologist";
+      const result = await createStaffAccount({ username, password: await hashPassword(temporaryPassword), role });
+      if (!result.created) throw new Error("El nombre de usuario ya existe.");
+      const campaignIds = role === "psychologist" ? await replaceStaffCampaignAccess(result.account.id, body.campaignIds || []) : [];
+      await auditSafely({ accountId: admin.account.id, eventType: "staff.created", targetType: "account", targetId: result.account.id, detail: { role } });
+      sendJson(res, 201, {
+        staff: {
+          id: result.account.id,
+          username: result.account.username,
+          role: result.account.role,
+          active: result.account.active,
+          mustChangePassword: result.account.must_change_password,
+          campaignIds,
+        },
+      });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudo crear la cuenta." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname.startsWith("/api/admin/accounts/") && req.method === "PATCH") {
+    const admin = await requireAdmin(req, res);
+    if (!admin || !requireSupabaseManagement(res)) return;
+    try {
+      const accountId = decodeURIComponent(requestUrl.pathname.replace("/api/admin/accounts/", ""));
+      const body = await readBody(req);
+      if (accountId === admin.account.id && body.active === false) throw new Error("No puedes desactivar tu propia cuenta.");
+      const patch = {};
+      if (typeof body.active === "boolean") patch.active = body.active;
+      if (body.role && ["participant", "admin", "psychologist"].includes(body.role)) patch.role = body.role;
+      if (body.temporaryPassword) {
+        const target = await findAccountById(accountId);
+        if (!target) throw new Error("No se encontro la cuenta.");
+        const temporaryPassword = String(body.temporaryPassword);
+        const policyError = await validateNewPassword({ username: target.username, currentPassword: "", newPassword: temporaryPassword, confirmPassword: temporaryPassword });
+        if (policyError) throw new Error(policyError);
+        patch.password = await hashPassword(temporaryPassword);
+      }
+      const account = await updateStaffAccount(accountId, patch);
+      if (!account) {
+        sendJson(res, 404, { error: "No se encontro la cuenta." });
+        return;
+      }
+      await auditSafely({ accountId: admin.account.id, eventType: "account.updated", targetType: "account", targetId: accountId });
+      sendJson(res, 200, { account: { id: account.id, username: account.username, role: account.role, active: account.active, mustChangePassword: account.must_change_password } });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudo actualizar la cuenta." });
+    }
+    return;
+  }
+
+  if (/^\/api\/admin\/staff\/[^/]+\/campaigns$/.test(requestUrl.pathname) && req.method === "PUT") {
+    const admin = await requireAdmin(req, res);
+    if (!admin || !requireSupabaseManagement(res)) return;
+    try {
+      const accountId = decodeURIComponent(requestUrl.pathname.split("/")[4]);
+      const body = await readBody(req);
+      const target = await findAccountById(accountId);
+      if (!target || target.role !== "psychologist") throw new Error("La cuenta seleccionada no es de psicologia.");
+      const validCampaignIds = new Set((await listCampaigns()).map((campaign) => campaign.id));
+      const campaignIds = [...new Set((body.campaignIds || []).map(String))];
+      if (campaignIds.some((campaignId) => !validCampaignIds.has(campaignId))) throw new Error("Una de las campanas no existe.");
+      const access = await replaceStaffCampaignAccess(accountId, campaignIds);
+      await auditSafely({ accountId: admin.account.id, eventType: "staff.scope_updated", targetType: "account", targetId: accountId, detail: { campaignIds: access } });
+      sendJson(res, 200, { campaignIds: access });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudo actualizar el alcance." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/admin/assignments" && req.method === "POST") {
+    const admin = await requireAdmin(req, res);
+    if (!admin || !requireSupabaseManagement(res)) return;
+    try {
+      const body = await readBody(req);
+      const personId = String(body.personId || "");
+      const campaignId = String(body.campaignId || "");
+      const instruments = validateInstrumentCodes(body.instrumentCodes);
+      const campaigns = await listCampaigns();
+      if (!campaigns.some((campaign) => campaign.id === campaignId)) throw new Error("La campana seleccionada no existe.");
+      const result = await createAssignmentsForPerson(personId, campaignId, instruments);
+      await auditSafely({ accountId: admin.account.id, eventType: "assignment.created", targetType: "person", targetId: personId, detail: { campaignId, instruments } });
+      sendJson(res, 200, result);
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "No se pudieron asignar las evaluaciones." });
+    }
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/admin/applications" && req.method === "GET") {
+    const staff = await requireStaff(req, res);
+    if (!staff) return;
+    try {
+      const applications = await listApplicationsForStaff(staff, {
         idNumber: requestUrl.searchParams.get("cedula") || "",
         instrumentCode: requestUrl.searchParams.get("instrument") || "",
         status: requestUrl.searchParams.get("status") || "",
-      });
+      }, { summaries: true });
       sendJson(res, 200, { applications });
     } catch (error) {
       sendJson(res, 400, { error: error.message || "No se pudieron listar las aplicaciones." });
@@ -871,12 +1191,17 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname.startsWith("/api/admin/applications/") && req.method === "GET") {
-    if (!requireAdmin(req, res)) return;
+    const staff = await requireStaff(req, res);
+    if (!staff) return;
     try {
       const applicationId = requestUrl.pathname.replace("/api/admin/applications/", "");
       const application = await getApplicationById(applicationId);
       if (!application) {
         sendJson(res, 404, { error: "No se encontro la aplicacion solicitada." });
+        return;
+      }
+      if (!(await staffCanAccessApplication(staff, application))) {
+        sendJson(res, 403, { error: "No tienes acceso a esta campana." });
         return;
       }
       sendJson(res, 200, application);
@@ -887,9 +1212,10 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === "/api/submissions" && req.method === "GET") {
-    if (!requireAdmin(req, res)) return;
+    const staff = await requireStaff(req, res);
+    if (!staff) return;
     try {
-      const applications = await listApplications({
+      const applications = await listApplicationsForStaff(staff, {
         idNumber: requestUrl.searchParams.get("cedula") || "",
         instrumentCode: requestUrl.searchParams.get("instrument") || "",
       });
@@ -901,13 +1227,18 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname.startsWith("/api/submissions/") && req.method === "GET") {
-    if (!requireAdmin(req, res)) return;
+    const staff = await requireStaff(req, res);
+    if (!staff) return;
     try {
       const idNumber = decodeURIComponent(requestUrl.pathname.replace("/api/submissions/", ""));
       const instrumentCode = String(requestUrl.searchParams.get("instrument") || "ema").trim().toLowerCase();
       const application = await findCurrentApplication(idNumber, instrumentCode);
       if (!application) {
         sendJson(res, 404, { error: "No se encontro ningun registro con esa cedula." });
+        return;
+      }
+      if (!(await staffCanAccessApplication(staff, application))) {
+        sendJson(res, 403, { error: "No tienes acceso a esta campana." });
         return;
       }
       sendJson(res, 200, application);
@@ -918,12 +1249,21 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === "/api/export/excel" && req.method === "GET") {
-    if (!requireAdmin(req, res)) return;
+    const staff = await requireStaff(req, res);
+    if (!staff) return;
     try {
-      await sendExcel(res, {
+      const filter = {
         idNumber: requestUrl.searchParams.get("cedula") || "",
         instrumentCode: String(requestUrl.searchParams.get("instrument") || "").trim().toLowerCase(),
         status: requestUrl.searchParams.get("status") || "",
+      };
+      const applications = await listApplicationsForStaff(staff, filter);
+      sendExcel(res, applications, filter.instrumentCode);
+      await auditSafely({
+        accountId: staff.account.id,
+        eventType: "results.exported",
+        targetType: "application",
+        detail: { count: applications.length, instrumentCode: filter.instrumentCode, status: filter.status },
       });
     } catch (error) {
       console.error("No se pudo generar el archivo Excel:", error);
@@ -1030,11 +1370,35 @@ server.on("error", (error) => {
   process.exit(1);
 });
 
+async function ensureBootstrapAdmin() {
+  if (!config.bootstrapAdminEnabled) return { enabled: false, created: false };
+  if (!shouldUseSupabase()) throw new Error("BOOTSTRAP_ADMIN_ENABLED requiere almacenamiento Supabase.");
+  if (!config.bootstrapAdminPassword) throw new Error("Falta BOOTSTRAP_ADMIN_PASSWORD para crear el administrador inicial.");
+  const result = await createStaffAccount({
+    username: config.bootstrapAdminUsername,
+    password: await hashPassword(config.bootstrapAdminPassword),
+    role: "admin",
+  });
+  if (result.created) {
+    await auditSafely({ accountId: result.account.id, eventType: "staff.bootstrap_created", targetType: "account", targetId: result.account.id });
+  }
+  return { enabled: true, created: result.created };
+}
+
+function validateRuntimeSecurity() {
+  if (config.nodeEnv === "production" && String(config.appSessionSecret || "").length < 32) {
+    throw new Error("APP_SESSION_SECRET debe contener al menos 32 caracteres en produccion.");
+  }
+}
+
 initializeStorage()
-  .then((storage) => {
+  .then(async (storage) => {
+    validateRuntimeSecurity();
+    const bootstrap = await ensureBootstrapAdmin();
     server.listen(PORT, () => {
       console.log(`Servidor iniciado en http://localhost:${PORT}`);
       console.log(`Almacenamiento activo: ${storage.driver}`);
+      if (bootstrap.enabled) console.log(`Administrador inicial: ${bootstrap.created ? "creado" : "existente"}.`);
     });
   })
   .catch((error) => {

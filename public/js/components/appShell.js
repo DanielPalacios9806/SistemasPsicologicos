@@ -43,7 +43,7 @@ export class AppShell {
     this.renderLoading();
     try {
       const auth = await api.getAuthMe();
-      if (auth?.user?.role === 'admin') {
+      if (auth?.user?.role === 'admin' || auth?.user?.role === 'psychologist') {
         window.location.replace('/admin.html');
         return;
       }
@@ -73,7 +73,7 @@ export class AppShell {
   renderLoading() {
     this.root.innerHTML = `
       <div class="portal-loading" role="status">
-        <img src="/mente-de-acero-emblem.png" alt="" />
+        <img src="/assets/mente-de-acero-logo-institucional.png" alt="" />
         <span>Cargando tu espacio seguro...</span>
       </div>
     `;
@@ -82,7 +82,7 @@ export class AppShell {
   renderFatalError(error) {
     this.root.innerHTML = `
       <main class="portal-error-state">
-        <img src="/mente-de-acero-emblem.png" alt="Mente de Acero" />
+        <img src="/assets/mente-de-acero-logo-institucional.png" alt="Mente de Acero" />
         <h1>No pudimos cargar tu portal</h1>
         <p>${escapeHtml(error?.message || 'Inténtalo nuevamente en unos momentos.')}</p>
         <button class="btn btn-navy" type="button" id="retryPortalBtn">
@@ -108,7 +108,7 @@ export class AppShell {
         <aside class="app-sidebar">
           <div class="sidebar-top">
             <a href="#home" class="brand-lockup" aria-label="Ir al inicio">
-              <img class="brand-emblem" src="/mente-de-acero-emblem.png" alt="" />
+              <img class="brand-emblem" src="/assets/mente-de-acero-logo-institucional.png" alt="" />
               <div class="brand-info">
                 <span class="brand-name">MENTE <small>DE</small> ACERO</span>
                 <span class="brand-tagline">Mente · Cuerpo · Espíritu</span>
@@ -144,7 +144,7 @@ export class AppShell {
         <main class="app-main">
           <header class="app-topbar">
             <a href="#home" class="mobile-brand" aria-label="Mente de Acero">
-              <img src="/mente-de-acero-emblem.png" alt="" />
+              <img src="/assets/mente-de-acero-logo-institucional.png" alt="" />
               <span>MENTE <strong>DE ACERO</strong></span>
             </a>
             <div class="topbar-heading">

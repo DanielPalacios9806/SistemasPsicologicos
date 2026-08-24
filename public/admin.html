@@ -3,106 +3,103 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Administración | Mente de Acero</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/styles.css?v=20260612-2" />
+    <meta name="theme-color" content="#062653" />
+    <title>Gestión institucional | Mente de Acero</title>
+    <link rel="icon" type="image/png" href="/assets/mente-de-acero-logo-institucional.png" />
+    <link rel="stylesheet" href="/admin.css?v=20260824-1" />
   </head>
-  <body class="admin-body">
-    <div class="page-glow page-glow-left" aria-hidden="true"></div>
-    <div class="page-glow page-glow-right" aria-hidden="true"></div>
-    <div id="adminAlert" class="alert hidden" aria-live="polite"></div>
-
-    <main class="admin-shell">
-      <section id="adminLoginScreen" class="glass-card admin-card">
-        <div class="section-heading">
-          <span class="step-pill">Admin</span>
-          <h1>Acceso administrativo</h1>
-          <p>Ingresa tus credenciales para consultar registros y descargar el Excel consolidado.</p>
+  <body>
+    <div id="adminAlert" class="admin-alert hidden" aria-live="polite"></div>
+    <div id="adminLoading" class="admin-loading"><img src="/assets/mente-de-acero-logo-institucional.png" alt="" /><span>Cargando gestión institucional...</span></div>
+    <div id="adminApp" class="admin-app hidden">
+      <aside class="admin-sidebar">
+        <a class="admin-brand" href="#resumen" aria-label="Mente de Acero">
+          <img src="/assets/mente-de-acero-logo-institucional.png" alt="" />
+          <span><strong>Mente de Acero</strong><small>Gestión psicológica</small></span>
+        </a>
+        <nav class="admin-nav" aria-label="Navegación principal">
+          <button class="active" type="button" data-view="overview"><i data-lucide="layout-dashboard"></i><span>Resumen</span></button>
+          <button type="button" data-view="results"><i data-lucide="clipboard-check"></i><span>Resultados</span></button>
+          <button type="button" data-view="directory" data-admin-only><i data-lucide="users"></i><span>Personal</span></button>
+          <button type="button" data-view="campaigns" data-admin-only><i data-lucide="calendar-range"></i><span>Campañas</span></button>
+          <button type="button" data-view="staff" data-admin-only><i data-lucide="key-round"></i><span>Accesos</span></button>
+        </nav>
+        <div class="admin-sidebar-foot">
+          <div class="admin-privacy"><i data-lucide="shield-check"></i><span>Datos institucionales protegidos</span></div>
+          <button id="adminLogoutButton" class="admin-logout" type="button"><i data-lucide="log-out"></i><span>Cerrar sesión</span></button>
         </div>
+      </aside>
 
-        <form id="adminLoginForm" class="participant-form admin-form">
-          <label>
-            Usuario
-            <input id="adminUsername" name="adminUsername" type="text" placeholder="admin" required />
-          </label>
-          <label>
-            Contrasena
-            <input id="adminPassword" name="adminPassword" type="password" placeholder="********" required />
-          </label>
-          <button class="primary-button" type="submit">Ingresar</button>
-        </form>
+      <main class="admin-main">
+        <header class="admin-topbar">
+          <button id="mobileMenuButton" class="icon-button mobile-only" type="button" title="Abrir menú" aria-label="Abrir menú"><i data-lucide="menu"></i></button>
+          <div><p id="viewEyebrow">Panel institucional</p><h1 id="viewTitle">Resumen operativo</h1></div>
+          <div class="admin-session"><span id="adminRoleBadge">Personal</span><div><strong id="adminUsername">-</strong><small>Sesión activa</small></div><i data-lucide="circle-user-round"></i></div>
+        </header>
 
-        <div class="navigation-row single-action">
-          <a href="/" class="secondary-button back-link">Regresar</a>
-        </div>
-      </section>
-
-      <section id="adminPanelScreen" class="glass-card admin-card hidden">
-        <div class="panel-head">
-          <div>
-            <span class="step-pill">Mente de Acero · Administración</span>
-            <h2>Evaluaciones y resultados</h2>
-            <p>Consulta el avance por instrumento, revisa resultados técnicos y exporta el consolidado.</p>
+        <section id="overviewView" class="admin-view active">
+          <div class="view-heading"><div><h2>Estado de las evaluaciones</h2><p>Seguimiento consolidado de campañas, asignaciones y aplicaciones.</p></div><button id="refreshOverviewButton" class="icon-button" type="button" title="Actualizar resumen" aria-label="Actualizar resumen"><i data-lucide="refresh-cw"></i></button></div>
+          <div id="overviewMetrics" class="metric-grid"></div>
+          <div class="overview-grid">
+            <section class="data-section"><header><div><h3>Avance por estado</h3><p>Asignaciones dentro de tu alcance.</p></div></header><div id="statusBreakdown" class="status-breakdown"></div></section>
+            <section class="data-section"><header><div><h3>Aplicaciones por instrumento</h3><p>Distribución del banco activo.</p></div></header><div id="instrumentBreakdown" class="instrument-breakdown"></div></section>
           </div>
-          <div class="admin-actions">
-            <button id="adminExportButton" class="primary-button" type="button">Descargar Excel</button>
-            <button id="adminRefreshButton" class="secondary-button" type="button">Actualizar</button>
-            <button id="adminLogoutButton" class="secondary-button" type="button">Cerrar sesión</button>
-          </div>
-        </div>
-
-        <section id="adminSummary" class="admin-summary" aria-label="Resumen de evaluaciones"></section>
-
-        <form id="adminSearchForm" class="search-form">
-          <input id="adminSearchIdNumber" name="adminSearchIdNumber" type="text" inputmode="numeric" placeholder="Cedula (opcional)" />
-          <select id="adminInstrumentFilter" name="adminInstrumentFilter">
-            <option value="">Todos los instrumentos</option>
-            <option value="ema">EMA</option>
-            <option value="baron">BarOn ICE</option>
-            <option value="disc">DISC</option>
-          </select>
-          <select id="adminStatusFilter" name="adminStatusFilter">
-            <option value="">Todos los estados</option>
-            <option value="in_progress">En progreso</option>
-            <option value="completed">Completado</option>
-            <option value="invalid">Invalido / revisar</option>
-          </select>
-          <button class="primary-button" type="submit">Consultar</button>
-        </form>
-
-        <section class="report-section admin-gap">
-          <p class="report-label">Listado</p>
-          <div id="adminApplicationList" class="answers-list"></div>
+          <section class="data-section"><header><div><h3>Actividad reciente</h3><p>Últimas evaluaciones iniciadas o completadas.</p></div><button class="text-button" type="button" data-go-view="results">Ver resultados <i data-lucide="arrow-right"></i></button></header><div id="recentApplications" class="responsive-table"></div></section>
         </section>
 
-        <section id="adminResultCard" class="report-section hidden">
-          <p class="report-label">Aplicacion consultada</p>
-          <div id="adminParticipantSummary" class="summary-grid"></div>
-          <div id="adminDimensionGrid" class="dimension-grid admin-gap"></div>
-          <div class="observations-grid admin-gap">
-            <article>
-              <h3>Fortalezas</h3>
-              <ul id="adminStrengthList" class="clean-list"></ul>
-            </article>
-            <article>
-              <h3>Areas de atencion</h3>
-              <ul id="adminAttentionList" class="clean-list"></ul>
-            </article>
-            <article>
-              <h3>Sugerencias</h3>
-              <ul id="adminSuggestionList" class="clean-list"></ul>
-            </article>
-          </div>
-          <div id="adminAnswersList" class="answers-list admin-gap"></div>
+        <section id="resultsView" class="admin-view">
+          <div class="view-heading"><div><h2>Evaluaciones y resultados</h2><p>Consulta técnica y exportación por instrumento.</p></div><button id="adminExportButton" class="primary-button" type="button"><i data-lucide="file-spreadsheet"></i>Exportar .xlsx</button></div>
+          <form id="resultsFilterForm" class="filter-bar">
+            <label><span>Cédula</span><input id="resultSearchId" type="search" inputmode="numeric" placeholder="Buscar cédula" /></label>
+            <label><span>Instrumento</span><select id="resultInstrument"><option value="">Todos</option><option value="ema">EMA</option><option value="baron">Bar-On ICE</option><option value="disc">DISC</option></select></label>
+            <label><span>Estado</span><select id="resultStatus"><option value="">Todos</option><option value="in_progress">En progreso</option><option value="completed">Completado</option><option value="invalid">Revisar</option></select></label>
+            <button class="secondary-button" type="submit"><i data-lucide="search"></i>Consultar</button>
+          </form>
+          <section class="data-section"><header><div><h3>Registro de aplicaciones</h3><p id="resultsCount">0 registros</p></div></header><div id="resultsTable" class="responsive-table"></div></section>
         </section>
-      </section>
-    </main>
 
-    <script src="/admin.js?v=20260612-2"></script>
+        <section id="directoryView" class="admin-view" data-admin-only>
+          <div class="view-heading"><div><h2>Personal registrado</h2><p>Identidad, perfil militar, cuenta y evaluaciones asignadas.</p></div></div>
+          <form id="directorySearchForm" class="filter-bar directory-filter"><label><span>Nombre o cédula</span><input id="directorySearch" type="search" placeholder="Buscar personal" /></label><button class="secondary-button" type="submit"><i data-lucide="search"></i>Buscar</button></form>
+          <section class="data-section"><header><div><h3>Directorio institucional</h3><p>Hasta 200 coincidencias por consulta.</p></div></header><div id="directoryTable" class="responsive-table"></div></section>
+        </section>
+
+        <section id="campaignsView" class="admin-view" data-admin-only>
+          <div class="view-heading"><div><h2>Campañas de evaluación</h2><p>Define los periodos que controlan las asignaciones activas.</p></div></div>
+          <div class="management-grid">
+            <form id="campaignForm" class="management-form">
+              <header><i data-lucide="calendar-plus"></i><div><h3>Nueva campaña</h3><p>Configura nombre y vigencia.</p></div></header>
+              <label>Nombre<input id="campaignName" required minlength="4" placeholder="Evaluaciones Psicológicas 2027" /></label>
+              <div class="form-columns"><label>Inicio<input id="campaignStart" type="datetime-local" required /></label><label>Cierre<input id="campaignEnd" type="datetime-local" required /></label></div>
+              <label class="check-line"><input id="campaignActive" type="checkbox" checked /> Campaña activa</label>
+              <button class="primary-button" type="submit"><i data-lucide="plus"></i>Crear campaña</button>
+            </form>
+            <section class="data-section"><header><div><h3>Campañas registradas</h3><p>Activa o cierra periodos sin borrar historial.</p></div></header><div id="campaignList" class="management-list"></div></section>
+          </div>
+        </section>
+
+        <section id="staffView" class="admin-view" data-admin-only>
+          <div class="view-heading"><div><h2>Accesos de personal</h2><p>Administradores y psicólogos con alcance por campaña.</p></div></div>
+          <div class="management-grid">
+            <form id="staffForm" class="management-form">
+              <header><i data-lucide="user-plus"></i><div><h3>Nueva cuenta</h3><p>La contraseña deberá cambiarse al ingresar.</p></div></header>
+              <label>Usuario<input id="staffUsername" required minlength="4" autocomplete="off" /></label>
+              <label>Rol<select id="staffRole"><option value="psychologist">Psicólogo</option><option value="admin">Administrador</option></select></label>
+              <label>Contraseña temporal<input id="staffPassword" type="password" required minlength="8" autocomplete="new-password" /></label>
+              <fieldset id="staffCampaignFields"><legend>Campañas autorizadas</legend><div id="staffCampaignOptions" class="check-grid"></div></fieldset>
+              <button class="primary-button" type="submit"><i data-lucide="user-plus"></i>Crear acceso</button>
+            </form>
+            <section class="data-section"><header><div><h3>Cuentas autorizadas</h3><p>Estado, rol y último acceso.</p></div></header><div id="staffList" class="management-list"></div></section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="resultDialog" class="admin-dialog"><div class="dialog-head"><div><span>Resultado técnico</span><h2 id="resultDialogTitle">Evaluación</h2></div><button class="icon-button" type="button" data-close-dialog="resultDialog" title="Cerrar" aria-label="Cerrar"><i data-lucide="x"></i></button></div><div id="resultDialogBody" class="dialog-body"></div></dialog>
+    <dialog id="assignmentDialog" class="admin-dialog compact-dialog"><form id="assignmentForm"><div class="dialog-head"><div><span>Asignación</span><h2 id="assignmentPersonName">Personal</h2></div><button class="icon-button" type="button" data-close-dialog="assignmentDialog" title="Cerrar" aria-label="Cerrar"><i data-lucide="x"></i></button></div><div class="dialog-body"><input id="assignmentPersonId" type="hidden" /><label>Campaña<select id="assignmentCampaign" required></select></label><fieldset><legend>Instrumentos</legend><div class="check-grid"><label><input type="checkbox" name="assignmentInstrument" value="ema" /> EMA</label><label><input type="checkbox" name="assignmentInstrument" value="baron" /> Bar-On ICE</label><label><input type="checkbox" name="assignmentInstrument" value="disc" /> DISC</label></div></fieldset><button class="primary-button" type="submit"><i data-lucide="clipboard-plus"></i>Guardar asignación</button></div></form></dialog>
+    <dialog id="scopeDialog" class="admin-dialog compact-dialog"><form id="scopeForm"><div class="dialog-head"><div><span>Alcance profesional</span><h2 id="scopeStaffName">Psicólogo</h2></div><button class="icon-button" type="button" data-close-dialog="scopeDialog" title="Cerrar" aria-label="Cerrar"><i data-lucide="x"></i></button></div><div class="dialog-body"><input id="scopeAccountId" type="hidden" /><fieldset><legend>Campañas visibles</legend><div id="scopeCampaignOptions" class="check-grid"></div></fieldset><button class="primary-button" type="submit"><i data-lucide="save"></i>Guardar alcance</button></div></form></dialog>
+    <dialog id="passwordDialog" class="admin-dialog compact-dialog"><form id="passwordResetForm"><div class="dialog-head"><div><span>Seguridad</span><h2 id="passwordStaffName">Restablecer acceso</h2></div><button class="icon-button" type="button" data-close-dialog="passwordDialog" title="Cerrar" aria-label="Cerrar"><i data-lucide="x"></i></button></div><div class="dialog-body"><input id="passwordAccountId" type="hidden" /><label>Contraseña temporal<input id="temporaryPassword" type="password" required minlength="8" autocomplete="new-password" /></label><p class="form-hint">La cuenta deberá cambiarla en su siguiente acceso.</p><button class="primary-button" type="submit"><i data-lucide="key-round"></i>Restablecer contraseña</button></div></form></dialog>
+    <script src="/vendor/lucide.js"></script>
+    <script src="/admin.js?v=20260824-1"></script>
   </body>
 </html>

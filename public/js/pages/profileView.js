@@ -61,6 +61,7 @@ export async function renderProfileView(container, userData) {
   const initials = person.fullName
     ? person.fullName.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase()
     : 'MA';
+  const campaignName = userData?.assignments?.[0]?.campaignName || '-';
 
   container.innerHTML = `
     <div class="profile-page">
@@ -76,6 +77,8 @@ export async function renderProfileView(container, userData) {
         <dl class="profile-identity-data">
           <div><dt>Identificación</dt><dd>${escapeHtml(person.idNumber || '-')}</dd></div>
           <div><dt>Unidad</dt><dd>${escapeHtml(person.unitName || person.unit || '-')}</dd></div>
+          <div><dt>Promoción</dt><dd>${person.promotion == null ? '-' : escapeHtml(`Promoción ${person.promotion}`)}</dd></div>
+          <div><dt>Campaña</dt><dd>${escapeHtml(campaignName)}</dd></div>
           <div><dt>Perfiles disponibles</dt><dd>${completed.length}</dd></div>
         </dl>
       </section>

@@ -1,5 +1,10 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const os = require("node:os");
+const path = require("node:path");
+
+process.env.STORAGE_DRIVER = "local";
+process.env.APP_DATA_DIR = path.join(os.tmpdir(), `mente-de-acero-flow-tests-${process.pid}`);
 
 const { startApplication, saveApplicationProgress, getApplicationById } = require("../lib/storage");
 const { getInstrumentDefinition } = require("../lib/instruments");

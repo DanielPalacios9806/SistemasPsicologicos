@@ -58,6 +58,15 @@ const state = {
   discSelections: {},
 };
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 const alertBox = document.getElementById("alert");
 const introSlides = Array.from(document.querySelectorAll("[data-intro-slide]"));
 const introDots = Array.from(document.querySelectorAll(".intro-dot"));
@@ -190,6 +199,10 @@ async function loadConfig() {
 async function loadInstruments() {
   const response = await fetch("/api/instruments");
   const payload = await response.json();
+  if (["admin", "psychologist"].includes(payload.user?.role)) {
+    window.location.href = "/admin.html";
+    return false;
+  }
   const instruments = payload.instruments || [];
   const assignedCodes = new Set(state.assignments.map((item) => item.instrumentCode));
   state.instruments = state.currentUser
@@ -647,7 +660,7 @@ function renderParticipantSummary(participant, date) {
   fields.forEach(([label, value, icon]) => {
     const card = document.createElement("article");
     card.className = "summary-item";
-    card.innerHTML = `<span><i data-lucide="${icon}"></i>${label}</span><strong>${value || "-"}</strong>`;
+    card.innerHTML = `<span><i data-lucide="${icon}"></i>${escapeHtml(label)}</span><strong>${escapeHtml(value || "-")}</strong>`;
     participantSummary.appendChild(card);
   });
   renderIcons(participantSummary);

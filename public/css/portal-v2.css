@@ -532,6 +532,28 @@ body,
   min-width: min(100%, 470px);
 }
 
+.identity-context-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.identity-context-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 27px;
+  padding: 4px 8px;
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  background: #fff;
+  font-size: 0.7rem;
+}
+
+.identity-context-row svg { width: 13px; color: var(--brand-blue); }
+
 .profile-identity-data > div { padding-left: 14px; border-left: 1px solid var(--surface-border); }
 .profile-identity-data dt { color: var(--text-muted); font-size: 0.7rem; }
 .profile-identity-data dd { color: var(--brand-navy); font-size: 0.85rem; font-weight: 700; overflow-wrap: anywhere; }

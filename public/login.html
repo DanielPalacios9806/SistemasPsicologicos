@@ -3,89 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Acceso | Sistemas Psicologicos</title>
+    <meta name="theme-color" content="#062653" />
+    <title>Acceso institucional | Mente de Acero</title>
+    <link rel="icon" type="image/png" href="/assets/mente-de-acero-logo-institucional.png" />
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/participant.css?v=20260819-1" />
+    <link rel="stylesheet" href="/login.css?v=20260824-1" />
   </head>
-  <body class="public-body participant-app login-page">
-    <div id="alert" class="alert hidden" aria-live="polite"></div>
-    <main class="public-shell">
-      <header class="brand-nav app-topbar">
-        <a class="brand-lockup" href="/login.html">
-          <span class="brand-mark" aria-hidden="true"><i data-lucide="brain-circuit"></i></span>
-          <span>
-            <strong>Sistemas Psicologicos</strong>
-            <small>Bienestar y evaluacion</small>
-          </span>
-        </a>
-        <span class="brand-status"><i data-lucide="shield-check"></i> Acceso protegido</span>
-      </header>
-
-      <section class="screen-card login-card">
-        <div class="login-hero">
-          <div class="section-heading">
-            <span class="eyebrow">Portal personal</span>
-            <h1>Tu espacio de evaluacion.</h1>
-            <p>Consulta tus instrumentos asignados, continua tu avance y revisa tus resultados en un solo lugar.</p>
-          </div>
-          <div class="login-assurance" aria-label="Estado del acceso">
-            <span class="assurance-icon"><i data-lucide="lock-keyhole"></i></span>
-            <div>
-              <strong>Informacion confidencial</strong>
-              <p>Tu perfil y tus respuestas solo se muestran dentro de una sesion autenticada.</p>
-            </div>
+  <body class="institutional-login">
+    <div id="alert" class="login-alert hidden" aria-live="polite"></div>
+    <main class="login-layout">
+      <section class="login-brand" aria-label="Mente de Acero">
+        <div class="login-brand-copy">
+          <img src="/assets/mente-de-acero-logo-institucional.png" alt="Mente de Acero, Fuerzas Armadas del Ecuador" />
+          <div>
+            <p>Comando Conjunto</p>
+            <h1>Mente de Acero</h1>
+            <span>Evaluación psicológica institucional</span>
           </div>
         </div>
-
-        <form id="loginForm" class="participant-form login-form">
-          <div class="form-heading">
-            <span class="form-icon"><i data-lucide="user-round"></i></span>
-            <div>
-              <h2>Iniciar sesion</h2>
-              <p>Usa las credenciales asignadas a tu perfil.</p>
-            </div>
-          </div>
-          <label>
-            Usuario
-            <span class="input-shell"><i data-lucide="badge-user"></i><input id="username" name="username" type="text" inputmode="numeric" autocomplete="username" placeholder="Cedula" required /></span>
-          </label>
-          <label>
-            Contrasena
-            <span class="input-shell"><i data-lucide="key-round"></i><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Contrasena" required /></span>
-          </label>
-          <button id="loginSubmitButton" class="primary-button" type="submit"><i data-lucide="log-in"></i><span>Ingresar al portal</span></button>
-          <p class="form-microcopy">Primer acceso: usuario y contrasena temporal son tu cedula.</p>
-        </form>
+        <p class="login-confidentiality"><i data-lucide="shield-check"></i> Información protegida y de acceso personal.</p>
       </section>
 
-      <section id="changeSection" class="screen-card password-card hidden">
-        <form id="changePasswordForm" class="participant-form login-form password-form">
-          <div class="form-heading">
-            <span class="form-icon"><i data-lucide="shield-check"></i></span>
-            <div>
-              <h2>Protege tu cuenta</h2>
-              <p>Crea una contrasena personal para continuar.</p>
+      <section class="login-access">
+        <div class="login-access-inner">
+          <header class="login-heading">
+            <span class="login-kicker">Acceso institucional</span>
+            <h2>Iniciar sesión</h2>
+            <p>Ingresa con las credenciales asignadas a tu perfil.</p>
+          </header>
+
+          <form id="loginForm" class="login-form">
+            <label for="username">Usuario</label>
+            <div class="login-input">
+              <i data-lucide="user-round"></i>
+              <input id="username" name="username" type="text" autocomplete="username" placeholder="Usuario o cédula" required autofocus />
             </div>
-          </div>
-          <label>
-            Contrasena actual
-            <span class="input-shell"><i data-lucide="key-round"></i><input id="currentPassword" type="password" autocomplete="current-password" required /></span>
-          </label>
-          <label>
-            Nueva contrasena
-            <span class="input-shell"><i data-lucide="lock-keyhole"></i><input id="newPassword" type="password" autocomplete="new-password" minlength="8" required /></span>
-          </label>
-          <label>
-            Confirmar nueva contrasena
-            <span class="input-shell"><i data-lucide="check"></i><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required /></span>
-          </label>
-          <p class="form-microcopy">Usa al menos 8 caracteres y evita repetir tu cedula.</p>
-          <button class="primary-button" type="submit"><i data-lucide="save"></i><span>Guardar contrasena</span></button>
-        </form>
+            <label for="password">Contraseña</label>
+            <div class="login-input">
+              <i data-lucide="key-round"></i>
+              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Contraseña" required />
+              <button class="password-toggle" type="button" data-password-toggle="password" aria-label="Mostrar contraseña" title="Mostrar contraseña"><i data-lucide="eye"></i></button>
+            </div>
+            <button id="loginSubmitButton" class="login-submit" type="submit"><span>Ingresar</span><i data-lucide="arrow-right"></i></button>
+            <p class="login-note"><i data-lucide="info"></i> En el primer acceso, usa la contraseña temporal entregada por la institución.</p>
+          </form>
+
+          <form id="changePasswordForm" class="login-form hidden">
+            <header class="login-heading compact">
+              <span class="login-kicker">Seguridad de la cuenta</span>
+              <h2>Crea tu contraseña</h2>
+              <p>Este paso es obligatorio antes de continuar.</p>
+            </header>
+            <label for="currentPassword">Contraseña actual</label>
+            <div class="login-input">
+              <i data-lucide="key-round"></i>
+              <input id="currentPassword" type="password" autocomplete="current-password" required />
+              <button class="password-toggle" type="button" data-password-toggle="currentPassword" aria-label="Mostrar contraseña" title="Mostrar contraseña"><i data-lucide="eye"></i></button>
+            </div>
+            <label for="newPassword">Nueva contraseña</label>
+            <div class="login-input">
+              <i data-lucide="lock-keyhole"></i>
+              <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required />
+              <button class="password-toggle" type="button" data-password-toggle="newPassword" aria-label="Mostrar contraseña" title="Mostrar contraseña"><i data-lucide="eye"></i></button>
+            </div>
+            <label for="confirmPassword">Confirmar contraseña</label>
+            <div class="login-input">
+              <i data-lucide="check"></i>
+              <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required />
+              <button class="password-toggle" type="button" data-password-toggle="confirmPassword" aria-label="Mostrar contraseña" title="Mostrar contraseña"><i data-lucide="eye"></i></button>
+            </div>
+            <p class="login-note"><i data-lucide="info"></i> Usa al menos 8 caracteres y no repitas tu usuario.</p>
+            <button id="changeSubmitButton" class="login-submit" type="submit"><span>Guardar y continuar</span><i data-lucide="arrow-right"></i></button>
+          </form>
+
+          <footer class="login-footer"><i data-lucide="lock"></i> Sesión privada · Mente de Acero</footer>
+        </div>
       </section>
     </main>
     <script src="/vendor/lucide.js"></script>
-    <script src="/ui.js?v=20260819-1"></script>
-    <script src="/login.js?v=20260819-1"></script>
+    <script src="/login.js?v=20260824-1"></script>
   </body>
 </html>

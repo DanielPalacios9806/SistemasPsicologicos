@@ -18,13 +18,20 @@ const authPayload = {
       idNumber: '0000000000',
       rankName: 'Soldado Profesional',
       unitName: 'Unidad de pruebas',
+      promotion: 58,
     },
   },
   assignments: [
-    { instrumentCode: 'baron', status: 'completed', percentageComplete: 100, required: true },
-    { instrumentCode: 'ema', status: 'in_progress', percentageComplete: 42, required: true },
-    { instrumentCode: 'disc', status: 'pending', percentageComplete: 0, required: true },
+    { instrumentCode: 'baron', status: 'completed', percentageComplete: 100, required: true, campaignName: 'Evaluaciones Psicológicas 2026' },
+    { instrumentCode: 'ema', status: 'in_progress', percentageComplete: 42, required: true, campaignName: 'Evaluaciones Psicológicas 2026' },
+    { instrumentCode: 'disc', status: 'pending', percentageComplete: 0, required: true, campaignName: 'Evaluaciones Psicológicas 2026' },
   ],
+};
+
+const adminAuthPayload = {
+  user: { username: 'admin.qa', role: 'admin', mustChangePassword: false, person: null },
+  assignments: [],
+  campaignIds: ['campaign-2026'],
 };
 
 const applicationPayload = {
@@ -68,6 +75,16 @@ const applicationPayload = {
       scoring: null,
     },
   ],
+};
+
+for (const application of applicationPayload.applications) {
+  application.participant = authPayload.user.person;
+  application.campaign = { id: 'campaign-2026', name: 'Evaluaciones Psicológicas 2026' };
+  application.scoringSnapshot = application.scoring;
+}
+
+const campaignPayload = {
+  campaigns: [{ id: 'campaign-2026', name: 'Evaluaciones Psicológicas 2026', startsAt: '2026-08-17T05:00:00.000Z', endsAt: '2026-09-18T04:59:59.000Z', active: true }],
 };
 
 function sendJson(res, payload, status = 200) {
@@ -157,8 +174,33 @@ function sendFile(res, filePath) {
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   if (url.pathname === '/api/config') return sendJson(res, {});
-  if (url.pathname === '/api/auth/me') return sendJson(res, authPayload);
+  if (url.pathname === '/api/auth/me') {
+    const isAdminPage = String(req.headers.referer || '').includes('/admin.html');
+    return sendJson(res, isAdminPage ? adminAuthPayload : authPayload);
+  }
+  if (url.pathname === '/api/auth/logout') return sendJson(res, { ok: true });
   if (url.pathname === '/api/me/applications') return sendJson(res, applicationPayload);
+  if (url.pathname === '/api/admin/overview') return sendJson(res, {
+    totals: { participants: 6007, assignments: 13518, applications: 255, completed: 229, staff: 3 },
+    statuses: { pending: 12980, in_progress: 309, completed: 229 },
+    instruments: { ema: 120, baron: 112, disc: 23 },
+    campaigns: campaignPayload.campaigns,
+    recentApplications: applicationPayload.applications,
+  });
+  if (url.pathname === '/api/admin/applications') return sendJson(res, applicationPayload);
+  if (url.pathname.startsWith('/api/admin/applications/')) {
+    const application = applicationPayload.applications.find((item) => item.id === url.pathname.split('/').pop());
+    return application ? sendJson(res, application) : sendJson(res, { error: 'No encontrado.' }, 404);
+  }
+  if (url.pathname === '/api/admin/campaigns') return sendJson(res, campaignPayload);
+  if (url.pathname === '/api/admin/directory') return sendJson(res, { people: [
+    { id: 'person-1', idNumber: '0000000000', fullName: 'Andrés Castillo', rankName: 'Soldado Profesional', unitCode: 'CCFFAA', promotion: 58, account: { id: 'account-1', active: true }, assignments: authPayload.assignments },
+    { id: 'person-2', idNumber: '1111111111', fullName: 'Daniela Paredes', rankName: 'Teniente', unitCode: 'FAE', promotion: 57, account: { id: 'account-2', active: true }, assignments: [] },
+  ] });
+  if (url.pathname === '/api/admin/staff') return sendJson(res, { staff: [
+    { id: 'staff-1', username: 'admin.qa', role: 'admin', active: true, mustChangePassword: false, lastLoginAt: '2026-08-24T14:00:00.000Z', campaignIds: [] },
+    { id: 'staff-2', username: 'psicologia.qa', role: 'psychologist', active: true, mustChangePassword: false, lastLoginAt: '2026-08-24T13:00:00.000Z', campaignIds: ['campaign-2026'] },
+  ] });
   if (url.pathname === '/api/instruments') return sendJson(res, { instruments: listInstruments() });
   if (url.pathname.startsWith('/api/instruments/')) {
     try {

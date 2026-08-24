@@ -1,79 +1,108 @@
 const alertBox = document.getElementById("alert");
 const loginForm = document.getElementById("loginForm");
-const loginCard = document.querySelector(".login-card");
-const changeSection = document.getElementById("changeSection");
 const changePasswordForm = document.getElementById("changePasswordForm");
 const loginSubmitButton = document.getElementById("loginSubmitButton");
+const changeSubmitButton = document.getElementById("changeSubmitButton");
+let authenticatedRole = "participant";
 
-function showAlert(message, isError = true) {
+function renderIcons(root = document) {
+  window.lucide?.createIcons({ attrs: { "stroke-width": 1.8 }, root });
+}
+
+function destinationForRole(role) {
+  return role === "admin" || role === "psychologist" ? "/admin.html" : "/portal.html";
+}
+
+function showAlert(message, type = "error") {
   alertBox.textContent = message;
-  alertBox.classList.remove("hidden");
-  alertBox.style.background = isError ? "rgba(96, 33, 56, 0.94)" : "rgba(28, 78, 79, 0.94)";
-  alertBox.style.color = isError ? "#ffe6ec" : "#e7fffb";
+  alertBox.className = `login-alert ${type}`;
+}
+
+function setBusy(button, isBusy, label) {
+  button.disabled = isBusy;
+  button.innerHTML = isBusy
+    ? '<span class="button-spinner" aria-hidden="true"></span><span>Verificando...</span>'
+    : `<span>${label}</span><i data-lucide="arrow-right"></i>`;
+  renderIcons(button);
 }
 
 function showChangePassword() {
-  loginCard?.classList.add("hidden");
-  changeSection.classList.remove("hidden");
-  changeSection.scrollIntoView({ behavior: "smooth" });
-  window.renderParticipantIcons?.(changeSection);
+  loginForm.classList.add("hidden");
+  changePasswordForm.classList.remove("hidden");
+  document.querySelector(".login-heading:not(.compact)")?.classList.add("hidden");
+  document.getElementById("currentPassword").focus();
+  renderIcons(changePasswordForm);
 }
 
-function setLoginBusy(isBusy) {
-  loginSubmitButton.disabled = isBusy;
-  loginSubmitButton.innerHTML = isBusy
-    ? '<i data-lucide="loader-circle"></i><span>Verificando...</span>'
-    : '<i data-lucide="log-in"></i><span>Ingresar al portal</span>';
-  loginSubmitButton.classList.toggle("is-loading", isBusy);
-  window.renderParticipantIcons?.(loginSubmitButton);
+async function readJson(response) {
+  try { return await response.json(); } catch { return {}; }
 }
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const username = String(document.getElementById("username").value || "").trim();
-  const password = String(document.getElementById("password").value || "");
-  setLoginBusy(true);
+  setBusy(loginSubmitButton, true, "Ingresar");
   try {
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({
+        username: document.getElementById("username").value.trim(),
+        password: document.getElementById("password").value,
+      }),
     });
-    const payload = await response.json();
-    if (!response.ok) {
-      showAlert(payload.error || "Usuario o contrasena incorrectos.");
-      return;
-    }
+    const payload = await readJson(response);
+    if (!response.ok) throw new Error(payload.error || "Usuario o contraseña incorrectos.");
+    authenticatedRole = payload.user?.role || "participant";
     if (payload.user?.mustChangePassword) {
-      showAlert("Debes cambiar tu contrasena para continuar.", false);
+      showAlert("Crea una contraseña personal para proteger tu cuenta.", "info");
       showChangePassword();
       return;
     }
-    window.location.href = "/portal.html";
+    window.location.replace(destinationForRole(authenticatedRole));
+  } catch (error) {
+    showAlert(error.message || "No fue posible iniciar sesión.");
   } finally {
-    setLoginBusy(false);
+    setBusy(loginSubmitButton, false, "Ingresar");
   }
 });
 
 changePasswordForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const response = await fetch("/api/auth/change-password", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      currentPassword: document.getElementById("currentPassword").value,
-      newPassword: document.getElementById("newPassword").value,
-      confirmPassword: document.getElementById("confirmPassword").value,
-    }),
-  });
-  const payload = await response.json();
-  if (!response.ok) {
-    showAlert(payload.error || "No se pudo cambiar la contrasena.");
-    return;
+  setBusy(changeSubmitButton, true, "Guardar y continuar");
+  try {
+    const response = await fetch("/api/auth/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        currentPassword: document.getElementById("currentPassword").value,
+        newPassword: document.getElementById("newPassword").value,
+        confirmPassword: document.getElementById("confirmPassword").value,
+      }),
+    });
+    const payload = await readJson(response);
+    if (!response.ok) throw new Error(payload.error || "No se pudo cambiar la contraseña.");
+    const sessionResponse = await fetch("/api/auth/me");
+    const session = await readJson(sessionResponse);
+    if (sessionResponse.ok) authenticatedRole = session.user?.role || authenticatedRole;
+    window.location.replace(destinationForRole(authenticatedRole));
+  } catch (error) {
+    showAlert(error.message || "No se pudo cambiar la contraseña.");
+  } finally {
+    setBusy(changeSubmitButton, false, "Guardar y continuar");
   }
-  window.location.href = "/portal.html";
 });
 
-if (new URLSearchParams(window.location.search).get("change")) {
-  showChangePassword();
-}
+document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const input = document.getElementById(button.dataset.passwordToggle);
+    const visible = input.type === "text";
+    input.type = visible ? "password" : "text";
+    button.setAttribute("aria-label", visible ? "Mostrar contraseña" : "Ocultar contraseña");
+    button.setAttribute("title", visible ? "Mostrar contraseña" : "Ocultar contraseña");
+    button.innerHTML = `<i data-lucide="${visible ? "eye" : "eye-off"}"></i>`;
+    renderIcons(button);
+  });
+});
+
+if (new URLSearchParams(window.location.search).get("change")) showChangePassword();
+renderIcons();

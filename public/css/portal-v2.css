@@ -725,8 +725,8 @@ body,
     z-index: 35;
     min-height: 68px;
     padding: 8px 14px;
-    border-bottom: 1px solid var(--surface-border);
-    background: #fff;
+    border-bottom: 3px solid #f4c542;
+    background: #011331;
   }
 
   .mobile-brand {
@@ -762,7 +762,7 @@ body,
 
   .mobile-brand-copy strong {
     overflow: hidden;
-    color: var(--brand-navy);
+    color: #fff;
     font-family: var(--font-display);
     font-size: 0.86rem;
     text-overflow: ellipsis;
@@ -770,7 +770,7 @@ body,
   }
 
   .mobile-brand-copy small {
-    color: var(--text-muted);
+    color: #c8d6e7;
     font-size: 0.62rem;
     font-weight: 600;
   }
@@ -784,14 +784,14 @@ body,
     width: 42px;
     height: 42px;
     flex: 0 0 42px;
-    border: 1px solid var(--surface-border);
+    border: 1px solid #3a5577;
     border-radius: 8px;
-    background: #fff;
-    color: var(--text-secondary);
+    background: #0d294f;
+    color: #fff;
   }
 
   .mobile-logout-btn svg { width: 19px; height: 19px; }
-  .mobile-logout-btn:active { background: #fff1f1; color: var(--danger-solid); }
+  .mobile-logout-btn:active { background: #173b69; color: #f4c542; }
   .mobile-logout-btn:disabled { opacity: 0.6; }
   .mobile-logout-btn.is-loading svg { animation: portal-spin 800ms linear infinite; }
 

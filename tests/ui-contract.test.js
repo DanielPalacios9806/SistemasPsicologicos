@@ -19,8 +19,10 @@ test("admin JavaScript matches the admin document", () => assertScriptIdsExist("
 test("institutional assets are referenced without checkerboard source files", () => {
   const login = fs.readFileSync(path.join(publicDir, "login.html"), "utf8");
   const admin = fs.readFileSync(path.join(publicDir, "admin.html"), "utf8");
+  const appShell = fs.readFileSync(path.join(publicDir, "js", "components", "appShell.js"), "utf8");
   assert.match(login, /assets\/mente-de-acero-logo-institucional\.png/);
   assert.match(admin, /assets\/mente-de-acero-logo-institucional\.png/);
+  assert.match(appShell, /assets\/mente-de-acero-institucional-fondo-azul\.png/);
   assert.equal(fs.existsSync(path.join(publicDir, "assets", "mente-de-acero-logo-institucional.png")), true);
   assert.equal(fs.existsSync(path.join(publicDir, "assets", "mente-de-acero-institucional-fondo-azul.png")), true);
 });

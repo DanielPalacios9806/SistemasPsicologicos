@@ -72,9 +72,16 @@ export class AppShell {
 
   renderLoading() {
     this.root.innerHTML = `
-      <div class="portal-loading" role="status">
-        <img src="/assets/mente-de-acero-logo-institucional.png" alt="" />
-        <span>Cargando tu espacio seguro...</span>
+      <div class="portal-loading" role="status" aria-live="polite">
+        <div class="portal-loading-mark" aria-hidden="true">
+          <img src="/assets/mente-de-acero-institucional-fondo-azul.png" alt="" />
+        </div>
+        <div class="portal-loading-copy">
+          <span>Comando Conjunto</span>
+          <strong>Mente de Acero</strong>
+          <small>Preparando tu perfil</small>
+        </div>
+        <div class="portal-loading-bar" aria-hidden="true"><span></span></div>
       </div>
     `;
   }

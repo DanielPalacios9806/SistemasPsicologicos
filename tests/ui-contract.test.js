@@ -23,6 +23,8 @@ test("institutional assets are referenced without checkerboard source files", ()
   assert.match(login, /assets\/mente-de-acero-logo-institucional\.png/);
   assert.match(admin, /assets\/mente-de-acero-logo-institucional\.png/);
   assert.match(appShell, /assets\/mente-de-acero-institucional-fondo-azul\.png/);
+  assert.match(appShell, /id="mobileLogoutBtn"/);
+  assert.match(appShell, /#sidebarLogoutBtn, #mobileLogoutBtn/);
   assert.equal(fs.existsSync(path.join(publicDir, "assets", "mente-de-acero-logo-institucional.png")), true);
   assert.equal(fs.existsSync(path.join(publicDir, "assets", "mente-de-acero-institucional-fondo-azul.png")), true);
 });

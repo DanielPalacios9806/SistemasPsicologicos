@@ -115,7 +115,9 @@ export class AppShell {
         <aside class="app-sidebar">
           <div class="sidebar-top">
             <a href="#home" class="brand-lockup" aria-label="Ir al inicio">
-              <img class="brand-emblem" src="/assets/mente-de-acero-logo-institucional.png" alt="" />
+              <span class="brand-emblem-frame" aria-hidden="true">
+                <img class="brand-emblem" src="/assets/mente-de-acero-institucional-fondo-azul.png" alt="" />
+              </span>
               <div class="brand-info">
                 <span class="brand-name">MENTE <small>DE</small> ACERO</span>
                 <span class="brand-tagline">Mente · Cuerpo · Espíritu</span>
@@ -151,8 +153,13 @@ export class AppShell {
         <main class="app-main">
           <header class="app-topbar">
             <a href="#home" class="mobile-brand" aria-label="Mente de Acero">
-              <img src="/assets/mente-de-acero-logo-institucional.png" alt="" />
-              <span>MENTE <strong>DE ACERO</strong></span>
+              <span class="mobile-brand-mark" aria-hidden="true">
+                <img src="/assets/mente-de-acero-institucional-fondo-azul.png" alt="" />
+              </span>
+              <span class="mobile-brand-copy">
+                <strong>Mente de Acero</strong>
+                <small>Portal personal</small>
+              </span>
             </a>
             <div class="topbar-heading">
               <h1 id="pageTitle">Inicio</h1>
@@ -165,6 +172,9 @@ export class AppShell {
                 <small>Sesión segura</small>
               </div>
             </div>
+            <button class="mobile-logout-btn" id="mobileLogoutBtn" type="button" title="Cerrar sesión" aria-label="Cerrar sesión">
+              <i data-lucide="log-out"></i>
+            </button>
           </header>
 
           <div class="content-container" id="pageContentContainer" aria-live="polite"></div>
@@ -178,7 +188,14 @@ export class AppShell {
       </div>
     `;
 
-    this.root.querySelector('#sidebarLogoutBtn')?.addEventListener('click', () => api.logout());
+    this.root.querySelectorAll('#sidebarLogoutBtn, #mobileLogoutBtn').forEach((button) => {
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        button.classList.add('is-loading');
+        button.setAttribute('aria-label', 'Cerrando sesión');
+        await api.logout();
+      });
+    });
     window.lucide?.createIcons();
   }
 

@@ -41,6 +41,7 @@ const {
   listPersonIdsForCampaigns,
   recordAuditEvent,
   listDirectory,
+  supabaseRequest,
   supabaseRequestAll,
   TABLES,
 } = require("./lib/storage");
@@ -77,6 +78,17 @@ function sendJson(res, statusCode, payload, extraHeaders = {}) {
     ...extraHeaders,
   });
   res.end(JSON.stringify(payload));
+}
+
+function sendRequestError(res, error, fallbackMessage, fallbackStatus = 500) {
+  const statusCode = Number(error?.statusCode) || fallbackStatus;
+  const message = statusCode === 503
+    ? error.message
+    : error?.message || fallbackMessage;
+  const headers = statusCode === 503
+    ? { "Retry-After": String(error.retryAfterSeconds || 5) }
+    : {};
+  sendJson(res, statusCode, { error: message }, headers);
 }
 
 async function getAuthenticatedContext(req) {
@@ -595,7 +607,7 @@ function sendExcel(res, applications, instrumentCode = "") {
   res.end(workbook);
 }
 
-const server = http.createServer(async (req, res) => {
+async function handleRequest(req, res) {
   const requestUrl = new URL(req.url, `http://${req.headers.host}`);
 
   if (req.method === "OPTIONS") {
@@ -617,12 +629,27 @@ const server = http.createServer(async (req, res) => {
   }
 
   if ((requestUrl.pathname === "/api/health" || requestUrl.pathname === "/health") && req.method === "GET") {
-    sendJson(res, 200, {
+    const payload = {
       status: "ok",
       version: APP_VERSION,
       commit: APP_VERSION,
       storage: shouldUseSupabase() ? "supabase" : "local",
-    });
+    };
+    if (requestUrl.pathname === "/api/health" && shouldUseSupabase()) {
+      try {
+        await supabaseRequest(`/rest/v1/${TABLES.people}?select=id&limit=1`, { retryCount: 0 });
+        payload.database = "ok";
+      } catch (error) {
+        sendJson(
+          res,
+          503,
+          { ...payload, status: "degraded", database: "unavailable", error: error.message },
+          { "Retry-After": String(error.retryAfterSeconds || 5) }
+        );
+        return;
+      }
+    }
+    sendJson(res, 200, payload);
     return;
   }
 
@@ -720,7 +747,8 @@ const server = http.createServer(async (req, res) => {
       );
       await auditSafely({ accountId: account.id, eventType: "auth.login", targetType: "account", targetId: account.id });
     } catch (error) {
-      sendJson(res, 400, { error: "Usuario o contrasena incorrectos." });
+      if (error?.statusCode === 503) sendRequestError(res, error, "No se pudo iniciar sesion.");
+      else sendJson(res, 400, { error: "Usuario o contrasena incorrectos." });
     }
     return;
   }
@@ -801,7 +829,7 @@ const server = http.createServer(async (req, res) => {
       );
       await auditSafely({ accountId: updated.id, eventType: "auth.password_changed", targetType: "account", targetId: updated.id });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo cambiar la contrasena." });
+      sendRequestError(res, error, "No se pudo cambiar la contrasena.", 400);
     }
     return;
   }
@@ -858,7 +886,7 @@ const server = http.createServer(async (req, res) => {
         applications: applications.map(buildParticipantApplicationSummary),
       });
     } catch (error) {
-      sendJson(res, 500, { error: error.message || "No se pudieron cargar tus evaluaciones." });
+      sendRequestError(res, error, "No se pudieron cargar tus evaluaciones.");
     }
     return;
   }
@@ -875,7 +903,7 @@ const server = http.createServer(async (req, res) => {
       }
       sendJson(res, 200, buildPublicApplicationPayload(application, getInstrumentDefinition(instrumentCode)));
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo reanudar la aplicacion." });
+      sendRequestError(res, error, "No se pudo reanudar la aplicacion.", 400);
     }
     return;
   }
@@ -925,7 +953,7 @@ const server = http.createServer(async (req, res) => {
       const saved = await saveApplicationProgress(aggregate);
       sendJson(res, 200, buildPublicApplicationPayload(saved, instrument));
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo guardar el avance." });
+      sendRequestError(res, error, "No se pudo guardar el avance.", 400);
     }
     return;
   }
@@ -946,7 +974,7 @@ const server = http.createServer(async (req, res) => {
       }
       sendJson(res, 200, buildPublicApplicationPayload(application, getInstrumentDefinition(application.instrumentCode)));
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo consultar la aplicacion." });
+      sendRequestError(res, error, "No se pudo consultar la aplicacion.", 400);
     }
     return;
   }
@@ -968,7 +996,7 @@ const server = http.createServer(async (req, res) => {
       }
       sendJson(res, 200, buildPublicApplicationPayload(application, getInstrumentDefinition(instrumentCode)));
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo consultar el resultado." });
+      sendRequestError(res, error, "No se pudo consultar el resultado.", 400);
     }
     return;
   }
@@ -979,7 +1007,7 @@ const server = http.createServer(async (req, res) => {
     try {
       sendJson(res, 200, await buildAdminOverview(staff));
     } catch (error) {
-      sendJson(res, 500, { error: error.message || "No se pudo cargar el resumen institucional." });
+      sendRequestError(res, error, "No se pudo cargar el resumen institucional.");
     }
     return;
   }
@@ -994,7 +1022,7 @@ const server = http.createServer(async (req, res) => {
       });
       sendJson(res, 200, { people });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo consultar el personal." });
+      sendRequestError(res, error, "No se pudo consultar el personal.", 400);
     }
     return;
   }
@@ -1009,7 +1037,7 @@ const server = http.createServer(async (req, res) => {
         : new Set(await listStaffCampaignAccess(staff.account.id));
       sendJson(res, 200, { campaigns: campaignIds ? campaigns.filter((campaign) => campaignIds.has(campaign.id)) : campaigns });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudieron consultar las campanas." });
+      sendRequestError(res, error, "No se pudieron consultar las campanas.", 400);
     }
     return;
   }
@@ -1024,7 +1052,7 @@ const server = http.createServer(async (req, res) => {
       await auditSafely({ accountId: admin.account.id, eventType: "campaign.created", targetType: "campaign", targetId: campaign.id });
       sendJson(res, 201, { campaign });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo crear la campana." });
+      sendRequestError(res, error, "No se pudo crear la campana.", 400);
     }
     return;
   }
@@ -1052,7 +1080,7 @@ const server = http.createServer(async (req, res) => {
       await auditSafely({ accountId: admin.account.id, eventType: "campaign.updated", targetType: "campaign", targetId: campaignId });
       sendJson(res, 200, { campaign });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo actualizar la campana." });
+      sendRequestError(res, error, "No se pudo actualizar la campana.", 400);
     }
     return;
   }
@@ -1068,7 +1096,7 @@ const server = http.createServer(async (req, res) => {
       })));
       sendJson(res, 200, { staff });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo consultar el personal autorizado." });
+      sendRequestError(res, error, "No se pudo consultar el personal autorizado.", 400);
     }
     return;
   }
@@ -1099,7 +1127,7 @@ const server = http.createServer(async (req, res) => {
         },
       });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo crear la cuenta." });
+      sendRequestError(res, error, "No se pudo crear la cuenta.", 400);
     }
     return;
   }
@@ -1130,7 +1158,7 @@ const server = http.createServer(async (req, res) => {
       await auditSafely({ accountId: admin.account.id, eventType: "account.updated", targetType: "account", targetId: accountId });
       sendJson(res, 200, { account: { id: account.id, username: account.username, role: account.role, active: account.active, mustChangePassword: account.must_change_password } });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo actualizar la cuenta." });
+      sendRequestError(res, error, "No se pudo actualizar la cuenta.", 400);
     }
     return;
   }
@@ -1150,7 +1178,7 @@ const server = http.createServer(async (req, res) => {
       await auditSafely({ accountId: admin.account.id, eventType: "staff.scope_updated", targetType: "account", targetId: accountId, detail: { campaignIds: access } });
       sendJson(res, 200, { campaignIds: access });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo actualizar el alcance." });
+      sendRequestError(res, error, "No se pudo actualizar el alcance.", 400);
     }
     return;
   }
@@ -1169,7 +1197,7 @@ const server = http.createServer(async (req, res) => {
       await auditSafely({ accountId: admin.account.id, eventType: "assignment.created", targetType: "person", targetId: personId, detail: { campaignId, instruments } });
       sendJson(res, 200, result);
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudieron asignar las evaluaciones." });
+      sendRequestError(res, error, "No se pudieron asignar las evaluaciones.", 400);
     }
     return;
   }
@@ -1185,7 +1213,7 @@ const server = http.createServer(async (req, res) => {
       }, { summaries: true });
       sendJson(res, 200, { applications });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudieron listar las aplicaciones." });
+      sendRequestError(res, error, "No se pudieron listar las aplicaciones.", 400);
     }
     return;
   }
@@ -1206,7 +1234,7 @@ const server = http.createServer(async (req, res) => {
       }
       sendJson(res, 200, application);
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo leer la aplicacion." });
+      sendRequestError(res, error, "No se pudo leer la aplicacion.", 400);
     }
     return;
   }
@@ -1221,7 +1249,7 @@ const server = http.createServer(async (req, res) => {
       });
       sendJson(res, 200, { applications });
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudieron consultar los registros." });
+      sendRequestError(res, error, "No se pudieron consultar los registros.", 400);
     }
     return;
   }
@@ -1243,7 +1271,7 @@ const server = http.createServer(async (req, res) => {
       }
       sendJson(res, 200, application);
     } catch (error) {
-      sendJson(res, 400, { error: error.message || "No se pudo consultar el registro." });
+      sendRequestError(res, error, "No se pudo consultar el registro.", 400);
     }
     return;
   }
@@ -1267,7 +1295,7 @@ const server = http.createServer(async (req, res) => {
       });
     } catch (error) {
       console.error("No se pudo generar el archivo Excel:", error);
-      sendJson(res, 500, { error: error.message || "No se pudo generar el archivo Excel." });
+      sendRequestError(res, error, "No se pudo generar el archivo Excel.");
     }
     return;
   }
@@ -1357,6 +1385,17 @@ const server = http.createServer(async (req, res) => {
   }
 
   sendFile(res, filePath);
+}
+
+const server = http.createServer((req, res) => {
+  handleRequest(req, res).catch((error) => {
+    console.error(`Fallo no controlado en ${req.method} ${req.url}:`, error.message);
+    if (res.headersSent || res.writableEnded) {
+      if (!res.writableEnded) res.end();
+      return;
+    }
+    sendRequestError(res, error, "No fue posible completar la solicitud.");
+  });
 });
 
 server.on("error", (error) => {

@@ -609,7 +609,8 @@ function renderQuestion() {
 
 async function persistCurrentAnswer() {
   const itemId = state.activeQuestionIds[state.activeQuestionIndex];
-  const value = getCurrentAnswerMap()[itemId];
+  const answerMap = getCurrentAnswerMap();
+  const value = answerMap[itemId];
   if (value == null) {
     throw new Error("Selecciona una respuesta antes de continuar.");
   }
@@ -619,6 +620,10 @@ async function persistCurrentAnswer() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       answers: [{ itemId, value }],
+      answerSnapshot: Object.entries(answerMap).map(([savedItemId, savedValue]) => ({
+        itemId: Number(savedItemId),
+        value: savedValue,
+      })),
     }),
   });
   const payload = await response.json();

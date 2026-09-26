@@ -16,6 +16,11 @@ function assertScriptIdsExist(scriptName, htmlName) {
 test("login JavaScript matches the login document", () => assertScriptIdsExist("login.js", "login.html"));
 test("admin JavaScript matches the admin document", () => assertScriptIdsExist("admin.js", "admin.html"));
 
+test("assessment autosave sends the in-memory answer snapshot", () => {
+  const app = fs.readFileSync(path.join(publicDir, "app.js"), "utf8");
+  assert.match(app, /answerSnapshot:\s*Object\.entries\(answerMap\)/);
+});
+
 test("institutional assets are referenced without checkerboard source files", () => {
   const login = fs.readFileSync(path.join(publicDir, "login.html"), "utf8");
   const admin = fs.readFileSync(path.join(publicDir, "admin.html"), "utf8");

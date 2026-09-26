@@ -19,6 +19,7 @@ const {
   shouldUseSupabase,
   startApplication,
   getApplicationById,
+  getApplicationForAnswerUpdate,
   findCurrentApplication,
   saveApplicationProgress,
   listApplications,
@@ -914,7 +915,7 @@ async function handleRequest(req, res) {
     try {
       const applicationId = requestUrl.pathname.split("/")[3];
       const body = await readBody(req);
-      const application = await getApplicationById(applicationId);
+      let application = await getApplicationForAnswerUpdate(applicationId);
       if (!application) {
         sendJson(res, 404, { error: "No se encontro la aplicacion." });
         return;
@@ -925,10 +926,26 @@ async function handleRequest(req, res) {
       }
 
       const instrument = getInstrumentOrThrow(application.instrumentCode);
-      const answerMap = buildAnswerPayloadMap(application.answers || []);
-      for (const answer of body.answers || []) {
+      if (!Array.isArray(body.answerSnapshot)) {
+        application = await getApplicationById(applicationId);
+      }
+      const itemIds = new Set(instrument.items.map((item) => Number(item.id)));
+      const answerMap = {};
+      for (const answer of body.answerSnapshot || application.answers || []) {
+        const itemId = Number(answer.itemId);
         const normalized = normalizeInstrumentAnswer(instrument.code, answer.value);
-        if (normalized == null) {
+        if (!itemIds.has(itemId) || normalized == null) {
+          sendJson(res, 400, { error: "El estado de respuestas recibido no es valido." });
+          return;
+        }
+        answerMap[itemId] = normalized;
+      }
+
+      const changedItemIds = [];
+      for (const answer of body.answers || []) {
+        const itemId = Number(answer.itemId);
+        const normalized = normalizeInstrumentAnswer(instrument.code, answer.value);
+        if (!itemIds.has(itemId) || normalized == null) {
           sendJson(res, 400, {
             error:
               instrument.code === "disc"
@@ -937,7 +954,12 @@ async function handleRequest(req, res) {
           });
           return;
         }
-        answerMap[answer.itemId] = normalized;
+        answerMap[itemId] = normalized;
+        changedItemIds.push(itemId);
+      }
+      if (!changedItemIds.length) {
+        sendJson(res, 400, { error: "No se recibieron respuestas para guardar." });
+        return;
       }
 
       const scoringSnapshot = scoreInstrumentApplication(instrument.code, answerMap);
@@ -950,7 +972,7 @@ async function handleRequest(req, res) {
         scoringSnapshot
       );
 
-      const saved = await saveApplicationProgress(aggregate);
+      const saved = await saveApplicationProgress(aggregate, { changedItemIds });
       sendJson(res, 200, buildPublicApplicationPayload(saved, instrument));
     } catch (error) {
       sendRequestError(res, error, "No se pudo guardar el avance.", 400);

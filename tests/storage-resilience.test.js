@@ -8,7 +8,7 @@ process.env.SUPABASE_REQUEST_TIMEOUT_MS = "1000";
 process.env.SUPABASE_READ_RETRIES = "1";
 
 const originalFetch = global.fetch;
-const { supabaseRequest } = require("../lib/storage");
+const { saveApplicationProgress, supabaseRequest } = require("../lib/storage");
 
 test.afterEach(() => {
   global.fetch = originalFetch;
@@ -57,4 +57,45 @@ test("Supabase: aborts an unresponsive request and returns a service error", asy
     (error) => error.code === "SUPABASE_UNAVAILABLE" && error.statusCode === 503
   );
   assert.ok(Date.now() - startedAt < 1600);
+});
+
+test("Supabase: incremental autosave writes only the changed answer", async () => {
+  const requests = [];
+  global.fetch = async (url, options) => {
+    requests.push({ url: String(url), method: options.method, body: options.body });
+    return new Response(null, { status: 204 });
+  };
+
+  const aggregate = {
+    id: "application-1",
+    personId: "person-1",
+    participant: { idNumber: "1234567890", fullName: "Persona Prueba" },
+    instrumentCode: "ema",
+    instrumentName: "EMA",
+    instrumentVersion: "1",
+    status: "in_progress",
+    currentModuleKey: "ema",
+    percentageComplete: 4,
+    valid: null,
+    startedAt: "2026-09-10T12:00:00.000Z",
+    completedAt: null,
+    scoringSnapshot: { dimensions: [] },
+    answers: [
+      { itemId: 1, value: 3, adjustedValue: 3, moduleKey: "ema" },
+      { itemId: 2, value: 4, adjustedValue: 4, moduleKey: "ema" },
+    ],
+    partialResults: [{ scopeType: "dimension", scopeKey: "example" }],
+    finalResult: null,
+  };
+
+  const saved = await saveApplicationProgress(aggregate, { changedItemIds: [2] });
+
+  assert.equal(saved.answers.length, 2);
+  assert.equal(requests.length, 2);
+  assert.match(requests[0].url, /responses\?on_conflict=application_id,item_id/);
+  assert.match(requests[1].url, /applications$/);
+  assert.equal(requests.some((request) => request.method === "DELETE"), false);
+  assert.equal(requests.some((request) => request.url.includes("people")), false);
+  assert.equal(requests.some((request) => request.url.includes("partial_results")), false);
+  assert.deepEqual(JSON.parse(requests[0].body).map((row) => row.item_id), [2]);
 });

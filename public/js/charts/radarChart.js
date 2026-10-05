@@ -3,6 +3,20 @@
  * Renders the user's real dimension scores without artificial benchmarks.
  */
 
+function escapeSvg(value) {
+  return value.replace(/[&<>"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[char]);
+}
+
+/** Parte una etiqueta en máximo dos líneas sin cortar palabras. */
+function wrapLabel(text, maxChars) {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  if (text.length <= maxChars || words.length < 2) return [text];
+  let first = '';
+  while (words.length && (first + ' ' + words[0]).trim().length <= maxChars) first = `${first} ${words.shift()}`.trim();
+  if (!first) first = words.shift();
+  return words.length ? [first, words.join(' ')] : [first];
+}
+
 export function renderRadarChart(container, dimensions = []) {
   if (!container) return;
   if (dimensions.length < 3) {
@@ -55,13 +69,15 @@ export function renderRadarChart(container, dimensions = []) {
     const lx = center + labelRadius * Math.cos(angle);
     const ly = center + labelRadius * Math.sin(angle);
     const horizontalDirection = Math.cos(angle);
-    const anchor = Math.abs(horizontalDirection) < 0.2 ? 'middle' : horizontalDirection > 0 ? 'end' : 'start';
-    const label = String(dim.axis || '').length > 20 ? `${String(dim.axis).slice(0, 19)}…` : String(dim.axis || '');
+    const anchor = Math.abs(horizontalDirection) < 0.2 ? 'middle' : horizontalDirection > 0 ? 'start' : 'end';
+    const lines = wrapLabel(String(dim.axis || ''), 14);
+    const firstDy = Math.sin(angle) > 0.2 ? 4 : Math.sin(angle) < -0.2 ? -((lines.length - 1) * 12) : -((lines.length - 1) * 6) + 3;
+    const tspans = lines
+      .map((line, index) => `<tspan x="${lx.toFixed(1)}" dy="${index === 0 ? firstDy : 12}">${escapeSvg(line)}</tspan>`)
+      .join('');
 
     spokesAndLabels += `
-      <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="10.5" font-family="'Inter', sans-serif" font-weight="600" fill="#475569">
-        ${label}
-      </text>
+      <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="12" font-family="'Inter', sans-serif" font-weight="600" fill="#475569">${tspans}</text>
     `;
   });
 
@@ -77,7 +93,7 @@ export function renderRadarChart(container, dimensions = []) {
   });
 
   container.innerHTML = `
-    <svg class="radar-svg" viewBox="0 0 ${size} ${size}" aria-label="Perfil psicológico multidimensional">
+    <svg class="radar-svg" viewBox="-66 -6 ${size + 132} ${size + 12}" aria-label="Perfil psicológico multidimensional">
       ${gridPolygons}
       ${spokesAndLabels}
       ${userPolygon}

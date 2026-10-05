@@ -149,7 +149,7 @@ export function getDimensions(application) {
       value: clamp(item.ceScore, 0, 140),
       max: 140,
       displayValue: item.ceScore == null ? 'Parcial' : `CE ${Math.round(item.ceScore)}`,
-      level: item.category || 'pendiente',
+      level: formatLevel(item.category || 'pendiente'),
     }));
   }
 
@@ -164,14 +164,21 @@ export function getDimensions(application) {
     }));
   }
 
-  return (scoring.dimensions || []).map((item) => ({
-    key: item.key,
-    label: item.label,
-    value: clamp(item.favorablePercentage),
-    max: 100,
-    displayValue: item.favorablePercentage == null ? 'Parcial' : `${Math.round(item.favorablePercentage)}%`,
-    level: item.interpretiveLevel || item.band || 'Pendiente',
-  }));
+  // EMA: en "No asertividad" y "Asertividad indirecta" se muestra cuánto del rasgo
+  // aparece (100 − porcentaje favorable), para que un valor alto signifique "más del rasgo".
+  return (scoring.dimensions || []).map((item) => {
+    const isRisk = EMA_RISK_KEYS.has(item.key);
+    const favorable = item.favorablePercentage;
+    const shown = favorable == null ? null : isRisk ? 100 - Number(favorable) : Number(favorable);
+    return {
+      key: item.key,
+      label: item.label,
+      value: clamp(shown),
+      max: 100,
+      displayValue: shown == null ? 'Parcial' : `${Math.round(shown)}%`,
+      level: emaLevel(item, isRisk),
+    };
+  });
 }
 
 export function getOverallProgress(rows = []) {
@@ -188,6 +195,51 @@ export function getObservationGroups(application) {
   };
 }
 
+const EMA_RISK_KEYS = new Set(['no_asertividad', 'asertividad_indirecta']);
+
+function emaLevel(item, isRisk) {
+  if (!isRisk) return item.interpretiveLevel || formatLevel(item.band) || 'Pendiente';
+  if (item.band === 'high') return 'Presencia baja (favorable)';
+  if (item.band === 'medium') return 'Presencia moderada';
+  if (item.band === 'low') return 'Presencia elevada (requiere atención)';
+  return item.interpretiveLevel || 'Pendiente';
+}
+
+const LEVEL_LABELS = {
+  very_low: 'Muy bajo',
+  low: 'Bajo',
+  average: 'Promedio',
+  high: 'Alto',
+  very_high: 'Muy alto',
+  pendiente: 'Pendiente',
+};
+
+/** Traduce códigos internos de nivel (very_low, average…) a texto legible. */
+export function formatLevel(value) {
+  const key = String(value || '').trim();
+  return LEVEL_LABELS[key] || LEVEL_LABELS[key.toLowerCase()] || key;
+}
+
+function titleCase(value) {
+  return String(value || '')
+    .toLocaleLowerCase('es-EC')
+    .replace(/(^|[\s'-])(\p{L})/gu, (match, separator, letter) => separator + letter.toLocaleUpperCase('es-EC'));
+}
+
+/** Nombre completo en formato legible: "PALACIOS GALLARDO DANIEL" → "Palacios Gallardo Daniel". */
+export function formatPersonName(fullName) {
+  const clean = String(fullName || '').trim().replace(/\s+/g, ' ');
+  return clean ? titleCase(clean) : 'Participante';
+}
+
+/**
+ * Nombre de pila para saludos. Las nóminas institucionales registran
+ * "APELLIDO APELLIDO NOMBRE NOMBRE" en mayúsculas; en ese caso se usa el
+ * tercer término. Si el nombre viene escrito por la persona, se usa el primero.
+ */
 export function getFirstName(fullName) {
-  return String(fullName || 'Participante').trim().split(/\s+/)[0] || 'Participante';
+  const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return 'Participante';
+  const isInstitutionalFormat = parts.length >= 3 && parts.join(' ') === parts.join(' ').toLocaleUpperCase('es-EC');
+  return titleCase(isInstitutionalFormat ? parts[2] : parts[0]);
 }

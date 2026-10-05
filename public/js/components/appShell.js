@@ -3,7 +3,7 @@
  */
 
 import { api } from '../core/api.js';
-import { escapeHtml, getFirstName } from '../core/assessmentData.mjs';
+import { escapeHtml, formatPersonName, getFirstName } from '../core/assessmentData.mjs';
 import { renderHomeDashboard } from '../pages/homeDashboard.js';
 import { renderResultsHub } from '../pages/resultsHub.js';
 import { renderProfileView } from '../pages/profileView.js';
@@ -103,7 +103,7 @@ export class AppShell {
 
   render() {
     const person = this.userData?.user?.person || {};
-    const safeName = escapeHtml(person.fullName || 'Participante');
+    const safeName = escapeHtml(formatPersonName(person.fullName));
     const initials = escapeHtml(
       person.fullName
         ? person.fullName.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase()
@@ -124,7 +124,7 @@ export class AppShell {
               </div>
             </a>
 
-            <div class="user-profile-badge">
+            <div class="user-profile-badge" title="${safeName}">
               <div class="user-avatar">${initials}</div>
               <div class="user-meta">
                 <span class="user-name">${safeName}</span>

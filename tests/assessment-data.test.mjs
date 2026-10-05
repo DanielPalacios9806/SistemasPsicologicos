@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 
 import {
   buildEvaluationRows,
+  formatPersonName,
   getDimensions,
+  getFirstName,
   getOverallProgress,
   getScoreSummary,
 } from '../public/js/core/assessmentData.mjs';
@@ -73,6 +75,34 @@ test('EMA and DISC preserve their own scoring models', () => {
   assert.equal(getDimensions(ema)[0].displayValue, '72%');
   assert.equal(getScoreSummary(disc).profile, 'Promotor');
   assert.equal(getDimensions(disc)[0].displayValue, 'MAS 8 / MENOS 5 / DIF 3');
+});
+
+test('EMA risk dimensions show presence of the trait instead of favorable score', () => {
+  const ema = {
+    instrumentCode: 'ema',
+    scoring: {
+      dimensions: [
+        {
+          key: 'no_asertividad',
+          label: 'No asertividad',
+          favorablePercentage: 82,
+          band: 'high',
+          interpretiveLevel: 'Presencia baja (favorable)',
+        },
+      ],
+    },
+  };
+
+  const [dimension] = getDimensions(ema);
+  assert.equal(dimension.value, 18);
+  assert.equal(dimension.displayValue, '18%');
+  assert.equal(dimension.level, 'Presencia baja (favorable)');
+});
+
+test('institutional names are readable and use the first given name in greetings', () => {
+  assert.equal(formatPersonName('PALACIOS GALLARDO DANIEL EDUARDO'), 'Palacios Gallardo Daniel Eduardo');
+  assert.equal(getFirstName('PALACIOS GALLARDO DANIEL EDUARDO'), 'Daniel');
+  assert.equal(getFirstName('Daniel Palacios'), 'Daniel');
 });
 
 test('empty data produces honest zero and null states', () => {

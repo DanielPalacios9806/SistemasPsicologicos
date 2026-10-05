@@ -922,3 +922,21 @@ body,
   .kpi-item:last-child { border-bottom: 0; }
   .progress-summary-band { align-items: flex-start; flex-direction: column; }
 }
+
+/* ── Ajustes 2026-10: nombre completo, textos sin cortes ───────────────── */
+.user-meta { min-width: 0; gap: 2px; }
+.user-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  overflow: hidden;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.status-instrument-copy { min-width: 0; }
+.status-instrument-copy span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-gauge-card .card-header { flex-wrap: wrap; gap: 8px; }
+.profile-gauge-card .card-header h3 { white-space: nowrap; }
+.radar-svg text { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }

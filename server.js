@@ -1,5 +1,6 @@
 const http = require("http");
 const fs = require("fs");
+const zlib = require("zlib");
 const path = require("path");
 const { URL } = require("url");
 
@@ -70,15 +71,32 @@ const MIME_TYPES = {
   ".ico": "image/x-icon",
 };
 
+// Compresion gzip para respuestas de texto/JSON (reduce ~85% la transferencia).
+const COMPRESSIBLE_TYPES = /^(text\/|application\/(javascript|json)|image\/svg\+xml)/;
+const COMPRESS_MIN_BYTES = 1024;
+
+function acceptsGzip(req) {
+  return /\bgzip\b/.test(String(req?.headers?.["accept-encoding"] || ""));
+}
+
 function sendJson(res, statusCode, payload, extraHeaders = {}) {
-  res.writeHead(statusCode, {
+  const body = Buffer.from(JSON.stringify(payload));
+  const headers = {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "same-origin",
     "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
+    Vary: "Accept-Encoding",
     ...extraHeaders,
-  });
-  res.end(JSON.stringify(payload));
+  };
+  if (body.length >= COMPRESS_MIN_BYTES && acceptsGzip(res.req)) {
+    const compressed = zlib.gzipSync(body, { level: 6 });
+    res.writeHead(statusCode, { ...headers, "Content-Encoding": "gzip", "Content-Length": compressed.length });
+    res.end(compressed);
+    return;
+  }
+  res.writeHead(statusCode, { ...headers, "Content-Length": body.length });
+  res.end(body);
 }
 
 function sendRequestError(res, error, fallbackMessage, fallbackStatus = 500) {
@@ -267,20 +285,56 @@ async function buildAdminOverview(context) {
   };
 }
 
-function sendFile(res, filePath) {
+// Archivos estaticos: imagenes con cache de 7 dias; HTML/CSS/JS se revalidan con ETag
+// (respuesta 304 sin cuerpo si no cambiaron) y se envian comprimidos.
+const STATIC_CACHE = new Map();
+const LONG_CACHE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".svg", ".ico", ".webp", ".woff", ".woff2"]);
+
+function loadStaticFile(filePath, stats) {
+  const key = `${filePath}:${stats.mtimeMs}:${stats.size}`;
+  const cached = STATIC_CACHE.get(filePath);
+  if (cached && cached.key === key) return cached;
+  const content = fs.readFileSync(filePath);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || "application/octet-stream";
-  fs.readFile(filePath, (error, content) => {
-    if (error) {
-      sendJson(res, 500, { error: "No se pudo cargar el recurso." });
-      return;
-    }
-    res.writeHead(200, {
-      "Content-Type": contentType,
-      "Cache-Control": "no-store, max-age=0",
-    });
-    res.end(content);
-  });
+  const entry = {
+    key,
+    content,
+    contentType,
+    etag: `W/"${stats.size.toString(16)}-${Math.floor(stats.mtimeMs).toString(16)}"`,
+    gzip: COMPRESSIBLE_TYPES.test(contentType) && content.length >= COMPRESS_MIN_BYTES ? zlib.gzipSync(content, { level: 9 }) : null,
+    cacheControl: LONG_CACHE_EXTENSIONS.has(ext) ? "public, max-age=604800" : "no-cache",
+  };
+  STATIC_CACHE.set(filePath, entry);
+  return entry;
+}
+
+function sendFile(res, filePath, req = res.req) {
+  let entry;
+  try {
+    entry = loadStaticFile(filePath, fs.statSync(filePath));
+  } catch {
+    sendJson(res, 500, { error: "No se pudo cargar el recurso." });
+    return;
+  }
+  const headers = {
+    "Content-Type": entry.contentType,
+    "Cache-Control": entry.cacheControl,
+    ETag: entry.etag,
+    Vary: "Accept-Encoding",
+  };
+  if (req?.headers?.["if-none-match"] === entry.etag) {
+    res.writeHead(304, headers);
+    res.end();
+    return;
+  }
+  if (entry.gzip && acceptsGzip(req)) {
+    res.writeHead(200, { ...headers, "Content-Encoding": "gzip", "Content-Length": entry.gzip.length });
+    res.end(req?.method === "HEAD" ? undefined : entry.gzip);
+    return;
+  }
+  res.writeHead(200, { ...headers, "Content-Length": entry.content.length });
+  res.end(req?.method === "HEAD" ? undefined : entry.content);
 }
 
 function readBody(req) {
@@ -973,7 +1027,11 @@ async function handleRequest(req, res) {
       );
 
       const saved = await saveApplicationProgress(aggregate, { changedItemIds });
-      sendJson(res, 200, buildPublicApplicationPayload(saved, instrument));
+      const publicPayload = buildPublicApplicationPayload(saved, instrument);
+      // El navegador ya tiene el banco de preguntas: los clientes nuevos piden una
+      // respuesta compacta sin reenviar el instrumento completo en cada guardado.
+      if (body.compact === true) delete publicPayload.instrument;
+      sendJson(res, 200, publicPayload);
     } catch (error) {
       sendRequestError(res, error, "No se pudo guardar el avance.", 400);
     }
@@ -1392,7 +1450,7 @@ async function handleRequest(req, res) {
   }
 
   if (VENDOR_FILES[requestUrl.pathname]) {
-    sendFile(res, VENDOR_FILES[requestUrl.pathname]);
+    sendFile(res, VENDOR_FILES[requestUrl.pathname], req);
     return;
   }
 
@@ -1406,7 +1464,7 @@ async function handleRequest(req, res) {
     filePath = path.join(PUBLIC_DIR, "index.html");
   }
 
-  sendFile(res, filePath);
+  sendFile(res, filePath, req);
 }
 
 const server = http.createServer((req, res) => {

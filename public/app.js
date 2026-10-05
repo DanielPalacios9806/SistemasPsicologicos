@@ -619,6 +619,7 @@ async function persistCurrentAnswer() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      compact: true,
       answers: [{ itemId, value }],
       answerSnapshot: Object.entries(answerMap).map(([savedItemId, savedValue]) => ({
         itemId: Number(savedItemId),
@@ -629,7 +630,7 @@ async function persistCurrentAnswer() {
   const payload = await response.json();
   if (!response.ok) throw new Error(payload.error || "No se pudo guardar el avance.");
 
-  state.currentApplication = payload;
+  state.currentApplication = { ...payload, instrument: payload.instrument || state.currentApplication.instrument };
   updateAssessmentContext();
   delete state.draftAnswers[itemId];
   delete state.discSelections[itemId];

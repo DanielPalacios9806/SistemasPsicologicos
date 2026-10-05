@@ -24,13 +24,24 @@ const tableNames = [
   TABLES.responses,
   TABLES.partialResults,
   TABLES.finalResults,
+  TABLES.staffCampaignAccess,
+  TABLES.auditEvents,
+  "instrument_versions",
+  "survey_submissions",
 ];
 
 async function main() {
   fs.mkdirSync(outputDir, { recursive: true });
   const manifest = { createdAt: new Date().toISOString(), tables: {} };
   for (const tableName of tableNames) {
-    const rows = await supabaseRequestAll(`/rest/v1/${tableName}?select=*`);
+    let rows;
+    try {
+      rows = await supabaseRequestAll(`/rest/v1/${tableName}?select=*`);
+    } catch (error) {
+      console.warn(`${tableName}: omitida (${error.message})`);
+      manifest.tables[tableName] = { error: error.message };
+      continue;
+    }
     const fileName = `${tableName}.json`;
     fs.writeFileSync(path.join(outputDir, fileName), JSON.stringify(rows, null, 2), { encoding: "utf8", mode: 0o600 });
     manifest.tables[tableName] = { rows: rows.length, file: fileName };

@@ -25,11 +25,21 @@ test("institutional assets are referenced without checkerboard source files", ()
   const login = fs.readFileSync(path.join(publicDir, "login.html"), "utf8");
   const admin = fs.readFileSync(path.join(publicDir, "admin.html"), "utf8");
   const appShell = fs.readFileSync(path.join(publicDir, "js", "components", "appShell.js"), "utf8");
-  assert.match(login, /assets\/mente-de-acero-logo-institucional\.png/);
-  assert.match(admin, /assets\/mente-de-acero-logo-institucional\.png/);
-  assert.match(appShell, /assets\/mente-de-acero-institucional-fondo-azul\.png/);
+  assert.match(login, /assets\/fae-logo\.png/);
+  assert.match(admin, /assets\/fae-logo\.png/);
+  assert.match(appShell, /assets\/fae-logo\.png/);
+  assert.match(fs.readFileSync(path.join(publicDir, "index.html"), "utf8"), /assets\/fae-logo\.png/);
+  assert.match(fs.readFileSync(path.join(publicDir, "login.css"), "utf8"), /mente-de-acero-institucional-fondo-azul\.png/);
   assert.match(appShell, /id="mobileLogoutBtn"/);
   assert.match(appShell, /#sidebarLogoutBtn, #mobileLogoutBtn/);
-  assert.equal(fs.existsSync(path.join(publicDir, "assets", "mente-de-acero-logo-institucional.png")), true);
+  assert.equal(fs.existsSync(path.join(publicDir, "assets", "fae-logo.png")), true);
   assert.equal(fs.existsSync(path.join(publicDir, "assets", "mente-de-acero-institucional-fondo-azul.png")), true);
+});
+
+test("evaluations live inside the portal instead of the legacy selector", () => {
+  const appShell = fs.readFileSync(path.join(publicDir, "js", "components", "appShell.js"), "utf8");
+  const app = fs.readFileSync(path.join(publicDir, "app.js"), "utf8");
+  assert.match(appShell, /renderEvaluationsView/);
+  assert.doesNotMatch(appShell, /href = route === 'evaluations' \? '\/index\.html'/);
+  assert.match(app, /portal\.html#evaluations/);
 });

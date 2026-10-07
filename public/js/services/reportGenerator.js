@@ -98,11 +98,11 @@ export function generateReportPdf(application, person) {
         <div>Identificador: ${escapeHtml(reportId)}</div>
         <div>Documento orientativo. No constituye diagnóstico clínico ni reemplaza una evaluación profesional.</div>
       </footer>
-      <script>window.addEventListener('load', () => window.print());</script>
     </body>
     </html>
   `;
 
+  printWindow.addEventListener('load', () => printWindow.print(), { once: true });
   printWindow.document.open();
   printWindow.document.write(html);
   printWindow.document.close();

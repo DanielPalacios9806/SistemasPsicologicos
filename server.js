@@ -5,6 +5,7 @@ const path = require("path");
 const { URL } = require("url");
 
 const { getServerConfig } = require("./lib/env");
+const { securityHeaders, getClientIp, createRateLimiter } = require("./lib/security");
 const { listInstruments, getInstrumentDefinition } = require("./lib/instruments");
 const { buildExcelWorkbook } = require("./lib/exportExcel");
 const { scoreInstrumentApplication, normalizeInstrumentAnswer } = require("./lib/scoring/index");
@@ -57,6 +58,17 @@ const VENDOR_FILES = {
 };
 const APP_VERSION = process.env.RENDER_GIT_COMMIT || "local";
 const loginAttempts = new Map();
+// Limites anti-abuso (por cuenta autenticada o, si no hay sesion, por IP).
+const apiLimiter = createRateLimiter({ windowMs: 60_000, max: 240 });
+const anonymousApiLimiter = createRateLimiter({ windowMs: 60_000, max: 300 });
+const startLimiter = createRateLimiter({ windowMs: 60_000, max: 8 });
+const MAX_BODY_BYTES = 1_000_000;
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of loginAttempts) {
+    if ((entry.lockedUntil || 0) < now) loginAttempts.delete(key);
+  }
+}, 10 * 60 * 1000).unref();
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -141,7 +153,7 @@ function isProductionRequest(req) {
 }
 
 function getClientKey(req, username = "") {
-  return `${req.headers["x-forwarded-for"] || req.socket.remoteAddress || "local"}:${username}`;
+  return `${getClientIp(req)}:${String(username).toLowerCase()}`;
 }
 
 function checkLoginRateLimit(req, username) {
@@ -340,12 +352,17 @@ function sendFile(res, filePath, req = res.req) {
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = "";
+    let size = 0;
     req.on("data", (chunk) => {
-      body += chunk.toString();
-      if (body.length > 3_000_000) {
-        reject(new Error("El cuerpo de la solicitud es demasiado grande."));
+      size += chunk.length;
+      if (size > MAX_BODY_BYTES) {
+        const error = new Error("El cuerpo de la solicitud es demasiado grande.");
+        error.statusCode = 413;
+        reject(error);
         req.destroy();
+        return;
       }
+      body += chunk.toString();
     });
     req.on("end", () => {
       try {
@@ -663,7 +680,21 @@ function sendExcel(res, applications, instrumentCode = "") {
 }
 
 async function handleRequest(req, res) {
-  const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+  const requestUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  for (const [name, value] of Object.entries(securityHeaders({ https: isProductionRequest(req) }))) {
+    res.setHeader(name, value);
+  }
+
+  if (requestUrl.pathname.startsWith("/api/") && req.method !== "OPTIONS") {
+    const session = getSessionFromRequest(req);
+    const retryAfter = session?.sub
+      ? apiLimiter.consume(`account:${session.sub}`)
+      : anonymousApiLimiter.consume(`ip:${getClientIp(req)}`);
+    if (retryAfter) {
+      sendJson(res, 429, { error: "Demasiadas solicitudes. Espera un momento e intenta nuevamente." }, { "Retry-After": String(retryAfter) });
+      return;
+    }
+  }
 
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
@@ -919,6 +950,11 @@ async function handleRequest(req, res) {
   if (requestUrl.pathname === "/api/applications/start" && req.method === "POST") {
     const context = await requireParticipant(req, res);
     if (!context) return;
+    const startRetryAfter = startLimiter.consume(`start:${context.account.id}`);
+    if (startRetryAfter) {
+      sendJson(res, 429, { error: "Estas iniciando evaluaciones demasiado rapido. Espera unos segundos." }, { "Retry-After": String(startRetryAfter) });
+      return;
+    }
     try {
       const body = await readBody(req);
       const participant = { ...context.person, personId: context.account.person_id };

@@ -8,12 +8,18 @@ import { renderHomeDashboard } from '../pages/homeDashboard.js';
 import { renderResultsHub } from '../pages/resultsHub.js';
 import { renderProfileView } from '../pages/profileView.js';
 import { renderProgressView } from '../pages/progressView.js';
+import { renderEvaluationsView } from '../pages/evaluationsView.js';
 
 const ROUTES = {
   home: {
     title: 'Inicio',
     subtitle: 'Tu espacio de evaluación y desarrollo personal',
     render: renderHomeDashboard,
+  },
+  evaluations: {
+    title: 'Evaluaciones',
+    subtitle: 'Instrumentos asignados a tu perfil',
+    render: renderEvaluationsView,
   },
   results: {
     title: 'Evaluaciones y resultados',
@@ -74,7 +80,7 @@ export class AppShell {
     this.root.innerHTML = `
       <div class="portal-loading" role="status" aria-live="polite">
         <div class="portal-loading-mark" aria-hidden="true">
-          <img src="/assets/mente-de-acero-institucional-fondo-azul.png" alt="" />
+          <img src="/assets/fae-logo.png" alt="" />
         </div>
         <div class="portal-loading-copy">
           <span>Comando Conjunto</span>
@@ -89,7 +95,7 @@ export class AppShell {
   renderFatalError(error) {
     this.root.innerHTML = `
       <main class="portal-error-state">
-        <img src="/assets/mente-de-acero-logo-institucional.png" alt="Mente de Acero" />
+        <img src="/assets/fae-logo.png" alt="Fuerza Aérea Ecuatoriana" />
         <h1>No pudimos cargar tu portal</h1>
         <p>${escapeHtml(error?.message || 'Inténtalo nuevamente en unos momentos.')}</p>
         <button class="btn btn-navy" type="button" id="retryPortalBtn">
@@ -116,7 +122,7 @@ export class AppShell {
           <div class="sidebar-top">
             <a href="#home" class="brand-lockup" aria-label="Ir al inicio">
               <span class="brand-emblem-frame" aria-hidden="true">
-                <img class="brand-emblem" src="/assets/mente-de-acero-institucional-fondo-azul.png" alt="" />
+                <img class="brand-emblem" src="/assets/fae-logo.png" alt="" />
               </span>
               <div class="brand-info">
                 <span class="brand-name">MENTE <small>DE</small> ACERO</span>
@@ -154,7 +160,7 @@ export class AppShell {
           <header class="app-topbar">
             <a href="#home" class="mobile-brand" aria-label="Mente de Acero">
               <span class="mobile-brand-mark" aria-hidden="true">
-                <img src="/assets/mente-de-acero-institucional-fondo-azul.png" alt="" />
+                <img src="/assets/fae-logo.png" alt="" />
               </span>
               <span class="mobile-brand-copy">
                 <strong>Mente de Acero</strong>
@@ -208,10 +214,8 @@ export class AppShell {
       ['profile', 'user-round', 'Perfil'],
     ];
     return links.map(([route, icon, label]) => {
-      const href = route === 'evaluations' ? '/index.html' : `#${route}`;
-      const routeAttribute = route === 'evaluations' ? '' : ` data-route="${route}"`;
       return `
-        <a href="${href}" class="${className}${route === 'home' ? ' active' : ''}"${routeAttribute}>
+        <a href="#${route}" class="${className}${route === 'home' ? ' active' : ''}" data-route="${route}">
           <i data-lucide="${icon}"></i><span>${label}</span>
         </a>
       `;

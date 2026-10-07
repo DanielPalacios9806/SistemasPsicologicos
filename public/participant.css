@@ -826,8 +826,8 @@ body.participant-app::after,
 }
 
 .participant-app .brand-logo-mini {
-  width: 34px;
-  height: 44px;
+  width: 36px;
+  height: 40px;
   flex: 0 0 auto;
   object-fit: contain;
 }

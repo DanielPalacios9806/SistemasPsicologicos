@@ -358,7 +358,19 @@ function decodeDiscAnswer(value) {
   return { most: Math.floor(numeric / 10), least: numeric % 10 };
 }
 
-async function startSelectedInstrument() {
+let startInFlight = null;
+
+function startSelectedInstrument() {
+  // Un solo inicio a la vez: evita aplicaciones duplicadas por doble clic.
+  if (!startInFlight) {
+    startInFlight = startSelectedInstrumentOnce().finally(() => {
+      startInFlight = null;
+    });
+  }
+  return startInFlight;
+}
+
+async function startSelectedInstrumentOnce() {
   if (!state.selectedInstrumentCode) {
     showAlert("Selecciona un instrumento antes de continuar.");
     return;
@@ -374,7 +386,7 @@ async function startSelectedInstrument() {
   } else if (!state.assignments.some((assignment) => assignment.instrumentCode === state.selectedInstrumentCode)) {
     showAlert("Esta evaluacion no esta asignada a tu cuenta.");
     setTimeout(() => {
-      window.location.href = "/portal.html";
+      window.location.href = "/portal.html#evaluations";
     }, 1200);
     return;
   }
@@ -974,7 +986,7 @@ async function initialize() {
     if (!state.instruments.some((instrument) => instrument.code === requestedInstrument)) {
       showAlert("Esta evaluacion no esta asignada a tu cuenta.");
       setTimeout(() => {
-        window.location.href = "/portal.html";
+        window.location.href = "/portal.html#evaluations";
       }, 1200);
       return;
     }
@@ -983,8 +995,8 @@ async function initialize() {
     await startSelectedInstrument();
     return;
   }
-  renderIntroSlide();
-  await initializeAuthenticatedAssessment();
+  // El selector heredado ya no se usa: la eleccion de instrumento vive en el portal.
+  window.location.replace("/portal.html#evaluations");
 }
 
 initialize().catch((error) => showAlert(error.message || "No se pudo iniciar la aplicacion."));

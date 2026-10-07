@@ -42,6 +42,24 @@ test("Supabase: does not retry writes that could be duplicated", async () => {
   assert.equal(calls, 1);
 });
 
+test("Supabase: preserves conflict metadata for idempotent recovery", async () => {
+  global.fetch = async () => new Response(JSON.stringify({
+    code: "23505",
+    message: "duplicate key value violates unique constraint",
+    details: "Key (person_id, instrument_code) already exists.",
+  }), {
+    status: 409,
+    headers: { "Content-Type": "application/json" },
+  });
+
+  await assert.rejects(
+    () => supabaseRequest("/rest/v1/applications", { method: "POST", body: "{}" }),
+    (error) => error.statusCode === 409
+      && error.supabaseCode === "23505"
+      && /duplicate key/.test(error.message)
+  );
+});
+
 test("Supabase: aborts an unresponsive request and returns a service error", async () => {
   global.fetch = async (_url, options) => new Promise((_resolve, reject) => {
     options.signal.addEventListener("abort", () => {

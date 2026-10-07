@@ -94,7 +94,7 @@ export async function renderProfileView(container, userData) {
             <i data-lucide="user-round-search"></i>
             <h2>Tu perfil se está construyendo</h2>
             <p>Completa al menos una evaluación para ver sus dimensiones y lectura orientativa.</p>
-            <a class="btn btn-primary" href="/index.html"><i data-lucide="clipboard-list"></i>Ir a evaluaciones</a>
+            <a class="btn btn-primary" href="#evaluations"><i data-lucide="clipboard-list"></i>Ir a evaluaciones</a>
           </div>
         `}
       </div>

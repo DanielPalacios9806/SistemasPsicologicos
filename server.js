@@ -63,6 +63,7 @@ const apiLimiter = createRateLimiter({ windowMs: 60_000, max: 240 });
 const anonymousApiLimiter = createRateLimiter({ windowMs: 60_000, max: 300 });
 const startLimiter = createRateLimiter({ windowMs: 60_000, max: 8 });
 const MAX_BODY_BYTES = 1_000_000;
+const overviewCache = new Map();
 setInterval(() => {
   const now = Date.now();
   for (const [key, entry] of loginAttempts) {
@@ -1121,7 +1122,16 @@ async function handleRequest(req, res) {
     const staff = await requireStaff(req, res);
     if (!staff || !requireSupabaseManagement(res)) return;
     try {
-      sendJson(res, 200, await buildAdminOverview(staff));
+      // Cache corto por cuenta: evita recalcular el resumen en cada recarga/clic.
+      const cacheKey = staff.account.id;
+      const cached = overviewCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now() && requestUrl.searchParams.get("fresh") !== "1") {
+        sendJson(res, 200, cached.payload);
+        return;
+      }
+      const payload = await buildAdminOverview(staff);
+      overviewCache.set(cacheKey, { payload, expiresAt: Date.now() + 30_000 });
+      sendJson(res, 200, payload);
     } catch (error) {
       sendRequestError(res, error, "No se pudo cargar el resumen institucional.");
     }

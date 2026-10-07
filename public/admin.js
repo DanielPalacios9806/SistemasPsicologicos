@@ -96,8 +96,8 @@ function applicationsTable(applications, compact=false) {
   return `<table><thead><tr><th>Participante</th><th>Instrumento</th>${compact ? "" : "<th>Campaña</th>"}<th>Estado</th><th>Avance</th><th>Fecha</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-async function loadOverview() {
-  state.overview = await request("/api/admin/overview");
+async function loadOverview(fresh = false) {
+  state.overview = await request(`/api/admin/overview${fresh ? "?fresh=1" : ""}`);
   state.campaigns = state.overview.campaigns || [];
   renderMetrics();
   renderBreakdown("statusBreakdown", [["Pendientes",state.overview.statuses?.pending],["En progreso",state.overview.statuses?.in_progress],["Completadas",state.overview.statuses?.completed]]);
@@ -238,7 +238,7 @@ document.addEventListener("click", (event) => {
 
 document.getElementById("resultsFilterForm").addEventListener("submit", (event) => { event.preventDefault(); loadApplications().catch((error) => showAlert(error.message)); });
 document.getElementById("directorySearchForm").addEventListener("submit", (event) => { event.preventDefault(); loadDirectory().catch((error) => showAlert(error.message)); });
-document.getElementById("refreshOverviewButton").addEventListener("click", () => loadOverview().then(() => showAlert("Resumen actualizado.",true)).catch((error) => showAlert(error.message)));
+document.getElementById("refreshOverviewButton").addEventListener("click", () => loadOverview(true).then(() => showAlert("Resumen actualizado.",true)).catch((error) => showAlert(error.message)));
 document.getElementById("adminExportButton").addEventListener("click", () => exportExcel().then(() => showAlert("Archivo Excel generado.",true)).catch((error) => showAlert(error.message)));
 document.getElementById("mobileMenuButton").addEventListener("click", () => document.querySelector(".admin-sidebar").classList.toggle("open"));
 document.getElementById("staffRole").addEventListener("change", (event) => document.getElementById("staffCampaignFields").classList.toggle("hidden",event.target.value === "admin"));
@@ -247,7 +247,7 @@ document.getElementById("campaignForm").addEventListener("submit", async (event)
   event.preventDefault();
   try {
     await request("/api/admin/campaigns",{ method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ name:document.getElementById("campaignName").value,startsAt:document.getElementById("campaignStart").value,endsAt:document.getElementById("campaignEnd").value,active:document.getElementById("campaignActive").checked }) });
-    event.target.reset(); document.getElementById("campaignActive").checked=true; showAlert("Campaña creada.",true); await loadCampaigns(); await loadOverview();
+    event.target.reset(); document.getElementById("campaignActive").checked=true; showAlert("Campaña creada.",true); await loadCampaigns(); await loadOverview(true);
   } catch (error) { showAlert(error.message); }
 });
 
@@ -266,7 +266,7 @@ document.getElementById("assignmentForm").addEventListener("submit", async (even
   try {
     const instrumentCodes=[...document.querySelectorAll('[name="assignmentInstrument"]:checked')].map((input) => input.value);
     await request("/api/admin/assignments",{ method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ personId:document.getElementById("assignmentPersonId").value,campaignId:document.getElementById("assignmentCampaign").value,instrumentCodes }) });
-    document.getElementById("assignmentDialog").close(); showAlert("Evaluaciones asignadas.",true); await loadDirectory(); await loadOverview();
+    document.getElementById("assignmentDialog").close(); showAlert("Evaluaciones asignadas.",true); await loadDirectory(); await loadOverview(true);
   } catch (error) { showAlert(error.message); }
 });
 
@@ -302,7 +302,7 @@ async function init() {
     document.querySelectorAll("[data-admin-only]").forEach((element) => element.classList.toggle("hidden",auth.user.role !== "admin"));
     document.getElementById("adminLoading").classList.add("hidden");
     document.getElementById("adminApp").classList.remove("hidden");
-    await loadOverview();
+    await loadOverview().catch((error) => showAlert(error.message || "No se pudo cargar el resumen."));
   } catch (error) {
     if (!document.getElementById("adminLoading").classList.contains("hidden")) document.getElementById("adminLoading").innerHTML=`<span>${escapeHtml(error.message)}</span>`;
   }

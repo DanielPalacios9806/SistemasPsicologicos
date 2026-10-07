@@ -32,6 +32,28 @@ for (const [code, expectedCount] of Object.entries(EXPECTED_COUNTS)) {
   });
 }
 
+test("question banks use reviewed Latin American Spanish", () => {
+  const ema = getInstrumentDefinition("ema");
+  const baron = getInstrumentDefinition("baron");
+  const disc = getInstrumentDefinition("disc");
+  const statements = [...ema.items, ...baron.items].map((item) => item.text);
+  const discChoices = disc.items.flatMap((item) => item.choices.map((choice) => choice.label));
+  const knownOcrErrors = /\b(dificuotades|deficiles|rsulta|desagaradables|extranas|dificil|facil|demas|telefono|critica|opinion|relacion|conversacion|caracter|lider|anos|estres)\b/i;
+
+  assert.ok(statements.every((text) => text.endsWith(".")));
+  assert.ok([...statements, ...discChoices].every((text) => !knownOcrErrors.test(text)));
+  assert.ok([...statements, ...discChoices].every((text) => !/\s{2,}/.test(text)));
+  assert.ok([...statements, ...discChoices].every((text) => !/\(Ia\)/.test(text)));
+  assert.ok([...statements, ...discChoices].every((text) => {
+    return (text.match(/\(/g) || []).length === (text.match(/\)/g) || []).length;
+  }));
+  assert.equal(baron.items[0].text, "Para superar las dificultades que se me presentan, actúo paso a paso.");
+  assert.equal(baron.items[56].text, "Percibo cosas extrañas que los demás no ven.");
+  assert.equal(ema.items[26].text, "Puedo pedir que me enseñen cómo hacer algo que no sé cómo realizar.");
+  assert.ok(discChoices.includes("autosuficiente"));
+  assert.ok(discChoices.includes("ecuánime"));
+});
+
 test("assessment script only references elements present in its HTML", () => {
   const publicDir = path.join(__dirname, "..", "public");
   const script = fs.readFileSync(path.join(publicDir, "app.js"), "utf8");

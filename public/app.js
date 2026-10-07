@@ -6,6 +6,47 @@ const RESPONSE_UI = {
   5: { icon: "chevrons-up" },
 };
 
+// Caritas neutras por intensidad: expresan "cuanto" (poco -> mucho) sin enojo ni alegria,
+// para no inducir respuestas en items redactados en negativo.
+const INTENSITY_COLORS = ["#d6ecf7", "#a9daeb", "#76c4d4", "#43a7b7", "#1f7f8f"];
+
+function renderIntensityFace(level) {
+  const fillHeight = Math.round((level / 5) * 40);
+  const clipId = `intensity-clip-${level}`;
+  const color = INTENSITY_COLORS[level - 1] || INTENSITY_COLORS[2];
+  return `
+    <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true" focusable="false">
+      <defs><clipPath id="${clipId}"><circle cx="24" cy="24" r="20" /></clipPath></defs>
+      <circle cx="24" cy="24" r="20" fill="#ffffff" />
+      <rect x="0" y="${44 - fillHeight}" width="48" height="${fillHeight}" fill="${color}" clip-path="url(#${clipId})" />
+      <circle cx="24" cy="24" r="20" fill="none" stroke="${color}" stroke-width="2.5" />
+      <circle cx="17.5" cy="21" r="2.3" fill="#17324d" />
+      <circle cx="30.5" cy="21" r="2.3" fill="#17324d" />
+      <path d="M18.5 30.5 L29.5 30.5" fill="none" stroke="#17324d" stroke-width="2.2" stroke-linecap="round" />
+    </svg>`;
+}
+
+const SUPPORT_MESSAGES = [
+  "Vas muy bien. Tómate tu tiempo.",
+  "Responde desde tu día a día, no desde lo ideal.",
+  "Tu primera impresión suele ser la más sincera.",
+  "No hay respuestas buenas ni malas: solo tu forma de ser.",
+  "Respira. Cada respuesta te ayuda a conocerte mejor.",
+  "Tu avance se guarda solo; puedes pausar cuando lo necesites.",
+  "Piensa en cómo actúas normalmente, no en un caso aislado.",
+  "Sigue a tu ritmo, lo estás haciendo bien.",
+];
+
+function getSupportMessage(questionNumber, total) {
+  if (questionNumber === 1) return "Empecemos con calma. Responde con naturalidad.";
+  if (questionNumber === total) return "¡Última pregunta de esta sección! Gracias por tu sinceridad.";
+  const ratio = questionNumber / total;
+  const previousRatio = (questionNumber - 1) / total;
+  if (ratio >= 0.5 && previousRatio < 0.5) return "¡Ya vas por la mitad! Excelente constancia.";
+  if (ratio >= 0.75 && previousRatio < 0.75) return "Queda muy poco. Sigue así.";
+  return SUPPORT_MESSAGES[Math.floor((questionNumber - 1) / 4) % SUPPORT_MESSAGES.length];
+}
+
 const INSTRUMENT_UI = {
   ema: {
     title: "Asertividad",
@@ -544,7 +585,20 @@ function renderQuestion() {
   const answeredCount = (module.itemIds || []).filter((moduleItemId) => answerMap[moduleItemId] != null).length;
   const percent = module.itemIds?.length ? Math.round((answeredCount / module.itemIds.length) * 100) : 0;
 
-  questionHeading.textContent = `Pregunta ${questionNumber} de ${module.itemIds?.length || state.activeQuestionIds.length}`;
+  const totalQuestions = module.itemIds?.length || state.activeQuestionIds.length;
+  questionHeading.textContent = `Pregunta ${questionNumber} de ${totalQuestions}`;
+  const moduleIndex = Math.max(0, instrument.modules.findIndex((candidate) => candidate.key === state.activeModuleKey));
+  document.body.dataset.qtheme = String((moduleIndex + Math.floor((questionNumber - 1) / 5)) % 5);
+  const supportText = document.getElementById("supportMessageText");
+  if (supportText) {
+    const nextMessage = getSupportMessage(questionNumber, totalQuestions);
+    if (supportText.textContent !== nextMessage) {
+      supportText.textContent = nextMessage;
+      supportText.parentElement.classList.remove("is-new");
+      void supportText.parentElement.offsetWidth;
+      supportText.parentElement.classList.add("is-new");
+    }
+  }
   questionText.textContent = question.text;
   questionHint.textContent =
     instrument.code === "disc"
@@ -601,13 +655,14 @@ function renderQuestion() {
 
   ratingGroup.classList.remove("disc-choice-group");
   instrument.responseScale.forEach((option) => {
-    const ui = RESPONSE_UI[option.value];
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `rating-button${currentValue === option.value ? " selected" : ""}`;
+    button.className = `rating-button intensity-${option.value}${currentValue === option.value ? " selected" : ""}`;
     button.setAttribute("aria-pressed", currentValue === option.value ? "true" : "false");
+    button.setAttribute("aria-label", option.label);
+    button.title = `${option.label} (tecla ${option.value})`;
     button.innerHTML = `
-      <span class="rating-emoji" aria-hidden="true"><i data-lucide="${ui.icon}"></i></span>
+      <span class="rating-emoji intensity-face" aria-hidden="true">${renderIntensityFace(Number(option.value))}</span>
       <span class="rating-title">${option.shortLabel || option.label}</span>
     `;
     button.addEventListener("click", () => {
@@ -946,6 +1001,16 @@ nextButton.addEventListener("click", async () => {
       nextButton.disabled = getCurrentAnswerMap()[itemId] == null;
     }
   }
+});
+
+// Atajos 1-5 para responder rapido en escritorio.
+document.addEventListener("keydown", (event) => {
+  if (questionScreen.classList.contains("hidden") || event.ctrlKey || event.metaKey || event.altKey) return;
+  if (getCurrentInstrument()?.code === "disc") return;
+  const value = Number(event.key);
+  if (!Number.isInteger(value) || value < 1 || value > 5) return;
+  const button = ratingGroup.querySelectorAll(".rating-button")[value - 1];
+  if (button) button.click();
 });
 
 async function initializeAuthenticatedAssessment() {

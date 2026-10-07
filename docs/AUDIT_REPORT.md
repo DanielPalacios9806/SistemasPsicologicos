@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-19  
 **Role:** Lead Product Designer, UX Engineer & Senior Frontend Engineer  
-**Objective:** Complete architectural, psychological, and UX audit to evolve the "Mente de Acero" platform from a military-skewed assessment runner into a modern, clinical-grade psychological assessment and personal well-being ecosystem for users aged 18–33.
+**Objective:** Complete architectural, psychological, and UX audit to evolve the "Mente de Acero" platform from a military-skewed assessment runner into a modern plataforma de evaluación psicológica and personal well-being ecosystem for users aged 18–33.
 
 ---
 
@@ -12,7 +12,7 @@ The current codebase is a lightweight, zero-dependency Node.js HTTP server backe
 
 To achieve the new product vision (**Strength + Self-Knowledge + Confidentiality + Wellness + Progress**), the platform requires:
 1. Architectural evolution toward a componentized participant portal.
-2. Clear separation between psychometrically validated clinical tests (EMA, Bar-On ICE, DISC) and longitudinal wellness tracking (daily mood, wellness habits, pulse checks).
+2. Clear separation between psychometrically validated psychological assessment instruments (EMA, Bar-On ICE, DISC) and longitudinal wellness tracking (daily mood, wellness habits, pulse checks).
 3. A softened, welcoming design system (Navy/Teal/Warm Amber, glassmorphic cards, human-centric typography, modern SVG micro-interactions) eliminating harsh military-command metaphors.
 
 ---
@@ -91,7 +91,7 @@ To achieve the new product vision (**Strength + Self-Knowledge + Confidentiality
 │ 5. Personalized Recommendation Engine (Mindfulness, Anxiety, Self-Esteem).  │
 │ 6. Longitudinal Wellness Habits Tracker (Sleep, Hydration, Movement, Zen). │
 │ 7. 14-Day Mood Spline Tracker (Valence/Energy curve).                       │
-│ 8. PDF Clinical Report Generation & Confidentiality Guarantee Badges.       │
+│ 8. Generación de informe de resultados psicológicos (PDF) y garantías de privacidad. │
 │ 9. 24/7 Psychological Helpline & Crisis Support Banner.                    │
 │ 10. Mobile Bottom-Navigation App Layout with touch-friendly widgets.        │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -106,7 +106,7 @@ To achieve the new product vision (**Strength + Self-Knowledge + Confidentiality
 - **Visual Values:**
   - **Strength (Fortaleza):** Sleek, solid, reliable structures; confident typography; crisp visual hierarchy.
   - **Self-Knowledge (Autoconocimiento):** Clear visual analytics (Radar charts, gauge dials, trend splines, strength badges).
-  - **Confidentiality (Confidencialidad):** Explicit privacy badges, clinical compliance microcopy, encrypted feel.
+  - **Confidentiality (Confidencialidad):** Explicit privacy badges, ethical compliance microcopy, encrypted feel.
   - **Well-Being (Bienestar):** Soothing tones (Emerald/Teal, Soft Slate, Warm Gold), ample whitespace, zero visual clutter.
   - **Progress (Progreso):** Stepped milestones, habit streaks, week-over-week comparative deltas ($\Delta +8\text{ pts}$).
 

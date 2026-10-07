@@ -15,13 +15,13 @@
 | **RadarChart (Psychological Dimensions)** | Screen 1 | Fully Supported | `SUPPORTED` | Renders strictly the authenticated user's actual standardized scores across Bar-On 5 Composites (Intrapersonal, Interpersonal, Adaptabilidad, Manejo del Estrés, Estado de Ánimo) or DISC dimensions. No age benchmark comparison. |
 | **Strengths & Opportunity Areas Cards** | Screen 1 | Fully Supported | `SUPPORTED` | Generated from `final_results.interpretation_json.observations.strengths` and `attentionAreas`. Render with accessible green/amber UI cards. |
 | **5-Step Evaluation Progress Stepper** | Screen 1 | Fully Supported | `SUPPORTED` | Computed from active application status (`started_at`, answers count, `isComplete`, and final report availability). |
-| **Personalized PDF Report Download** | Screen 1 | Partially Supported | `DATA_GAP` (Feature) | Client-side/server-side PDF generation template rendering the official clinical summary from `final_results` with cryptographic verification seal. |
-| **Índice General de Bienestar (Radial 72/100 or 82/100 Gauge)** | Screen 2 & 3 | Schema Gap | `DATA_GAP` | **Strict Rule 9 adherence:** Do NOT average unrelated tests. Implement the non-clinical composite formula from `METRICS_CATALOG.md` (35% Habits + 35% Mood + 30% Assessment) or link directly to Bar-On CE Total scaled to 100. |
+| **Personalized PDF Report Download** | Screen 1 | Partially Supported | `DATA_GAP` (Feature) | Client-side/server-side PDF generation template rendering the official psychological results summary from `final_results` with document identifier (`report_id`) and timestamp (`generated_at`). (Cryptographic digital signature classified as `FUTURE_CAPABILITY`). |
+| **Adherencia a Hábitos (Radial 72% Gauge)** | Screen 2 & 3 | Schema Gap | `DATA_GAP` | **Strict Rule 9 adherence:** Do NOT average unrelated tests or psychometric percentiles. Implement purely as `habit_adherence` / `habit_completion_rate` (0–100%) tracking weekly completion of active habits. |
 | **Daily Wellness Habits Tracker (Sleep, Water, Movement, Breathing, Journal)** | Screen 2 & 3 | Schema Gap | `DATA_GAP` | Add table `wellness_habits` (or localStorage fallback in offline driver). Endpoints: `GET /api/habits`, `POST /api/habits/log`. |
 | **14-Day Mood Tracker Spline** | Screen 3 | Schema Gap | `DATA_GAP` | Add table `daily_mood_logs` (`person_id`, `logged_date`, `valence_level [1..3]`, `note`). Endpoints: `GET /api/mood/history`, `POST /api/mood/log`. |
 | **Quick Action / Interactive Tools (Respiración, Ejercicios, Diario)** | Screen 2 & 3 | UI Gap | `DATA_GAP` (Tool) | Build client-side interactive tool modals (e.g. 4-7-8 Breathing visualizer with SVG animated circle, cognitive journal check-in modal, emergency 24/7 helpline modal). |
 | **Recent Results Cards (Bar-On, EMA, DISC)** | Screen 3 | Fully Supported | `SUPPORTED` | Surfaces completed applications from `final_results` and `applications`. |
-| **Weekly Progress Trend Chart (7-Day Line)** | Screen 2 & 3 | Computation Gap | `DATA_GAP` | Aggregate past 7 daily wellness index points into a smooth SVG sparkline curve with delta indicator ($\Delta +8\text{ pts}$). |
+| **Weekly Progress Trend Chart (7-Day Line)** | Screen 2 & 3 | Computation Gap | `DATA_GAP` | Aggregate past 7 daily habit adherence points into a smooth SVG sparkline curve with delta indicator ($\Delta +8\text{ pts}$). |
 | **Age Group Comparison (18–33 Benchmark)** | Screen 1 | N/A | `OUT_OF_SCOPE` | **Age 18–33 is strictly a UX/UI design sensitivity reference.** It is NOT a business rule, scoring norm, or comparative benchmark. |
 
 ---
@@ -31,8 +31,8 @@
 ### 2.1 The "Mental Score" Trap (Rule 9 Compliance)
 - **Problem:** Many consumer apps carelessly calculate `(BarOn_CE + DISC_Diff + EMA_Raw) / 3`, producing a meaningless and scientifically invalid number.
 - **Solution in Mente de Acero:**
-  1. For clinical/psychometric screens: Always display the specific instrument's standardized score (e.g., "Cociente Emocional: 104 CE — Promedio Adecuado", "Asertividad Directa: 78% — Alta").
-  2. For the main lifestyle dashboard gauge: Display the **Índice de Bienestar Personal**, explicitly documented as a lifestyle and self-regulation tracker derived from verified habits and daily check-ins.
+  1. For psychological/psychometric screens: Always display the specific instrument's standardized score (e.g., "Cociente Emocional: 104 CE — Promedio Adecuado", "Asertividad Directa: 78% — Alta").
+  2. For the main lifestyle dashboard gauge: Display the **Adherencia a hábitos**, explicitly documented as a lifestyle and self-regulation tracker derived from verified habit completions.
   3. Radar Chart: Visualizes the user's single dataset across real dimensions (Bar-On 5 composites or DISC).
 
 ---

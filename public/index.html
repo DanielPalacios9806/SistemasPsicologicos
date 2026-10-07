@@ -10,10 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/styles.css?v=20260612-2" />
-    <link rel="stylesheet" href="/participant.css?v=20261007-1" />
+    <link rel="stylesheet" href="/participant.css?v=20261007-2" />
   </head>
   <body class="public-body participant-app assessment-page">
     <div id="alert" class="alert hidden" aria-live="polite"></div>
+    <div class="question-backdrop" aria-hidden="true"><span class="blob blob-a"></span><span class="blob blob-b"></span><span class="blob blob-c"></span></div>
 
     <main class="public-shell assessment-shell">
       <header class="brand-nav app-topbar assessment-topbar">
@@ -113,6 +114,7 @@
         </header>
 
         <article class="question-card">
+          <p id="supportMessage" class="support-message" aria-live="polite"><span class="support-dot" aria-hidden="true"></span><span id="supportMessageText">Vas muy bien. Tómate tu tiempo.</span></p>
           <h2 id="questionText"></h2>
           <p id="questionMicrocopy" class="question-microcopy">Responde según cómo actúas habitualmente.</p>
           <div id="ratingGroup" class="rating-group" role="group" aria-label="Opciones de respuesta"></div>
@@ -211,6 +213,6 @@
 
     <script src="/vendor/lucide.js"></script>
     <script src="/ui.js?v=20260819-1"></script>
-    <script src="/app.js?v=20261007-1"></script>
+    <script src="/app.js?v=20261007-2"></script>
   </body>
 </html>

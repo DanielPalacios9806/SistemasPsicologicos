@@ -29,11 +29,11 @@
 
 ### 1.4 `ConfidentialityBanner` & `EmergencySupportBanner`
 - **Props / State:** `variant` (`confidentiality_header`, `confidentiality_footer`, `crisis_helpline`).
-- **Children:** Shield/Phone icon, reassuring clinical confidentiality text, emergency hotline link (`01 800 123 4567`).
+- **Children:** Shield/Phone icon, reassuring confidentiality text, emergency hotline link (`01 800 123 4567`).
 
 ---
 
-## 2. Assessment & Clinical Evaluation Components
+## 2. Assessment & Psychological Evaluation Components
 
 ### 2.1 `HeroEvaluationCard` ("Evaluación de perfil mental")
 - **Props / State:** `title`, `description`, `illustrationSrc`, `ctaLabel`, `onStartClick`.

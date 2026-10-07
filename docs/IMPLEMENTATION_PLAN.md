@@ -37,23 +37,13 @@
 │   14-Day Mood Splines, Sparklines).                                         │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │
-                                       ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 2: Core Dashboard & Results Hub Implementation                        │
-│ - Screen 1: "Evaluaciones y Resultados" (Radar comparison, Strengths/       │
-│   Opportunities, Step Stepper, Report Download, Active Batteries).          │
-│ - Screen 3: Desktop "Inicio / Dashboard" (Current Evaluation, Recent        │
-│   Results, Wellness Score Gauge, Habit Tracker, Mood Spline, Support).      │
-│ - Screen 2: Responsive Mobile Experience with touch navigation.             │
-└──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │
-                                       ▼
+                                                                        ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ PHASE 3: Interactive Measurement & Growth Tools                             │
 │ - Interactive 4-7-8 Breathing Pacer Tool with pre/post stress rating.       │
 │ - Daily Mood Valence & Energy Check-in Tool.                                │
 │ - 5-Pillar Wellness Habits Tracker (Sleep, Hydration, Movement, Zen, Log). │
-│ - PDF Clinical Summary Report Generator with verification seal.             │
+│ - PDF Psychological Summary Report Generator with document ID & timestamp.  │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │
                                        ▼
@@ -64,6 +54,27 @@
 │ - WCAG 2.1 AA accessibility validation.                                     │
 │ - Zero console error verification.                                          │
 └─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3. Risk Assessment & Rollback Strategies
+
+| Component | Risk Level | Potential Impact | Mitigation & Rollback Strategy |
+| :--- | :--- | :--- | :--- |
+| **Participant UI Modernization** | Low | Visual regression if CSS cascades improperly | Scoped CSS classes under `.participant-app` and isolated view templates; old templates backed up. |
+| **Scoring & Psychometrics** | Zero | None | Core scoring modules in `lib/scoring/` and `lib/instruments/` are completely untouched; read-only consumption. |
+| **Database & Schema Extensions** | Very Low | New table creation in Supabase or local store | Non-destructive `CREATE TABLE IF NOT EXISTS`; local fallback automatically provides JSON storage. |
+| **Authentication Flow** | Low | Session disruption | Existing session cookies and password validation endpoints preserved without modifying signature. |
+
+---
+
+## 4. Acceptance Criteria
+
+1. **Visual Match & Modern Polish:** The desktop dashboard, results hub, and mobile views reflect the aesthetic of the reference mockups while softening military rigidity into an institutional psychological assessment and wellness sanctum.
+2. **Psychometric Fidelity:** Every rendered metric matches `METRICS_CATALOG.md` with zero arbitrary cross-test blending.
+3. **Interactive Tools Working:** Participants can interact with the 5-minute breathing pacer, log daily habits, track mood, and download an official PDF psychological results report.
+4. **Testing:** All existing automated unit and regression tests pass without regressions; full fixture coverage across EMA, Bar-On ICE, and DISC.�────────────────────────────────────────────────────────┘
 ```
 
 ---

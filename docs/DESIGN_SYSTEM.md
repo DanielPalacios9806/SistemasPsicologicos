@@ -1,7 +1,7 @@
 # DESIGN SYSTEM — MENTE DE ACERO
 
 **Document Version:** 2.1.0  
-**Design Philosophy:** Humanized Clinical Wellness & Mental Fitness (Target Audience: 18–33)  
+**Design Philosophy:** Humanized Psychological Wellness & Mental Fitness (Target Audience: 18–33)  
 **Core Mantra:** *Strength + Self-Knowledge + Confidentiality + Well-Being + Progress*
 
 ---
@@ -26,7 +26,7 @@ Monolithic wall of 133 questions            Stepped modular cards, autosave, bre
 ## 2. Color Palette & Visual Architecture
 
 ### 2.1 Primary & Neutral Colors
-- **Deep Navy (`#0B192C`):** Used for primary sidebars, prominent brand marks, and high-trust anchors. Evokes stability, depth, and clinical seriousness.
+- **Deep Navy (`#0B192C`):** Used for primary sidebars, prominent brand marks, and high-trust anchors. Evokes stability, depth, institutional reliability, and scientific rigor.
 - **Calm Teal (`#0B716C`):** Used for active states, positive progression, and mental clarity cues.
 - **Warm Gold / Amber (`#D99B26` / `#F59E0B`):** Used for primary CTAs ("Iniciar evaluación", "Descargar informe"), active milestones, and streak highlights. Evokes energy, value, and warmth.
 - **Canvas Soft White / Off-White (`#F4F7F9`):** Soothing background reducing eye fatigue during 15–20 minute assessment batteries.

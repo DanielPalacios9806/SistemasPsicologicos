@@ -8,7 +8,12 @@ process.env.SUPABASE_REQUEST_TIMEOUT_MS = "1000";
 process.env.SUPABASE_READ_RETRIES = "1";
 
 const originalFetch = global.fetch;
-const { saveApplicationProgress, supabaseRequest } = require("../lib/storage");
+const {
+  findActiveAssignmentForInstrument,
+  listAssignmentsForPerson,
+  saveApplicationProgress,
+  supabaseRequest,
+} = require("../lib/storage");
 
 test.afterEach(() => {
   global.fetch = originalFetch;
@@ -116,4 +121,54 @@ test("Supabase: incremental autosave writes only the changed answer", async () =
   assert.equal(requests.some((request) => request.url.includes("people")), false);
   assert.equal(requests.some((request) => request.url.includes("partial_results")), false);
   assert.deepEqual(JSON.parse(requests[0].body).map((row) => row.item_id), [2]);
+});
+
+test("Supabase: combines assignments from every active campaign", async () => {
+  const campaigns = [
+    { id: "campaign-new", name: "Revision", starts_at: "2026-10-08T10:44:00Z", created_at: "2026-10-08T10:40:00Z" },
+    { id: "campaign-main", name: "Evaluaciones 2026", starts_at: "2026-08-17T05:00:00Z", created_at: "2026-08-01T12:00:00Z" },
+  ];
+  global.fetch = async (url) => {
+    const endpoint = String(url);
+    if (endpoint.includes("assessment_campaigns")) return Response.json(campaigns);
+    if (endpoint.includes("assessment_assignments")) {
+      assert.match(endpoint, /campaign_id=in\.\(campaign-new,campaign-main\)/);
+      return Response.json([
+        { id: "assignment-ema", campaign_id: "campaign-main", person_id: "person-1", instrument_code: "ema", status: "pending" },
+        { id: "assignment-baron", campaign_id: "campaign-new", person_id: "person-1", instrument_code: "baron", status: "pending" },
+      ]);
+    }
+    if (endpoint.includes("applications")) return Response.json([]);
+    throw new Error(`Unexpected request: ${endpoint}`);
+  };
+
+  const assignments = await listAssignmentsForPerson("person-1");
+
+  assert.deepEqual(assignments.map((assignment) => assignment.instrumentCode), ["baron", "ema"]);
+  assert.equal(assignments.find((assignment) => assignment.instrumentCode === "baron").campaignName, "Revision");
+  assert.equal(assignments.find((assignment) => assignment.instrumentCode === "ema").campaignName, "Evaluaciones 2026");
+});
+
+test("Supabase: chooses the newest active campaign when an instrument is assigned twice", async () => {
+  global.fetch = async (url) => {
+    const endpoint = String(url);
+    if (endpoint.includes("assessment_campaigns")) {
+      return Response.json([
+        { id: "campaign-main", starts_at: "2026-08-17T05:00:00Z", created_at: "2026-08-01T12:00:00Z" },
+        { id: "campaign-new", starts_at: "2026-10-08T10:44:00Z", created_at: "2026-10-08T10:40:00Z" },
+      ]);
+    }
+    if (endpoint.includes("assessment_assignments")) {
+      assert.match(endpoint, /instrument_code=eq\.baron/);
+      return Response.json([
+        { id: "assignment-old", campaign_id: "campaign-main", person_id: "person-1", instrument_code: "baron" },
+        { id: "assignment-new", campaign_id: "campaign-new", person_id: "person-1", instrument_code: "baron" },
+      ]);
+    }
+    throw new Error(`Unexpected request: ${endpoint}`);
+  };
+
+  const assignment = await findActiveAssignmentForInstrument("person-1", "BARON");
+
+  assert.equal(assignment.id, "assignment-new");
 });
